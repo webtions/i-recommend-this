@@ -1,0 +1,32 @@
+.iRecommendThis { display:block; clear:both; position:relative; }
+
+
+
+.iRecommendThis a { background:url(heart.png) top left no-repeat; padding:0 0 0 20px; cursor:pointer !important; }
+.iRecommendThis a.active, .iRecommendThis a:hover { background-position:0 -19px; color: #F56559 !important; }
+.iRecommendThis span.counter {padding:0; margin:0; font-weight:bold; display:inline !important; }
+
+
+
+
+/*
+.iRecommendThis .image { background:url(heart.png) top left no-repeat; float:left; height:16px; width:16px; background-position:0 3px ; padding:0 0 0 4px; }
+.iRecommendThis .counter { background:url(heart.png) top left no-repeat; background-position:0 3px ; padding:0 0 0 20px; font-weight:bold; }
+.iRecommendThis .counter a.image { background:url(add.png) center right no-repeat; padding:0 20px 0 0; }
+
+
+.iRecommendThis { display:block; }
+.iRecommendThis a { background:url(heart.png) top left no-repeat; padding:0 0 0 20px; cursor:pointer !important; }
+.iRecommendThis a.active, .iRecommendThis a:hover { background-position:0 -19px; color: #F56559 !important; }
+
+
+.iRecommendThis { display:inline; }
+.iRecommendThis .counter {padding:0 0 0 0; font-weight:bold; margin-right:5px; }
+
+
+
+
+.iRecommendThis .counter { background:url(heart.png) center left no-repeat; padding:0 0 0 20px; font-weight:bold; margin-left:5px; }
+.iRecommendThis .counter a.image { background:url(add.png) center right no-repeat; padding:0 20px 0 0; }
+
+ */
