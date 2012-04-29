@@ -1,7 +1,26 @@
+
+
+
+
+.iRecommendThis { display:inline; }
+.iRecommendThis .recommendThis { background:url(heart.png) top left no-repeat; padding:0 0 0 20px; font-weight:bold; cursor:pointer;}
+.iRecommendThis .recommendThis.active { background-position:0 -24px; color: #F56559 !important; }
+
+
+
+/*
+
+.iRecommendThis { display:inline; }
+.iRecommendThis .counter { background:url(heart.png) top left no-repeat; padding:0 0 0 20px; font-weight:bold; margin-left:5px; line-height:12px !important; }
+.iRecommendThis .counter a { cursor:pointer;   }
+.iRecommendThis a.active, .iRecommendThis a:hover { background-position:0 -19px; color: #F56559 !important; }
+.iRecommendThis .counter a.image{padding:0; margin:0; font-weight:bold; display:inline !important; }
+
+
+
+
+
 .iRecommendThis { display:block; clear:both; position:relative; }
-
-
-
 .iRecommendThis a { background:url(heart.png) top left no-repeat; padding:0 0 0 20px; cursor:pointer !important; }
 .iRecommendThis a.active, .iRecommendThis a:hover { background-position:0 -19px; color: #F56559 !important; }
 .iRecommendThis span.counter {padding:0; margin:0; font-weight:bold; display:inline !important; }
@@ -9,7 +28,7 @@
 
 
 
-/*
+
 .iRecommendThis .image { background:url(heart.png) top left no-repeat; float:left; height:16px; width:16px; background-position:0 3px ; padding:0 0 0 4px; }
 .iRecommendThis .counter { background:url(heart.png) top left no-repeat; background-position:0 3px ; padding:0 0 0 20px; font-weight:bold; }
 .iRecommendThis .counter a.image { background:url(add.png) center right no-repeat; padding:0 20px 0 0; }
