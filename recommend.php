@@ -14,12 +14,12 @@ if($post_ID != '') {
 		update_post_meta($post_ID, '_recommended', $recommendNew);
 
 		setcookie('liked-'.$post_ID, time(), time()+3600*24*365, '/');
-		$wpdb->query("INSERT INTO ".$wpdb->prefix."irecommendthis_votes VALUES ('0', NOW(), '$post_ID', '$ip')");
+		$wpdb->query("INSERT INTO ".$wpdb->prefix."irecommendthis_votes VALUES ('', NOW(), '$post_ID', '$ip')");
 
-		echo $recommendNew;
+		echo $recommendNew.' recommends'; // .' lights' is added new
 	}
 	else {
-		echo $recommend;
+		echo $recommend.' recommends'; // .' lights' is added new
 	}
 }
 ?>

@@ -4,7 +4,7 @@ Donate link:
 Tags: recommend, like, love, post, rate, rating, heart
 Requires at least: 2.5
 Tested up to: 3.2.2
-Stable tag: 1
+Stable tag: 1.2
 
 == Description ==
 
@@ -32,6 +32,15 @@ You can also visit the [support center](http://www.harishchouhan.com/personal-pr
 
 
 == Changelog ==
+
+= 1.2
+* More bugs fixed.
+
+
+= 1.1
+* Fixed Bug that did not allow displaying text next to the counter.
+* Updated code using branch of original plugin on GitHub
+
 
 = 1.0
 * Removed JQuery loading style when heart is clicked.
