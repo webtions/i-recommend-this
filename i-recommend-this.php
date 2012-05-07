@@ -3,7 +3,7 @@
 Plugin Name: I Recommend This
 Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
 Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
-Version: 1.2
+Version: 1.3
 Author: Harish Chouhan
 Author URI: http://www.harishchouhan.com
 
@@ -217,7 +217,7 @@ function add_widget_most_recommended_posts() {
 		echo '</ul>';
 		echo $after_widget;
 	}	
-	register_sidebar_widget('Most recommended posts', 'widget_most_recommended_posts');
+	wp_register_sidebar_widget('most_recommended_posts', 'Most recommended posts', 'widget_most_recommended_posts');
 	
 	function options_widget_most_recommended_posts() {
 		$options = get_option("most_recommended_posts");
@@ -250,7 +250,7 @@ function add_widget_most_recommended_posts() {
 		<input type="hidden" id="mrp-submit" name="mrp-submit" value="1" />
 		<?php
 	}
-	register_widget_control('Most recommended posts', 'options_widget_most_recommended_posts');
+	wp_register_widget_control('most_recommended_posts', 'Most recommended posts', 'options_widget_most_recommended_posts');
 } 
 
 add_action('init', 'add_widget_most_recommended_posts');
