@@ -33,6 +33,12 @@ Please report any bugs you find via http://www.harishchouhan.com/personal-projec
 * [Designers Kiosk](http://www.designerskiosk.com)
 
 
+= My Links = 
+
+* Twitter @[harishchouhan](https://twitter.com/harishchouhan)
+* Google+ [Harish Chouhan](https://plus.google.com/u/0/103138475844539274387/)
+
+
 If you love the plugin, please consider rating it and clicking on "it works" button.
 
 
