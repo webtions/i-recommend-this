@@ -29,7 +29,7 @@ Please report any bugs you find via http://www.harishchouhan.com/personal-projec
 
 = Examples of how the plugin has been used =
 
-* [Harish's blog](http://www.harishchouhan.com/blog/)
+* [Harish's blog](http://www.harishchouhan.com/blog/) - Please leave your suggestions here.
 * [Designers Kiosk](http://www.designerskiosk.com)
 
 
