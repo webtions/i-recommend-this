@@ -4,8 +4,8 @@ Donate link: http://www.designerskiosk.com
 Tags: recommend, like, love, post, rate, rating, heart
 Requires at least: 3.0
 Tested up to: 3.2.2
-Stable tag: 1.4
-Last Updated: 2012-May-7
+Stable tag: 1.4.1
+Last Updated: 2012-May-15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,9 @@ You can also visit the [support center](http://www.harishchouhan.com/personal-pr
 
 
 == Changelog ==
+
+= 1.4.1
+* Fixed bug that broke update.
 
 = 1.4
 * Added feature to display custom text when a post is liked.

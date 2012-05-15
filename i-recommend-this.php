@@ -3,7 +3,7 @@
 Plugin Name: I Recommend This
 Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
 Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
-Version: 1.4
+Version: 1.4.1
 Author: Harish Chouhan
 Author URI: http://www.harishchouhan.com
 
@@ -414,6 +414,7 @@ function setOptionsIRT() {
 	add_option('irt_onPage', '1', '', 'yes');
 	add_option('irt_textOrNotext', 'notext', '', 'yes');
 	add_option('irt_text', 'I recommend This', '', 'yes');
+	add_option('irt_textOnclick', 'recommends', '', 'yes');
 }
 
 register_activation_hook(__FILE__, 'setOptionsIRT');
@@ -426,6 +427,7 @@ function unsetOptionsIRT() {
 	delete_option('irt_onPage');
 	delete_option('irt_textOrNotext');
 	delete_option('irt_text');
+	delete_option('irt_textOnclick');
 	delete_option('most_recommended_posts');
 	delete_option('irt_dbVersion');
 }
@@ -445,6 +447,7 @@ function IRecommendThisAdminRegisterSettings() { // whitelist options
 	register_setting( 'irt_options', 'irt_onPage' );
 	register_setting( 'irt_options', 'irt_textOrNotext' );
 	register_setting( 'irt_options', 'irt_text' );
+	register_setting( 'irt_options', 'irt_textOnclick' );
 }
 add_action('admin_init', 'IRecommendThisAdminRegisterSettings');
 
