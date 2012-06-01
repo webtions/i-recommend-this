@@ -3,7 +3,7 @@
 Plugin Name: I Recommend This
 Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
 Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
-Version: 1.4.2
+Version: 1.4.3
 Author: Harish Chouhan
 Author URI: http://www.harishchouhan.com
 
@@ -74,7 +74,7 @@ register_uninstall_hook(__FILE__, 'unsetOptionsIRT');
 
 #### ADMIN OPTIONS ####
 function IRecommendThisAdminMenu() {
-	add_options_page('I Recommend This', 'I Recommend This', '10', 'IRecommendThisAdminMenu', 'IRecommendThisAdminContent');
+	add_options_page('I Recommend This', 'I Recommend This', 'administrator', 'IRecommendThisAdminMenu', 'IRecommendThisAdminContent');
 }
 add_action('admin_menu', 'IRecommendThisAdminMenu');
 

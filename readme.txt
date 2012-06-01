@@ -1,11 +1,11 @@
 === Plugin Name ===
-Contributors: Harish Chouhan, Benoit "LeBen" Burgener
+Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://www.designerskiosk.com
-Tags: recommend, like, love, post, rate, rating, heart
+Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.0
 Tested up to: 3.2.2
-Stable tag: 1.4.2
-Last Updated: 2012-May-15
+Stable tag: 1.4.3
+Last Updated: 2012-June-01
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,10 @@ You can also visit the [support center](http://www.harishchouhan.com/personal-pr
 
 
 == Changelog ==
+
+= 1.4.3
+* All deprecated functions removed. Plugin might not work on WordPress versions older than 3.
+
 
 = 1.4.1
 * Fixed bug that broke update.
