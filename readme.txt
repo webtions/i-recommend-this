@@ -4,7 +4,7 @@ Donate link: http://www.designerskiosk.com
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.0
 Tested up to: 3.2.2
-Stable tag: 1.4.3
+Stable tag: 1.4.5
 Last Updated: 2012-June-01
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
