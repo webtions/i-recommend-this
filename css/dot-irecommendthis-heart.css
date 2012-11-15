@@ -1,0 +1,17 @@
+
+.dot-irecommendthis { 
+	background:url(../images/heart.png) 0 3px no-repeat; 
+	padding-left: 18px;
+	border: 0 !important;
+	margin-bottom: 10px;
+	display: inline-block;
+	text-decoration: none;
+	min-height: 14px;
+
+}
+
+	
+.dot-irecommendthis:hover, .dot-irecommendthis.active { background-position:0 -23px; color: #F56559 !important; 	border: 0 !important;
+	margin: 0 0 10px 0 !important;
+	padding-left: 18px !important;
+	text-decoration: none;}

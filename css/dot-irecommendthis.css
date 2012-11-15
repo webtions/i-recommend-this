@@ -1,0 +1,10 @@
+
+.dot-irecommendthis { 
+	background:url(../images/default.png) 0 0px no-repeat; 
+	padding:0 0 0 20px;
+	border: 0 !important;
+	margin-bottom: 10px;
+	display: inline-block;
+	text-decoration: none;
+	}
+.dot-irecommendthis:hover, .dot-irecommendthis.active { background-position:0 -24px; color: #F56559 !important; }
