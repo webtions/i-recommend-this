@@ -2,10 +2,10 @@
 Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://www.designerskiosk.com
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
-Requires at least: 3.0
+Requires at least: 3.4
 Tested up to: 3.2.2
-Stable tag: 1.4.5
-Last Updated: 2012-June-01
+Stable tag: 2.0
+Last Updated: 2012-November-15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,7 +18,7 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 
 
 = This plugin includes =
-* A counter/button to display the number of "like" and to vote.
+* A counter to display the number of "like" and to vote.
 * A widget and a function to display the X most liked posts.
 * A preference pane with some options.
 
@@ -59,6 +59,13 @@ You can also visit the [support center](http://www.harishchouhan.com/personal-pr
 
 
 == Changelog ==
+
+= 2.0
+* This is a major revamp. The entire plugin structure is now based on OOP
+* Settings are now stored using Settings API and Settings page is created based on WordPress standards.
+* This plugin contains code from "Zilla Like" plugin developed by Orman Clark of www.themezilla.com.
+* Translation files are finally added.
+
 
 = 1.4.3
 * All deprecated functions removed. Plugin might not work on WordPress versions older than 3.
