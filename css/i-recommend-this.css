@@ -1,3 +1,0 @@
-.iRecommendThis { display:inline; }
-.iRecommendThis .recommendThis { background:url(heart.png) top left no-repeat; padding:0 0 0 20px; font-weight:bold; cursor:pointer;}
-.iRecommendThis .recommendThis.active { background-position:0 -24px; color: #F56559 !important; }
