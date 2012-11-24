@@ -48,7 +48,7 @@ If you love the plugin, please consider rating it and clicking on "it works" but
 2. Activate the plugin through the 'Plugins' menu in WordPress
 
 To display the recomment/like link other than at the bottom of individual post, you would have to add below code in your template
-<?php if(function_exists(getIRecommendThis)) getIRecommendThis('get'); ?>
+'<?php if( function_exists('dot_irecommendthis') ) dot_irecommendthis(); ?>'
 
 == Frequently Asked Questions ==
 
