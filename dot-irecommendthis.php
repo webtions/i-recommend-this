@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.0
+ * Version: 2.1
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -259,7 +259,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		function setting_instructions() 
 		{
 			echo '<p>'. __('To use I Recomment This in your posts and pages you can use the shortcode:', 'dot') .'</p>
-			<p><code>[dot_irecommendthis]</code></p>
+			<p><code>[dot_recommends]</code></p>
 			<p>'. __('To use I Recomment This manually in your theme template use the following PHP code:', 'dot') .'</p>
 			<p><code>&lt;?php if( function_exists(\'dot_irecommendthis\') ) dot_irecommendthis(); ?&gt;</code></p>';
 		}	
@@ -332,7 +332,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		 * Setup recommends
 		 *--------------------------------------------*/
 	
-		function setup_recommends( $post_id ) 
+		function dot_setup_recommends( $post_id ) 
 		{
 			if(!is_numeric($post_id)) return;
 		
@@ -431,18 +431,18 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 				
 		function shortcode( $atts )
 		{
-			extract( shortcode_atts( array(), $atts ) );
-			return $this->dot_recommend();
+			extract( shortcode_atts( array('id' => null), $atts ) );
+			return $this->dot_recommend($id);
 			
 		}	//shortcode
-	
-	
-		function dot_recommend()
+
+
+		function dot_recommend($id=null)
 		{
 			global $wpdb;
 			$ip = $_SERVER['REMOTE_ADDR'];
-			$post_ID = get_the_ID();
-			$voteStatusByIp = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = '$post->ID' AND ip = '$ip'");
+			$post_ID = $id ? $id : get_the_ID();
+			$voteStatusByIp = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = '$post_ID' AND ip = '$ip'");
 			global $post;
 		
 
@@ -452,7 +452,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['text_one_suffix']) ) $options['text_one_suffix'] = '';
 			if( !isset($options['text_more_suffix']) ) $options['text_more_suffix'] = '';
 			
-			$output = $this->dot_recommend_this($post->ID, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix']);
+			$output = $this->dot_recommend_this($post_ID, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix']);
 	  
 
 			
@@ -468,7 +468,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 				$title = __('You already recommended this', 'dot');
 			}
 			
-			return '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post->ID .'" title="'. $title .'">'. $output .'</a>';
+			return '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post_ID .'" title="'. $title .'">'. $output .'</a>';
 		}
 		
 
