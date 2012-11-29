@@ -3,9 +3,9 @@ Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://www.designerskiosk.com
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.4
-Tested up to: 3.2.2
-Stable tag: 2.0
-Last Updated: 2012-November-15
+Tested up to: 3.4
+Stable tag: 2.1
+Last Updated: 2012-November-29
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,7 +30,6 @@ Please report any bugs you find via http://www.harishchouhan.com/personal-projec
 = Examples of how the plugin has been used =
 
 * [Harish's blog](http://www.harishchouhan.com/blog/) - Please leave your suggestions here.
-* [Designers Kiosk](http://www.designerskiosk.com)
 
 
 = My Links = 
@@ -46,9 +45,10 @@ If you love the plugin, please consider rating it and clicking on "it works" but
 
 1. Upload the directory `/i-recommend-this/` to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Click on the Settings link below the plugin name on the plugins page
 
 To display the recomment/like link other than at the bottom of individual post, you would have to add below code in your template
-'<?php if( function_exists('dot_irecommendthis') ) dot_irecommendthis(); ?>'
+`<?php if( function_exists('dot_irecommendthis') ) dot_irecommendthis(); ?>`
 
 == Frequently Asked Questions ==
 
@@ -59,6 +59,12 @@ You can also visit the [support center](http://www.harishchouhan.com/personal-pr
 
 
 == Changelog ==
+
+
+= 2.1
+* Fixed Naming Errors. Thanks to Marian Hillmar.
+* Fixed Shortcode name & Added support to place like button anywhere pointing to any post. Thanks to Bryant Williams for the code.
+
 
 = 2.0
 * This is a major revamp. The entire plugin structure is now based on OOP
