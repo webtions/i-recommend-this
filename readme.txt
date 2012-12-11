@@ -5,7 +5,7 @@ Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr li
 Requires at least: 3.4
 Tested up to: 3.4
 Stable tag: 2.1
-Last Updated: 2012-November-29
+Last Updated: 2012-December-11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,10 @@ If you love the plugin, please consider rating it and clicking on "it works" but
 
 To display the recomment/like link other than at the bottom of individual post, you would have to add below code in your template
 `<?php if( function_exists('dot_irecommendthis') ) dot_irecommendthis(); ?>`
+
+Shortcode
+`[dot_recommends]`
+
 
 == Frequently Asked Questions ==
 
