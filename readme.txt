@@ -2,10 +2,10 @@
 Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://www.designerskiosk.com
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
-Requires at least: 3.4
-Tested up to: 3.4
-Stable tag: 2.1
-Last Updated: 2012-December-11
+Requires at least: 3.3
+Tested up to: 3.5
+Stable tag: 2.1.2
+Last Updated: 2012-December-20
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,8 @@ You can also visit the [support center](http://www.harishchouhan.com/personal-pr
 
 == Changelog ==
 
+= 2.1.2
+* Fixed CSS Disable issue. Thanks to Nicolas Mollet.
 
 = 2.1
 * Fixed Naming Errors. Thanks to Marian Hillmar.
