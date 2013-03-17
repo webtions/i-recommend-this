@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.1.2
+ * Version: 2.1.3
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -15,7 +15,7 @@
  *
  * License:
 
-  Copyright 2012 "I Recommend This WordPress Plugin" (me@harishchouhan.coms)
+  Copyright 2013 "I Recommend This WordPress Plugin" (me@harishchouhan.coms)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as 
@@ -31,17 +31,14 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   
  */
- 
-//if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
- 
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 if ( ! class_exists( 'DOT_IRecommendThis' ) ) 
 {
 	
 	
 	class DOT_IRecommendThis {
 		
-		public $version = '2.1.2';
+		public $version = '2.1.3';
 		
 		/*--------------------------------------------*
 		 * Constructor
@@ -51,12 +48,12 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		{		
 			$this->file = $file;
 			
+			// Run this on activation / deactivation
+			register_activation_hook( $file, array( $this, 'activate' ) );
+			
 			// Load text domain
 			add_action( 'init', array( &$this, 'load_localisation' ), 0 );
-			
-			// Run this on activation / deactivation
-			register_activation_hook(  __FILE__, array( &$this, 'activate' ) );
-			
+				
 			add_action( 'admin_menu', array( &$this, 'dot_irecommendthis_menu' ) );
 			add_action( 'admin_init', array( &$this, 'dot_irecommendthis_settings' ) );
 			add_action( 'init', array( &$this, 'add_widget_most_recommended_posts' ) );
@@ -69,28 +66,18 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			
 		} // end constructor    
 	
-	
-		/*--------------------------------------------*
-		 * Localisation | Public | 1.4.6 | Return : void
-		 *--------------------------------------------*/
-	
-		public function load_localisation () 
-		{
-			load_plugin_textdomain( 'dot', false, dirname( plugin_basename( $this->file ) ) . '/languages/' );
-			
-		} // End load_localisation()
-		
-		
+
 		/*--------------------------------------------*
 		 * Activate
 		 *--------------------------------------------*/
 		 
 		public function activate( $network_wide ) {
-			
+			if (!isset($wpdb)) $wpdb = $GLOBALS['wpdb'];
 			global $wpdb;
 			
 			$table_name = $wpdb->prefix . "irecommendthis_votes";
-			if($wpdb->get_var("show tables recommend '$table_name'") != $table_name) {
+			if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+			{
 				$sql = "CREATE TABLE " . $table_name . " (
 					id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
 					time TIMESTAMP NOT NULL,
@@ -100,11 +87,12 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 				);";
 		
 				require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+				
 				dbDelta($sql);
 				
 				$this->register_plugin_version();
 		
-				//add_option("dot_irecommendthis_db_version", $dot_irecommendthis_db_version);
+				add_option("dot_irecommendthis_db_version", $dot_irecommendthis_db_version);
 			}
 	
 		} // end activate
@@ -114,6 +102,16 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 				update_option( 'dot-irecommendthis' . '-version', $this->version );
 			}
 		} // End register_plugin_version()
+			
+		/*--------------------------------------------*
+		 * Localisation | Public | 1.4.6 | Return : void
+		 *--------------------------------------------*/
+	
+		public function load_localisation () 
+		{
+			load_plugin_textdomain( 'dot', false, dirname( plugin_basename( $this->file ) ) . '/languages/' );
+			
+		} // End load_localisation()
 				
 	
 		/*--------------------------------------------*
@@ -249,10 +247,10 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			$options = get_option( 'dot_irecommendthis_settings' );
 			if( !isset($options['recommend_style']) ) $options['recommend_style'] = '0';
 			
-			echo '<label><input type="radio" name="dot_irecommendthis_settings[recommend_style]" value="0"'. (($options['recommend_style']) == "0" ? checked : '') .' />
+			echo '<label><input type="radio" name="dot_irecommendthis_settings[recommend_style]" value="0"'. (($options['recommend_style']) == "0" ? 'checked' : '') .' />
 			'. __('Default style - Thumb', 'dot') .'</label><br />
 			
-			<label><input type="radio" name="dot_irecommendthis_settings[recommend_style]" value="1"'. (($options['recommend_style']) == "1" ? checked : '') .' />
+			<label><input type="radio" name="dot_irecommendthis_settings[recommend_style]" value="1"'. (($options['recommend_style']) == "1" ? 'checked' : '') .' />
 			'. __('Heart', 'dot') .'</label><br />';
 		}
 		
@@ -570,7 +568,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 	global $dot_irecommendthis;
 	
 	// Initiation call of plugin
-	$dot_irecommendthis = new DOT_IRecommendThis( $file );
+	$dot_irecommendthis = new DOT_IRecommendThis(__FILE__);
 
 }
 
