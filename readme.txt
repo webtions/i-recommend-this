@@ -4,8 +4,8 @@ Donate link: http://www.designerskiosk.com
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.5.2
-Stable tag: 2.1.3
-Last Updated: 2013-March-17
+Stable tag: 2.1.4
+Last Updated: 2013-March-18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,6 +63,9 @@ You can also visit the [support center](http://www.harishchouhan.com/personal-pr
 
 
 == Changelog ==
+
+= 2.1.4
+* Removed 2 instances of double quotes. Thanks to [boyevul](http://profiles.wordpress.org/boyevul/)
 
 = 2.1.3
 * Fixed errors shown when Debug mode was on. Thanks to [Air](http://profiles.wordpress.org/air-1/)
