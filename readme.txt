@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
-Donate link: http://www.designerskiosk.com
+Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.5.2
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 Last Updated: 2013-March-18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -25,14 +25,14 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 
 This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin and has been modified after getting requests for the changes I had made on my website.
 
-Please report any bugs you find via http://www.harishchouhan.com/personal-projects/i-recommend-this/
+Please report any bugs you find via http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/
 
 = Examples of how the plugin has been used =
 
 * [Harish's blog](http://www.harishchouhan.com/blog/) - Please leave your suggestions here.
 
 
-= My Links = 
+= My Links =
 
 * Twitter @[harishchouhan](https://twitter.com/harishchouhan)
 * Google+ [Harish Chouhan](https://plus.google.com/u/0/103138475844539274387/)
@@ -56,13 +56,16 @@ Shortcode
 
 == Frequently Asked Questions ==
 
-Take a look at the [official "I Recommend This" FAQ](http://www.harishchouhan.com/personal-projects/i-recommend-this/).
+Take a look at the [official "I Recommend This" FAQ](http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/).
 
-You can also visit the [support center](http://www.harishchouhan.com/personal-projects/i-recommend-this/) and start a discussion if needed.
+You can also visit the [support center](http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/) and start a discussion if needed.
 
 
 
 == Changelog ==
+
+= 2.1.5
+* Support URL update for new plugin details page.
 
 = 2.1.4
 * Removed 2 instances of double quotes. Thanks to [boyevul](http://profiles.wordpress.org/boyevul/)
