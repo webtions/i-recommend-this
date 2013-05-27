@@ -4,7 +4,7 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.5.2
-Stable tag: 2.1.5
+Stable tag: 2.2.0
 Last Updated: 2013-March-18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -63,6 +63,10 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.2.0
+* Added option to customize the link title. You can now remove the word recomment and add anything you like. Ideas suggested by Krystina Montemurro.
+
 
 = 2.1.5
 * Support URL update for new plugin details page.

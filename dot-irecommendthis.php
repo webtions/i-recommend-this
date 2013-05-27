@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.1.5
+ * Version: 2.2.0
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -137,13 +137,25 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		public function dot_irecommendthis_settings() // whitelist options
 		{
 			register_setting( 'dot-irecommendthis', 'dot_irecommendthis_settings', array(&$this, 'settings_validate') );
+
 			add_settings_section( 'dot-irecommendthis', '', array(&$this, 'section_intro'), 'dot-irecommendthis' );
+
 			add_settings_field( 'show_on', __( 'Automatically display on', 'dot' ), array(&$this, 'setting_show_on'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
 			add_settings_field( 'text_zero_suffix', __( 'Text after 0 Count', 'dot' ), array(&$this, 'setting_text_zero_suffix'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
 			add_settings_field( 'text_one_suffix', __( 'Text after 1 Count', 'dot' ), array(&$this, 'setting_text_one_suffix'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
 			add_settings_field( 'text_more_suffix', __( 'Text after more than 1 Count', 'dot' ), array(&$this, 'setting_text_more_suffix'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
+			add_settings_field( 'link_title_new', __( 'Title for New posts', 'dot' ), array(&$this, 'setting_link_title_new'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
+			add_settings_field( 'link_title_active', __( 'Title for already voted posts', 'dot' ), array(&$this, 'setting_link_title_active'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
 			add_settings_field( 'disable_css', __( 'Disable CSS', 'dot' ), array(&$this, 'setting_disable_css'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
 			add_settings_field( 'recommend_style', __( 'Choose a style', 'dot' ), array(&$this, 'setting_recommend_style'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
 			add_settings_field( 'instructions', __( 'Shortcode and Template Tag', 'dot' ), array(&$this, 'setting_instructions'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
 		}	//dot_irecommendthis_settings
@@ -240,6 +252,24 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			echo '<input type="text" name="dot_irecommendthis_settings[text_more_suffix]" class="regular-text" value="'. $options['text_more_suffix'] .'" /><br />
 			<span class="description">'. __('Text to display after more than 1 person have recommended. Leave blank for no text after the count.', 'dot') .'</span>';
+		}
+
+		function setting_link_title_new()
+		{
+			$options = get_option( 'dot_irecommendthis_settings' );
+			if( !isset($options['link_title_new']) ) $options['link_title_new'] = '';
+
+			echo '<input type="text" name="dot_irecommendthis_settings[link_title_new]" class="regular-text" value="'. $options['link_title_new'] .'" /><br />
+			<span class="description">'. __('Link Title element for posts not yet voted by a user.', 'dot') .'</span>';
+		}
+
+		function setting_link_title_active()
+		{
+			$options = get_option( 'dot_irecommendthis_settings' );
+			if( !isset($options['link_title_active']) ) $options['link_title_active'] = '';
+
+			echo '<input type="text" name="dot_irecommendthis_settings[link_title_active]" class="regular-text" value="'. $options['link_title_active'] .'" /><br />
+			<span class="description">'. __('Link Title element for posts already voted by a user.', 'dot') .'</span>';
 		}
 
 		function setting_recommend_style()
@@ -459,12 +489,32 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			if (!isset($_COOKIE['dot_irecommendthis_'.$post_ID]) && $voteStatusByIp == 0) {
 				$class = 'dot-irecommendthis';
-				$title = __('Recommend this', 'dot');
+
+
+				if( $options['link_title_new'] == '' ) {
+
+					$title = __('Recommend this', 'dot');
+
+				} else {
+
+					$title = $options['link_title_new'];
+
+				}
+
 			}
 			else {
 
 				$class = 'dot-irecommendthis active';
-				$title = __('You already recommended this', 'dot');
+
+				if( $options['link_title_active'] == '' ) {
+
+					$title = __('You already recommended this', 'dot');
+
+				} else {
+
+					$title = $options['link_title_active'];
+
+				}
 			}
 
 			return '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post_ID .'" title="'. $title .'">'. $output .'</a>';
