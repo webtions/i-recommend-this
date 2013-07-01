@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.2.0
+ * Version: 2.3.0
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -38,7 +38,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 	class DOT_IRecommendThis {
 
-		public $version = '2.1.5';
+		public $version = '2.3.0';
 
 		/*--------------------------------------------*
 		 * Constructor
@@ -154,6 +154,10 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			add_settings_field( 'disable_css', __( 'Disable CSS', 'dot' ), array(&$this, 'setting_disable_css'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
+			add_settings_field( 'hide_zero', __( 'Hide Zero Count', 'dot' ), array(&$this, 'setting_hide_zero'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
+			add_settings_field( 'disable_unique_ip', __( 'Disable IP saving', 'dot' ), array(&$this, 'setting_disable_unique_ip'), 'dot-irecommendthis', 'dot-irecommendthis' );
+
 			add_settings_field( 'recommend_style', __( 'Choose a style', 'dot' ), array(&$this, 'setting_recommend_style'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
 			add_settings_field( 'instructions', __( 'Shortcode and Template Tag', 'dot' ), array(&$this, 'setting_instructions'), 'dot-irecommendthis', 'dot-irecommendthis' );
@@ -216,6 +220,26 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			<input type="hidden" name="dot_irecommendthis_settings[add_to_other]" value="0" />
 			<label><input type="checkbox" name="dot_irecommendthis_settings[add_to_other]" value="1"'. (($options['add_to_other']) ? ' checked="checked"' : '') .' />
 			'. __('All other pages like Index, Archive, etc.', 'dot') .'</label><br />';
+		}
+
+		function setting_hide_zero()
+		{
+			$options = get_option( 'dot_irecommendthis_settings' );
+			if( !isset($options['hide_zero']) ) $options['hide_zero'] = '0';
+
+			echo '<input type="hidden" name="dot_irecommendthis_settings[hide_zero]" value="0" />
+			<label><input type="checkbox" name="dot_irecommendthis_settings[hide_zero]" value="1"'. (($options['hide_zero']) ? ' checked="checked"' : '') .' />
+			Hide count if count is zero</label>';
+		}
+
+		function setting_disable_unique_ip()
+		{
+			$options = get_option( 'dot_irecommendthis_settings' );
+			if( !isset($options['disable_unique_ip']) ) $options['disable_unique_ip'] = '0';
+
+			echo '<input type="hidden" name="dot_irecommendthis_settings[disable_unique_ip]" value="0" />
+			<label><input type="checkbox" name="dot_irecommendthis_settings[disable_unique_ip]" value="1"'. (($options['disable_unique_ip']) ? ' checked="checked"' : '') .' />
+			Disable saving of IP Address. Will only save cookies to track user votes.</label>';
 		}
 
 		function setting_disable_css()
@@ -423,25 +447,69 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 					elseif( $recommended == 1 ) { $suffix = $text_one_suffix; }
 					else { $suffix = $text_more_suffix; }
 
-					return '<span class="dot-irecommendthis-count">'. $recommended .'</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
+
+					/*
+
+					Hides the count is the count is zero.
+
+					*/
+					$options = get_option( 'dot_irecommendthis_settings' );
+					if( !isset($options['hide_zero']) ) $options['hide_zero'] = '0';
+
+
+					if( ($recommended == 0) &&  $options['hide_zero'] == 1 ) {
+						return '<span class="dot-irecommendthis-count">&nbsp;</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
+
+					} else {
+						return '<span class="dot-irecommendthis-count">'. $recommended .'</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
+
+					}
+
 					break;
+
 
 				case 'update':
 
 					$recommended = get_post_meta($post_id, '_recommended', true);
 
-					global $wpdb;
-					$ip = $_SERVER['REMOTE_ADDR'];
-					$voteStatusByIp = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = '$post_id' AND ip = '$ip'");
+					$options = get_option( 'dot_irecommendthis_settings' );
+					if( !isset($options['disable_unique_ip']) ) $options['disable_unique_ip'] = '0';
 
-					if ( isset($_COOKIE['dot_irecommendthis_'. $post_id]) && $voteStatusByIp != 0 ) {
-						return $recommended;
+					/*
+
+					Check if Unique IP saving is required or disabled
+
+					*/
+					if( $options['disable_unique_ip'] == 0 ) {
+
+						global $wpdb;
+						$ip = $_SERVER['REMOTE_ADDR'];
+						$voteStatusByIp = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = '$post_id' AND ip = '$ip'");
+
+						if ( isset($_COOKIE['dot_irecommendthis_'. $post_id]) && $voteStatusByIp != 0 ) {
+							return $recommended;
+						}
+
+						$recommended++;
+						update_post_meta($post_id, '_recommended', $recommended);
+						setcookie('dot_irecommendthis_'. $post_id, time(), time()+3600*24*365, '/');
+						$wpdb->query("INSERT INTO ".$wpdb->prefix."irecommendthis_votes VALUES ('', NOW(), '$post_id', '$ip')");
+
+
+					} else {
+
+						if ( isset($_COOKIE['dot_irecommendthis_'. $post_id]) ) {
+							return $recommended;
+						}
+
+						$recommended++;
+						update_post_meta($post_id, '_recommended', $recommended);
+						setcookie('dot_irecommendthis_'. $post_id, time(), time()+3600*24*365, '/');
+
 					}
 
-					$recommended++;
-					update_post_meta($post_id, '_recommended', $recommended);
-					setcookie('dot_irecommendthis_'. $post_id, time(), time()+3600*24*365, '/');
-					$wpdb->query("INSERT INTO ".$wpdb->prefix."irecommendthis_votes VALUES ('', NOW(), '$post_id', '$ip')");
+
+
 
 					if( $recommended == 0 ) { $suffix = $text_zero_suffix; }
 					elseif( $recommended == 1 ) { $suffix = $text_one_suffix; }
@@ -468,12 +536,24 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 		function dot_recommend($id=null)
 		{
+
+
 			global $wpdb;
 			$ip = $_SERVER['REMOTE_ADDR'];
 			$post_ID = $id ? $id : get_the_ID();
-			$voteStatusByIp = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = '$post_ID' AND ip = '$ip'");
 			global $post;
 
+			/*
+
+			Check if Unique IP saving is required or disabled
+
+			*/
+			if( !isset($options['disable_unique_ip']) ) $options['disable_unique_ip'] = '0';
+
+			if( $options['disable_unique_ip'] = '0' ) {
+
+				$voteStatusByIp = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = '$post_ID' AND ip = '$ip'");
+			}
 
 
 			$options = get_option( 'dot_irecommendthis_settings' );
@@ -487,34 +567,71 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			//if ( isset($_COOKIE['dot_irecommendthis_'. $post_id]) && $voteStatusByIp != 0 ) {
 
-			if (!isset($_COOKIE['dot_irecommendthis_'.$post_ID]) && $voteStatusByIp == 0) {
-				$class = 'dot-irecommendthis';
+			if( $options['disable_unique_ip'] = '0' ) {
+
+				if (!isset($_COOKIE['dot_irecommendthis_'.$post_ID]) && $voteStatusByIp == 0) {
+					$class = 'dot-irecommendthis';
 
 
-				if( $options['link_title_new'] == '' ) {
+					if( $options['link_title_new'] == '' ) {
 
-					$title = __('Recommend this', 'dot');
+						$title = __('Recommend this', 'dot');
 
-				} else {
+					} else {
 
-					$title = $options['link_title_new'];
+						$title = $options['link_title_new'];
 
-				}
-
-			}
-			else {
-
-				$class = 'dot-irecommendthis active';
-
-				if( $options['link_title_active'] == '' ) {
-
-					$title = __('You already recommended this', 'dot');
-
-				} else {
-
-					$title = $options['link_title_active'];
+					}
 
 				}
+				else {
+
+					$class = 'dot-irecommendthis active';
+
+					if( $options['link_title_active'] == '' ) {
+
+						$title = __('You already recommended this', 'dot');
+
+					} else {
+
+						$title = $options['link_title_active'];
+
+					}
+				}
+
+			} else {
+
+				if (!isset($_COOKIE['dot_irecommendthis_'.$post_ID])) {
+					$class = 'dot-irecommendthis';
+
+
+					if( $options['link_title_new'] == '' ) {
+
+						$title = __('Recommend this', 'dot');
+
+					} else {
+
+						$title = $options['link_title_new'];
+
+					}
+
+				}
+				else {
+
+					$class = 'dot-irecommendthis active';
+
+					if( $options['link_title_active'] == '' ) {
+
+						$title = __('You already recommended this', 'dot');
+
+					} else {
+
+						$title = $options['link_title_active'];
+
+					}
+				}
+
+
 			}
 
 			return '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post_ID .'" title="'. $title .'">'. $output .'</a>';

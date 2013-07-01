@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: I Recommend This 2.2.0\n"
-"POT-Creation-Date: 2013-05-27 10:46+0530\n"
-"PO-Revision-Date: 2013-05-27 10:47+0530\n"
+"POT-Creation-Date: 2013-07-01 09:20+0530\n"
+"PO-Revision-Date: 2013-07-01 09:20+0530\n"
 "Last-Translator: DOT <hello@dreamsmedia.in>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -58,21 +58,31 @@ msgstr ""
 
 #: D:\Projects\Plugin
 #: Development\i-recommend-this\trunk/dot-irecommendthis.php:157
-msgid "Choose a style"
+msgid "Hide Zero Count"
 msgstr ""
 
 #: D:\Projects\Plugin
 #: Development\i-recommend-this\trunk/dot-irecommendthis.php:159
+msgid "Disable IP saving"
+msgstr ""
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:161
+msgid "Choose a style"
+msgstr ""
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:163
 msgid "Shortcode and Template Tag"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:187
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:191
 msgid "Save Changes"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:201
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:205
 msgid ""
 "<a href=\"https://twitter.com/harishchouhan\" class=\"twitter-follow-button"
 "\" data-show-count=\"false\">Follow @harishchouhan</a>\n"
@@ -84,101 +94,103 @@ msgid ""
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:203
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:207
 msgid ""
 "This plugin allows your visitors to simply recommend or like your posts "
 "instead of commment it."
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:215
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:219
 msgid "Posts"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:218
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:222
 msgid "All other pages like Index, Archive, etc."
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:237
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:261
 msgid ""
 "Text to display after zero count. Leave blank for no text after the count."
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:245
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:269
 msgid ""
 "Text to display after 1 person has recommended. Leave blank for no text "
 "after the count."
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:254
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:278
 msgid ""
 "Text to display after more than 1 person have recommended. Leave blank for "
 "no text after the count."
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:263
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:287
 msgid "Link Title element for posts not yet voted by a user."
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:272
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:296
 msgid "Link Title element for posts already voted by a user."
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:281
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:305
 msgid "Default style - Thumb"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:284
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:308
 msgid "Heart"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:289
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:313
 msgid ""
 "To use I Recomment This in your posts and pages you can use the shortcode:"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:291
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:315
 msgid ""
 "To use I Recomment This manually in your theme template use the following "
 "PHP code:"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:496
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:578
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:610
 msgid "Recommend this"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:511
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:593
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:625
 msgid "You already recommended this"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:601
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:718
 msgid "Title:"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:604
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:721
 msgid "Number of posts to show:"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:607
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:724
 msgid "Show post count"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:645
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:762
 msgid "Settings"
 msgstr ""

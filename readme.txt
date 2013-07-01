@@ -4,8 +4,8 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.5.2
-Stable tag: 2.2.0
-Last Updated: 2013-March-18
+Stable tag: 2.3.0
+Last Updated: 2013-June-30
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,15 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 * A counter to display the number of "like" and to vote.
 * A widget and a function to display the X most liked posts.
 * A preference pane with some options.
+* Saves Cookie as well as users IP address to disable voting on the same post again
 
+
+= Advanced Options =
+* Hide count if count is zero
+* Set a default messages when count is zero, one or more
+* Choose between a "Thumbs Up" or a "Heart" icon to allow recommending on a post
+* Disable CSS to allow you to add your own styling rules
+* Disable saving of IP address in the table.
 
 This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin and has been modified after getting requests for the changes I had made on my website.
 
@@ -63,6 +71,11 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.3.0
+* Added option to hide count if count is zero
+* Added option to disable saving of IP address in the database
+
 
 = 2.2.0
 * Added option to customize the link title. You can now remove the word recomment and add anything you like. Ideas suggested by Krystina Montemurro.
