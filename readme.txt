@@ -4,7 +4,7 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.5.2
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 Last Updated: 2013-June-30
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
