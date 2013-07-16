@@ -1,11 +1,11 @@
 === Plugin Name ===
 Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
-Donate link: http://www.designerskiosk.com
+Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
-Requires at least: 3.4
-Tested up to: 3.2.2
-Stable tag: 2.0
-Last Updated: 2012-November-15
+Requires at least: 3.3
+Tested up to: 3.5.2
+Stable tag: 2.4.0
+Last Updated: 2013-July-15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,19 +21,28 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 * A counter to display the number of "like" and to vote.
 * A widget and a function to display the X most liked posts.
 * A preference pane with some options.
+* Saves Cookie as well as users IP address to disable voting on the same post again
 
+
+= Advanced Options =
+* Hide count if count is zero
+* Set a default messages when count is zero, one or more
+* Choose between a "Thumbs Up" or a "Heart" icon to allow recommending on a post
+* Disable CSS to allow you to add your own styling rules
+* Disable saving of IP address in the table.
 
 This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin and has been modified after getting requests for the changes I had made on my website.
 
-Please report any bugs you find via http://www.harishchouhan.com/personal-projects/i-recommend-this/
+Please report any bugs you find via http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/
 
 = Examples of how the plugin has been used =
 
+* [Flat UI Design Gallery](http://flattrendz.com) - Example usage in website Design Gallery
+
 * [Harish's blog](http://www.harishchouhan.com/blog/) - Please leave your suggestions here.
-* [Designers Kiosk](http://www.designerskiosk.com)
 
 
-= My Links = 
+= My Links =
 
 * Twitter @[harishchouhan](https://twitter.com/harishchouhan)
 * Google+ [Harish Chouhan](https://plus.google.com/u/0/103138475844539274387/)
@@ -46,19 +55,54 @@ If you love the plugin, please consider rating it and clicking on "it works" but
 
 1. Upload the directory `/i-recommend-this/` to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Click on the Settings link below the plugin name on the plugins page
 
 To display the recomment/like link other than at the bottom of individual post, you would have to add below code in your template
-<?php if(function_exists(getIRecommendThis)) getIRecommendThis('get'); ?>
+`<?php if( function_exists('dot_irecommendthis') ) dot_irecommendthis(); ?>`
+
+Shortcode
+`[dot_recommends]`
+
 
 == Frequently Asked Questions ==
 
-Take a look at the [official "I Recommend This" FAQ](http://www.harishchouhan.com/personal-projects/i-recommend-this/).
+Take a look at the [official "I Recommend This" FAQ](http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/).
 
-You can also visit the [support center](http://www.harishchouhan.com/personal-projects/i-recommend-this/) and start a discussion if needed.
+You can also visit the [support center](http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/) and start a discussion if needed.
 
 
 
 == Changelog ==
+
+= 2.4.0
+* Added filter dot_irt_before_count to be able to allow custom content or icons before the count. 
+
+
+= 2.3.0
+* Added option to hide count if count is zero
+* Added option to disable saving of IP address in the database
+
+
+= 2.2.0
+* Added option to customize the link title. You can now remove the word recomment and add anything you like. Ideas suggested by Krystina Montemurro.
+
+
+= 2.1.5
+* Support URL update for new plugin details page.
+
+= 2.1.4
+* Removed 2 instances of double quotes. Thanks to [boyevul](http://profiles.wordpress.org/boyevul/)
+
+= 2.1.3
+* Fixed errors shown when Debug mode was on. Thanks to [Air](http://profiles.wordpress.org/air-1/)
+
+= 2.1.2
+* Fixed CSS Disable issue. Thanks to Nicolas Mollet.
+
+= 2.1
+* Fixed Naming Errors. Thanks to Marian Hillmar.
+* Fixed Shortcode name & Added support to place like button anywhere pointing to any post. Thanks to Bryant Williams for the code.
+
 
 = 2.0
 * This is a major revamp. The entire plugin structure is now based on OOP
