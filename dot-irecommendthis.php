@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.3.1
+ * Version: 2.4.0
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -38,7 +38,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 	class DOT_IRecommendThis {
 
-		public $version = '2.3.0';
+		public $version = '2.4.0';
 
 		/*--------------------------------------------*
 		 * Constructor
@@ -434,6 +434,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			$text_one_suffix = strip_tags($text_one_suffix);
 			$text_more_suffix = strip_tags($text_more_suffix);
 
+
 			switch($action) {
 
 				case 'get':
@@ -458,10 +459,16 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 
 					if( ($recommended == 0) &&  $options['hide_zero'] == 1 ) {
-						return '<span class="dot-irecommendthis-count">&nbsp;</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
+
+						$output = '<span class="dot-irecommendthis-count">&nbsp;</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
+
+						return $output;
 
 					} else {
-						return '<span class="dot-irecommendthis-count">'. $recommended .'</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
+
+						$output = '<span class="dot-irecommendthis-count">'. $recommended .'</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
+
+						return $output;
 
 					}
 
@@ -515,7 +522,12 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 					elseif( $recommended == 1 ) { $suffix = $text_one_suffix; }
 					else { $suffix = $text_more_suffix; }
 
-					return '<span class="dot-irecommendthis-count">'. $recommended .'</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
+					$output = '<span class="dot-irecommendthis-count">'. $recommended .'</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
+
+					$dot_irt_html .= apply_filters( 'dot_irt_before_count', $output );
+
+					return $dot_irt_html;
+
 					break;
 
 			}
@@ -634,7 +646,14 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			}
 
-			return '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post_ID .'" title="'. $title .'">'. $output .'</a>';
+			$dot_irt_html = '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post_ID .'" title="'. $title .'">';
+
+			$dot_irt_html .= apply_filters( 'dot_irt_before_count', $output );
+			$dot_irt_html .= '</a>';
+
+			return $dot_irt_html;
+
+			//return '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post_ID .'" title="'. $title .'"><i class="icon-heart"></i> '. $output .'</a>';
 		}
 
 
