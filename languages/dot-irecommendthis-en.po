@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: I Recommend This 2.2.0\n"
-"POT-Creation-Date: 2013-07-01 09:20+0530\n"
-"PO-Revision-Date: 2013-07-01 09:20+0530\n"
+"POT-Creation-Date: 2013-08-10 21:34+0530\n"
+"PO-Revision-Date: 2013-08-10 21:35+0530\n"
 "Last-Translator: DOT <hello@dreamsmedia.in>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -164,33 +164,33 @@ msgid ""
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:578
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:610
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:590
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:622
 msgid "Recommend this"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:593
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:625
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:605
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:637
 msgid "You already recommended this"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:718
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:737
 msgid "Title:"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:721
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:740
 msgid "Number of posts to show:"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:724
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:743
 msgid "Show post count"
 msgstr ""
 
 #: D:\Projects\Plugin
-#: Development\i-recommend-this\trunk/dot-irecommendthis.php:762
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:781
 msgid "Settings"
 msgstr ""

@@ -4,7 +4,7 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.5.2
-Stable tag: 2.4.0
+Stable tag: 2.4.1
 Last Updated: 2013-July-15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -39,7 +39,7 @@ Please report any bugs you find via http://www.dreamsonline.net/wordpress-plugin
 
 * [Flat UI Design Gallery](http://flattrendz.com) - Example usage in website Design Gallery
 
-* [Harish's blog](http://www.harishchouhan.com/blog/) - Please leave your suggestions here.
+* [Harish's blog](http://www.harishchouhan.com/blog/) -
 
 
 = My Links =
@@ -74,8 +74,11 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 == Changelog ==
 
+= 2.4.1
+* Fixed undefined index error.
+
 = 2.4.0
-* Added filter dot_irt_before_count to be able to allow custom content or icons before the count. 
+* Added filter dot_irt_before_count to be able to allow custom content or icons before the count.
 
 
 = 2.3.0

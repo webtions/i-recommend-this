@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.4.0
+ * Version: 2.4.1
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -38,7 +38,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 	class DOT_IRecommendThis {
 
-		public $version = '2.4.0';
+		public $version = '2.4.1';
 
 		/*--------------------------------------------*
 		 * Constructor
@@ -524,7 +524,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 					$output = '<span class="dot-irecommendthis-count">'. $recommended .'</span> <span class="dot-irecommendthis-suffix">'. $suffix .'</span>';
 
-					$dot_irt_html .= apply_filters( 'dot_irt_before_count', $output );
+					$dot_irt_html = apply_filters( 'dot_irt_before_count', $output );
 
 					return $dot_irt_html;
 
