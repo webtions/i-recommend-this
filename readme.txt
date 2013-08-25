@@ -4,7 +4,7 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.5.2
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 Last Updated: 2013-July-15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -73,6 +73,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.4.2
+* Bug fix. Thanks to @mmaxim
 
 = 2.4.1
 * Fixed undefined index error.
