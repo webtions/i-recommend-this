@@ -316,7 +316,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			<p>'. __('To use I Recomment This manually in your theme template use the following PHP code:', 'dot') .'</p>
 			<p><code>&lt;?php if( function_exists(\'dot_irecommendthis\') ) dot_irecommendthis(); ?&gt;</code></p>
 			<p>'. __('To show top recommended post from a particular date use below shortcode', 'dot') .'</p>
-			<p><code>[dot_recommended_posts post_type=\'showcase\' number=\'10\' year=\'2013\' monthnum=\'7\']</code></p>';
+			<p><code>[dot_recommended_posts container=\'div\' post_type=\'showcase\' number=\'10\' year=\'2013\' monthnum=\'7\']</code></p>';
 		}
 
 		function settings_validate($input)
