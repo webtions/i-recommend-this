@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://www.dreamsonline.net
-Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
+Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.6.1
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 Last Updated: 2013-September-28
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -35,14 +35,16 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 * You can add the voting link to any page using shortcodes
 * Now using shortcode display a specific number of most recommended posts of all time or from a specific time period with support to chose the post type.
 
+= Translations =
+* Portuguese translation added. Thanks to Darlan ten Caten - http://i9solucoesdigitais.com.br/
+
 This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin and has been modified after getting requests for the changes I had made on my website.
 
-Please report any bugs you find via http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/
+Please report any bugs you find via http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/ or via WordPress forums.
 
 = Examples of how the plugin has been used =
 
 * [Flat UI Design Gallery](http://flattrendz.com) - Example usage in website Design Gallery
-
 * [Harish's blog](http://www.harishchouhan.com/blog/) -
 
 
@@ -82,6 +84,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.5.3
+* Fixed textdomain problem. Added portuguese translation. Thanks to @Darlan ten Caten.
 
 = 2.5.2
 * Replaced 'before' & 'after' attributes in shortocde 'dot_recommended_posts' with a single attribute 'container'

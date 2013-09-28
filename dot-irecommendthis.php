@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.5.2
+ * Version: 2.5.3
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -38,7 +38,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 	class DOT_IRecommendThis {
 
-		public $version = '2.5.1';
+		public $version = '2.5.3';
 
 		/*--------------------------------------------*
 		 * Constructor
@@ -110,7 +110,9 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 		public function load_localisation ()
 		{
+
 			load_plugin_textdomain( 'dot', false, dirname( plugin_basename( $this->file ) ) . '/languages/' );
+
 
 		} // End load_localisation()
 
@@ -204,7 +206,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			?>
 
 			<p><?php _e('<a href="https://twitter.com/harishchouhan" class="twitter-follow-button" data-show-count="false">Follow @harishchouhan</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script> or Check out our other themes & plugins at <a href="http://www.dreamsonline.net">Dreams Online Themes</a>.', 'dot'); ?></p>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>', 'dot'); ?><br />
+			<?php _e('or Check out our other themes & plugins at <a href="http://www.dreamsonline.net">Dreams Online Themes</a>.', 'dot'); ?></p>
 			<p><?php _e('This plugin allows your visitors to simply recommend or like your posts instead of commment it.', 'dot'); ?></p>
 			<?php
 		}
@@ -229,8 +232,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['hide_zero']) ) $options['hide_zero'] = '0';
 
 			echo '<input type="hidden" name="dot_irecommendthis_settings[hide_zero]" value="0" />
-			<label><input type="checkbox" name="dot_irecommendthis_settings[hide_zero]" value="1"'. (($options['hide_zero']) ? ' checked="checked"' : '') .' />
-			Hide count if count is zero</label>';
+			<label><input type="checkbox" name="dot_irecommendthis_settings[hide_zero]" value="1"'. (($options['hide_zero']) ? ' checked="checked"' : '') .' />' .
+			__('Hide count if count is zero', 'dot') . '</label>';
 		}
 
 		function setting_disable_unique_ip()
@@ -239,8 +242,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['disable_unique_ip']) ) $options['disable_unique_ip'] = '0';
 
 			echo '<input type="hidden" name="dot_irecommendthis_settings[disable_unique_ip]" value="0" />
-			<label><input type="checkbox" name="dot_irecommendthis_settings[disable_unique_ip]" value="1"'. (($options['disable_unique_ip']) ? ' checked="checked"' : '') .' />
-			Disable saving of IP Address. Will only save cookies to track user votes.</label>';
+			<label><input type="checkbox" name="dot_irecommendthis_settings[disable_unique_ip]" value="1"'. (($options['disable_unique_ip']) ? ' checked="checked"' : '') .' />' .
+			__('Disable saving of IP Address. Will only save cookies to track user votes.', 'dot') . '</label>';
 		}
 
 		function setting_disable_css()
@@ -249,8 +252,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['disable_css']) ) $options['disable_css'] = '0';
 
 			echo '<input type="hidden" name="dot_irecommendthis_settings[disable_css]" value="0" />
-			<label><input type="checkbox" name="dot_irecommendthis_settings[disable_css]" value="1"'. (($options['disable_css']) ? ' checked="checked"' : '') .' />
-			I want to use my own CSS styles</label>';
+			<label><input type="checkbox" name="dot_irecommendthis_settings[disable_css]" value="1"'. (($options['disable_css']) ? ' checked="checked"' : '') .' />' .
+			__('I want to use my own CSS styles', 'dot') . '</label>';
 		}
 
 		function setting_text_zero_suffix()
