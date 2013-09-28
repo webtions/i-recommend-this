@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.5.0
+ * Version: 2.5.1
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -38,7 +38,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 	class DOT_IRecommendThis {
 
-		public $version = '2.5.0';
+		public $version = '2.5.1';
 
 		/*--------------------------------------------*
 		 * Constructor
@@ -63,7 +63,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			add_action( 'wp_ajax_dot-irecommendthis', array( &$this, 'ajax_callback' ) );
 			add_action( 'wp_ajax_nopriv_dot-irecommendthis', array( &$this, 'ajax_callback' ) );
 			add_shortcode( 'dot_recommends', array( &$this, 'shortcode' ) );
-			add_shortcode( 'dot_recommends_posts', array( &$this, 'dot_recommends_top_posts' ) );
+			add_shortcode( 'dot_recommended_posts', array( &$this, 'dot_recommended_top_posts' ) );
 
 		} // end constructor
 
@@ -314,7 +314,9 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			echo '<p>'. __('To use I Recomment This in your posts and pages you can use the shortcode:', 'dot') .'</p>
 			<p><code>[dot_recommends]</code></p>
 			<p>'. __('To use I Recomment This manually in your theme template use the following PHP code:', 'dot') .'</p>
-			<p><code>&lt;?php if( function_exists(\'dot_irecommendthis\') ) dot_irecommendthis(); ?&gt;</code></p>';
+			<p><code>&lt;?php if( function_exists(\'dot_irecommendthis\') ) dot_irecommendthis(); ?&gt;</code></p>
+			<p>'. __('To show top recommended post from a particular date use below shortcode', 'dot') .'</p>
+			<p><code>[dot_recommended_posts post_type=\'showcase\' number=\'10\' year=\'2013\' monthnum=\'7\']</code></p>';
 		}
 
 		function settings_validate($input)
@@ -658,10 +660,10 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		}
 
 		/*--------------------------------------------*
-		 * Shortcode //dot_recommends_top_posts
+		 * Shortcode //dot_recommended_top_posts
 		 *--------------------------------------------*/
 
-		function dot_recommends_top_posts( $atts, $content = null )
+		function dot_recommended_top_posts( $atts, $content = null )
 		{
 		    // get our variable from $atts
 		    extract(shortcode_atts(array(
@@ -710,7 +712,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		    }
 		    return $return;
 
-		}	//dot_recommends_top_posts
+		}	//dot_recommended_top_posts
 
 		/*--------------------------------------------*
 		 * Widget

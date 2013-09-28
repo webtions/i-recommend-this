@@ -4,7 +4,7 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.6.1
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 Last Updated: 2013-September-28
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -68,10 +68,10 @@ Shortcode
 `[dot_recommends]`
 
 To display the most recommended posts you can below code in your template
-`<?php if( function_exists('dot_irecommendthis') ) echo do_shortcode("[dot_recommends_posts post_type='post' number='10' year='2013' monthnum='7']"); ?>`
+`<?php if( function_exists('dot_irecommendthis') ) echo do_shortcode("[dot_recommended_posts post_type='post' number='10' year='2013' monthnum='7']"); ?>`
 
 Shortcode
-`[dot_recommends_posts post_type='post' number='10' year='2013' monthnum='7']`
+`[dot_recommended_posts post_type='post' number='10' year='2013' monthnum='7']`
 
 == Frequently Asked Questions ==
 
@@ -82,6 +82,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.5.0
+* Change shortcode name from dot_recommends_posts to dot_recommended_posts
 
 = 2.5.0
 * Added new shortcode with multiple options to display most recommended post / post_type of all time or from a specific date
