@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.5.1
+ * Version: 2.5.2
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -667,8 +667,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		{
 		    // get our variable from $atts
 		    extract(shortcode_atts(array(
-		        'before' => '<li>',
-		        'after' => '</li>',
+		        'container' => 'li',
 		        'number' => '10',
 		        'post_type' => 'post',
 		        'year' => '',
@@ -700,14 +699,16 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		        $post_title = stripslashes($item->post_title);
 		        $permalink = get_permalink($item->ID);
 		        $post_count = $item->meta_value;
-		        $return .= $before.'<a href="' . $permalink . '" title="' . $post_title.'" rel="nofollow">' . $post_title . '</a> ';
+
+		        $return .= '<' . $container . '>';
+		        $return .= '<a href="' . $permalink . '" title="' . $post_title.'" rel="nofollow">' . $post_title . '</a> ';
 
 		        if ( $show_count == '1') {
 		            $return .= '<span class="votes">' . $post_count . '</span> ';
 		        }
 
 		        //$return .= get_the_post_thumbnail($item->ID, 'showcase-thumbnail');
-		        $return .= $after;
+		        $return .= '</' . $container . '>';
 
 		    }
 		    return $return;
