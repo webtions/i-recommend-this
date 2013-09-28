@@ -3,9 +3,9 @@ Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
-Tested up to: 3.5.2
-Stable tag: 2.4.2
-Last Updated: 2013-July-15
+Tested up to: 3.6.1
+Stable tag: 2.5.0
+Last Updated: 2013-September-28
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,10 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 * Choose between a "Thumbs Up" or a "Heart" icon to allow recommending on a post
 * Disable CSS to allow you to add your own styling rules
 * Disable saving of IP address in the table.
+
+= Shortcodes =
+* You can add the voting link to any page using shortcodes
+* Now using shortcode display a specific number of most recommended posts of all time or from a specific time period with support to chose the post type.
 
 This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin and has been modified after getting requests for the changes I had made on my website.
 
@@ -63,6 +67,11 @@ To display the recomment/like link other than at the bottom of individual post, 
 Shortcode
 `[dot_recommends]`
 
+To display the most recommended posts you can below code in your template
+`<?php if( function_exists('dot_irecommendthis') ) echo do_shortcode("[dot_recommends_posts post_type='post' number='10' year='2013' monthnum='7']"); ?>`
+
+Shortcode
+`[dot_recommends_posts post_type='post' number='10' year='2013' monthnum='7']`
 
 == Frequently Asked Questions ==
 
@@ -73,6 +82,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.5.0
+* Added new shortcode with multiple options to display most recommended post / post_type of all time or from a specific date
 
 = 2.4.2
 * Bug fix. Thanks to @mmaxim

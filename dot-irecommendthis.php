@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.4.2
+ * Version: 2.5.0
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -38,7 +38,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 	class DOT_IRecommendThis {
 
-		public $version = '2.4.1';
+		public $version = '2.5.0';
 
 		/*--------------------------------------------*
 		 * Constructor
@@ -63,6 +63,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			add_action( 'wp_ajax_dot-irecommendthis', array( &$this, 'ajax_callback' ) );
 			add_action( 'wp_ajax_nopriv_dot-irecommendthis', array( &$this, 'ajax_callback' ) );
 			add_shortcode( 'dot_recommends', array( &$this, 'shortcode' ) );
+			add_shortcode( 'dot_recommends_posts', array( &$this, 'dot_recommends_top_posts' ) );
 
 		} // end constructor
 
@@ -656,6 +657,60 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			//return '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post_ID .'" title="'. $title .'"><i class="icon-heart"></i> '. $output .'</a>';
 		}
 
+		/*--------------------------------------------*
+		 * Shortcode //dot_recommends_top_posts
+		 *--------------------------------------------*/
+
+		function dot_recommends_top_posts( $atts, $content = null )
+		{
+		    // get our variable from $atts
+		    extract(shortcode_atts(array(
+		        'before' => '<li>',
+		        'after' => '</li>',
+		        'number' => '10',
+		        'post_type' => 'post',
+		        'year' => '',
+		        'monthnum' => '',
+		        'show_count' => '1',
+		    ), $atts));
+
+		    global $wpdb;
+
+		    $request = "SELECT * FROM $wpdb->posts, $wpdb->postmeta";
+		    $request .= " WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id";
+
+		    if ($year != '') {
+		        $request .= " AND YEAR(post_date) = '$year'";
+		    }
+
+		    if ($monthnum != '') {
+		        $request .= " AND MONTH(post_date) = '$monthnum'";
+		    }
+
+		    $request .= " AND post_status='publish' AND post_type='$post_type' AND meta_key='_recommended'";
+		    $request .= " ORDER BY $wpdb->postmeta.meta_value+0 DESC LIMIT $number";
+		    $posts = $wpdb->get_results($request);
+
+		    $return = '';
+
+
+		    foreach ($posts as $item) {
+		        $post_title = stripslashes($item->post_title);
+		        $permalink = get_permalink($item->ID);
+		        $post_count = $item->meta_value;
+		        $return .= $before.'<a href="' . $permalink . '" title="' . $post_title.'" rel="nofollow">' . $post_title . '</a> ';
+
+		        if ( $show_count == '1') {
+		            $return .= '<span class="votes">' . $post_count . '</span> ';
+		        }
+
+		        //$return .= get_the_post_thumbnail($item->ID, 'showcase-thumbnail');
+		        $return .= $after;
+
+		    }
+		    return $return;
+
+		}	//dot_recommends_top_posts
 
 		/*--------------------------------------------*
 		 * Widget
