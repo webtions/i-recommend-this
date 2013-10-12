@@ -4,8 +4,8 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.6.1
-Stable tag: 2.5.3
-Last Updated: 2013-September-28
+Stable tag: 2.5.4
+Last Updated: 2013-October-11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -84,6 +84,10 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.5.4
+* Fixed PHP error in Widget.
+* Converted text strings in widget to be translatable.
 
 = 2.5.3
 * Fixed textdomain problem. Added portuguese translation. Thanks to @Darlan ten Caten.

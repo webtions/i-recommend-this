@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.5.3
+ * Version: 2.5.4
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -38,7 +38,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 	class DOT_IRecommendThis {
 
-		public $version = '2.5.3';
+		public $version = '2.5.4';
 
 		/*--------------------------------------------*
 		 * Constructor
@@ -115,6 +115,36 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 
 		} // End load_localisation()
+
+
+
+		/*--------------------------------------------*
+		 * Enqueue Scripts
+		 *--------------------------------------------*/
+
+		function dot_enqueue_scripts()
+		{
+			$options = get_option( 'dot_irecommendthis_settings' );
+			if( !isset($options['disable_css']) ) $options['disable_css'] = '0';
+			if( !isset($options['recommend_style']) ) $options['recommend_style'] = '0';
+
+			if ($options['disable_css'] == '0') {
+
+				if ($options['recommend_style'] == '0') {
+					wp_enqueue_style( 'dot-irecommendthis', plugins_url( '/css/dot-irecommendthis.css', __FILE__ ) );
+				}
+				else {
+					wp_enqueue_style( 'dot-irecommendthis', plugins_url( '/css/dot-irecommendthis-heart.css', __FILE__ ) );
+				}
+			}
+			wp_register_script('dot-irecommendthis',  plugins_url( '/js/dot_irecommendthis.js', __FILE__ ), 'jquery', '2.5.4', FALSE);
+
+			wp_enqueue_script( 'jquery' );
+			wp_enqueue_script( 'dot-irecommendthis' );
+
+			wp_localize_script( 'dot-irecommendthis', 'dot_irecommendthis', array( 'ajaxurl' => admin_url('admin-ajax.php')) );
+
+		}	//dot_enqueue_scripts
 
 
 		/*--------------------------------------------*
@@ -327,37 +357,6 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			return $input;
 		}
 
-
-		/*--------------------------------------------*
-		 * Enqueue Scripts
-		 *--------------------------------------------*/
-
-		function dot_enqueue_scripts()
-		{
-			$options = get_option( 'dot_irecommendthis_settings' );
-			if( !isset($options['disable_css']) ) $options['disable_css'] = '0';
-			if( !isset($options['recommend_style']) ) $options['recommend_style'] = '0';
-
-			if ($options['disable_css'] == '0') {
-
-				if ($options['recommend_style'] == '0') {
-					wp_enqueue_style( 'dot-irecommendthis', plugins_url( '/css/dot-irecommendthis.css', __FILE__ ) );
-				}
-				else {
-					wp_enqueue_style( 'dot-irecommendthis', plugins_url( '/css/dot-irecommendthis-heart.css', __FILE__ ) );
-				}
-			}
-
-			wp_enqueue_script( 'dot-irecommendthis', plugins_url( '/js/dot_irecommendthis.js', __FILE__ ), array('jquery') );
-			wp_enqueue_script( 'jquery' );
-
-			wp_localize_script('dot-irecommendthis', 'dot', array(
-				'ajaxurl' => admin_url('admin-ajax.php'),
-			));
-
-			wp_localize_script( 'dot-irecommendthis', 'dot_irecommendthis', array('ajaxurl' => admin_url('admin-ajax.php')) );
-
-		}	//dot_enqueue_scripts
 
 
 		/*--------------------------------------------*
@@ -718,6 +717,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 		}	//dot_recommended_top_posts
 
+
 		/*--------------------------------------------*
 		 * Widget
 		 *--------------------------------------------*/
@@ -755,8 +755,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 				if (!is_array( $options ))
 				{
 					$options = array(
-					'title' => 'Most recommended posts',
-					'number' => '5',
+					'title' => __('Most recommended posts', 'dot'),
+					'number' => __('5', 'dot'),
 					'show_count' => '0'
 					);
 				}
@@ -773,20 +773,22 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 				echo '</ul>';
 				echo $after_widget;
 			}
-			wp_register_sidebar_widget('most_recommended_posts', 'Most recommended posts', 'widget_most_recommended_posts');
+
+			wp_register_sidebar_widget('most_recommended_posts', __('Most recommended posts', 'dot'), 'widget_most_recommended_posts');
 
 			function options_widget_most_recommended_posts() {
 				$options = get_option("most_recommended_posts");
 
 				if (!is_array( $options )) {
 					$options = array(
-					'title' => 'Most recommended posts',
-					'number' => '5',
+					'title' => __('Most recommended posts', 'dot'),
+					'number' => __('5', 'dot'),
 					'show_count' => '0'
 					);
 				}
 
-				if ($_POST['mrp-submit']) {
+
+				if ( isset($_POST['mrp-submit']) ) {
 					$options['title'] = htmlspecialchars($_POST['mrp-title']);
 					$options['number'] = htmlspecialchars($_POST['mrp-number']);
 					$options['show_count'] = $_POST['mrp-show-count'];
@@ -795,18 +797,18 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 					update_option("most_recommended_posts", $options);
 				}
 				?>
-				<p><label for="mrp-title"><?php _e('Title:', 'i-recommend-this'); ?><br />
+				<p><label for="mrp-title"><?php _e('Title:', 'dot'); ?><br />
 				<input class="widefat" type="text" id="mrp-title" name="mrp-title" value="<?php echo $options['title'];?>" /></label></p>
 
-				<p><label for="mrp-number"><?php _e('Number of posts to show:', 'i-recommend-this'); ?><br />
+				<p><label for="mrp-number"><?php _e('Number of posts to show:', 'dot'); ?><br />
 				<input type="text" id="mrp-number" name="mrp-number" style="width: 25px;" value="<?php echo $options['number'];?>" /> <small>(max. 15)</small></label></p>
 
-				<p><label for="mrp-show-count"><input type="checkbox" id="mrp-show-count" name="mrp-show-count" value="1"<?php if($options['show_count'] == '1') echo 'checked="checked"'; ?> /> <?php _e('Show post count', 'i-recommend-this'); ?></label></p>
+				<p><label for="mrp-show-count"><input type="checkbox" id="mrp-show-count" name="mrp-show-count" value="1"<?php if($options['show_count'] == '1') echo 'checked="checked"'; ?> /> <?php _e('Show post count', 'dot'); ?></label></p>
 
 				<input type="hidden" id="mrp-submit" name="mrp-submit" value="1" />
 				<?php
 			}
-			wp_register_widget_control('most_recommended_posts', 'Most recommended posts', 'options_widget_most_recommended_posts');
+			wp_register_widget_control('most_recommended_posts', __('Most recommended posts', 'dot'), 'options_widget_most_recommended_posts');
 		}
 
 
