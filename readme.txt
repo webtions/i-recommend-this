@@ -4,8 +4,8 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.6.1
-Stable tag: 2.5.4
-Last Updated: 2013-October-11
+Stable tag: 2.6.0
+Last Updated: 2013-October-15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,7 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 * A widget and a function to display the X most liked posts.
 * A preference pane with some options.
 * Saves Cookie as well as users IP address to disable voting on the same post again
+* Displays Number of likes on Post Edit page along with sorting option Thanks to [HSG](http://profiles.wordpress.org/HSG/)
 
 
 = Advanced Options =
@@ -37,6 +38,7 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 
 = Translations =
 * Portuguese translation added. Thanks to Darlan ten Caten - http://i9solucoesdigitais.com.br/
+* Persian translation added. Thanks to Hossein Soroor Golshani - Thanks to [HSG](http://profiles.wordpress.org/HSG/)
 
 This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin and has been modified after getting requests for the changes I had made on my website.
 
@@ -46,6 +48,7 @@ Please report any bugs you find via http://www.dreamsonline.net/wordpress-plugin
 
 * [Flat UI Design Gallery](http://flattrendz.com) - Example usage in website Design Gallery
 * [Harish's blog](http://www.harishchouhan.com/blog/) -
+* [OnePageMania.com](http://onepagemania.com/) -
 
 
 = My Links =
@@ -85,7 +88,11 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 == Changelog ==
 
-= 2.5.4
+= 2.6.0
+* Added Persian translation - Thanks to [HSG](http://profiles.wordpress.org/HSG/)
+* Now you can see number of likes on Post Edit page along with sorting option. Thanks to [HSG](http://profiles.wordpress.org/HSG/)
+
+= 2.5.3
 * Fixed PHP error in Widget.
 * Converted text strings in widget to be translatable.
 

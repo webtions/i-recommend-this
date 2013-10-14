@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.5.4
+ * Version: 2.6.0
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -38,7 +38,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 	class DOT_IRecommendThis {
 
-		public $version = '2.5.4';
+		public $version = '2.6.0';
 
 		/*--------------------------------------------*
 		 * Constructor
@@ -137,7 +137,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 					wp_enqueue_style( 'dot-irecommendthis', plugins_url( '/css/dot-irecommendthis-heart.css', __FILE__ ) );
 				}
 			}
-			wp_register_script('dot-irecommendthis',  plugins_url( '/js/dot_irecommendthis.js', __FILE__ ), 'jquery', '2.5.4', FALSE);
+			wp_register_script('dot-irecommendthis',  plugins_url( '/js/dot_irecommendthis.js', __FILE__ ), 'jquery', '2.6.0', FALSE);
 
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'dot-irecommendthis' );
@@ -846,5 +846,39 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			$links
 		);
 	}
+
+	/*--------------------------------------------*
+	* Add Likes Column In Post Manage Page
+	*--------------------------------------------*/
+
+	function dot_columns_head($defaults) {
+		$defaults['likes'] = __('Likes', 'dot');
+		return $defaults;
+	}
+
+	function dot_column_content($column_name, $post_ID) {
+		if ($column_name == 'likes')
+			echo get_post_meta($post_ID, '_recommended', true) . ' ' . __('like', 'dot');
+	}
+
+	function dot_column_register_sortable( $columns ) {
+	    $columns['likes'] = 'likes';
+		return $columns;
+	}
+
+	function dot_column_orderby( $vars ) {
+		if ( isset( $vars['orderby'] ) && 'likes' == $vars['orderby'] ) {
+			$vars = array_merge( $vars, array(
+				'meta_key' => '_recommended',
+				'orderby' => 'meta_value'
+			) );
+		}
+
+		return $vars;
+	}
+	add_filter('request', 'dot_column_orderby');
+	add_filter('manage_edit-post_sortable_columns', 'dot_column_register_sortable');
+	add_filter('manage_posts_columns', 'dot_columns_head');
+    add_action('manage_posts_custom_column', 'dot_column_content', 10, 2);
 
 ?>
