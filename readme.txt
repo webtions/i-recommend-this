@@ -4,8 +4,8 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
 Tested up to: 3.6.1
-Stable tag: 2.6.0
-Last Updated: 2013-October-15
+Stable tag: 2.6.1
+Last Updated: 2013-October-22
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.6.1
+* Updates to Persian translation
 
 = 2.6.0
 * Added Persian translation - Thanks to [HSG](http://profiles.wordpress.org/HSG/)
