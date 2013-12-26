@@ -1,0 +1,266 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: I Recommend This 2.5.3\n"
+"POT-Creation-Date: 2013-10-12 19:50+0530\n"
+"PO-Revision-Date: 2013-12-24 13:36+0100\n"
+"Last-Translator: \n"
+"Language-Team: WPTheme <wpthemefr@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.3\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;__\n"
+"X-Poedit-Basepath: D:\\Projects\\Plugin Development\\i-recommend-this"
+"\\trunk\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: D:\\Projects\\Plugin Development\\i-recommend-this"
+"\\trunk\n"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:156
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:157
+msgid "I Recommend This"
+msgstr "Je recommande ceci "
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:176
+msgid "Automatically display on"
+msgstr "Afficher automatiquement sur"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:178
+msgid "Text after 0 Count"
+msgstr "Texte après 0 partage"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:180
+msgid "Text after 1 Count"
+msgstr "Texte après 1 partage"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:182
+msgid "Text after more than 1 Count"
+msgstr "Texte après plus d'un partage"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:184
+msgid "Title for New posts"
+msgstr "Titre pour les nouveaux articles"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:186
+msgid "Title for already voted posts"
+msgstr "Titre pour les articles déjà votés"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:188
+msgid "Disable CSS"
+msgstr "Désactiver la feuille de style"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:190
+msgid "Hide Zero Count"
+msgstr "Cacher Zéro Partage"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:192
+msgid "Disable IP saving"
+msgstr "Désactiver la sauvegarde d'iP"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:194
+msgid "Choose a style"
+msgstr "Choisir un style"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:196
+msgid "Shortcode and Template Tag"
+msgstr "Shortcode et structure de tag"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:224
+msgid "Save Changes"
+msgstr "Sauvegarder les changements"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:238
+msgid ""
+"<a href=\"https://twitter.com/harishchouhan\" class=\"twitter-follow-button"
+"\" data-show-count=\"false\">Follow @harishchouhan</a>\n"
+"<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d."
+"getElementById(id)){js=d.createElement(s);js.id=id;js.src=\"//platform."
+"twitter.com/widgets.js\";fjs.parentNode.insertBefore(js,fjs);}}(document,"
+"\"script\",\"twitter-wjs\");</script>"
+msgstr ""
+"<a href=\"https://twitter.com/harishchouhan\" class=\"twitter-follow-button"
+"\" data-show-count=\"false\">Follow @harishchouhan</a>\n"
+"<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d."
+"getElementById(id)){js=d.createElement(s);js.id=id;js.src=\"//platform."
+"twitter.com/widgets.js\";fjs.parentNode.insertBefore(js,fjs);}}(document,"
+"\"script\",\"twitter-wjs\");</script>"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:240
+msgid ""
+"or Check out our other themes & plugins at <a href=\"http://www.dreamsonline."
+"net\">Dreams Online Themes</a>."
+msgstr ""
+"or Check out our other themes & plugins at <a href=\"http://www.dreamsonline."
+"net\">Dreams Online Themes</a>."
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:241
+msgid ""
+"This plugin allows your visitors to simply recommend or like your posts "
+"instead of commment it."
+msgstr ""
+"Ce plugin autorise vos internautes à aimer une page ou un article en lieu et "
+"place de laisser un commentaire"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:253
+msgid "Posts"
+msgstr "Articles"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:256
+msgid "All other pages like Index, Archive, etc."
+msgstr "Autres pages comme l'accueil, les archives, etc... "
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:266
+msgid "Hide count if count is zero"
+msgstr "Cacher le compteur si 0 j'aime"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:276
+msgid ""
+"Disable saving of IP Address. Will only save cookies to track user votes."
+msgstr ""
+"Désactiver la sauvegarde par IP. Cela sauvegardera seulement les cookies "
+"utilisés pour suivre les j'aime des internautes. "
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:286
+msgid "I want to use my own CSS styles"
+msgstr "Je veux utiliser ma propre feuille de style"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:295
+msgid ""
+"Text to display after zero count. Leave blank for no text after the count."
+msgstr "Texte à afficher après 0 j'aime. Laissez vide si pas de texte"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:303
+msgid ""
+"Text to display after 1 person has recommended. Leave blank for no text "
+"after the count."
+msgstr ""
+"Texte à afficher si une personne a aimé. Laissez vide si vous ne souhaitez "
+"pas de texte. "
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:312
+msgid ""
+"Text to display after more than 1 person have recommended. Leave blank for "
+"no text after the count."
+msgstr ""
+"Texte à afficher si plus d'une personne a aimé. Laissez vide si vous ne "
+"voulez pas de texte"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:321
+msgid "Link Title element for posts not yet voted by a user."
+msgstr ""
+"Titre du lien pour les articles qui n'ont pas encore recus un j'aime par les "
+"internautes"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:330
+msgid "Link Title element for posts already voted by a user."
+msgstr ""
+"Titre du lien pour les articles qui ont déjà recus un j'aime par les "
+"internautes"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:339
+msgid "Default style - Thumb"
+msgstr "Style par défaut : pouce"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:342
+msgid "Heart"
+msgstr "Coeur "
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:347
+msgid ""
+"To use I Recomment This in your posts and pages you can use the shortcode:"
+msgstr ""
+"Pour utiliser ce plugin dans vos articles et pages, vous pouvez utiliser le "
+"raccourci"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:349
+msgid ""
+"To use I Recomment This manually in your theme template use the following "
+"PHP code:"
+msgstr ""
+"Pour utiliser ce plugin de façon manuelle, insérer le code PHP suivant dans "
+"votre thème"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:351
+msgid "To show top recommended post from a particular date use below shortcode"
+msgstr ""
+"Pour afficher les articles aimés d'une date précise, utilisez le shortcode "
+"ci-dessous"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:595
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:628
+msgid "Recommend this"
+msgstr "Recommander ceci "
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:610
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:643
+msgid "You already recommended this"
+msgstr "Vous avez également recommandé ceci "
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:758
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:777
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:784
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:811
+msgid "Most recommended posts"
+msgstr "Articles les plus recommandés"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:759
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:785
+msgid "5"
+msgstr "5"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:800
+msgid "Title:"
+msgstr "Titre :"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:803
+msgid "Number of posts to show:"
+msgstr "Nombres d'articles à afficher"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:806
+msgid "Show post count"
+msgstr "Afficher le nombre d'articles"
+
+#: D:\Projects\Plugin
+#: Development\i-recommend-this\trunk/dot-irecommendthis.php:844
+msgid "Settings"
+msgstr "Réglages"

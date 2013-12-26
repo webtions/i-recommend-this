@@ -3,9 +3,9 @@ Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
-Tested up to: 3.6.1
-Stable tag: 2.6.1
-Last Updated: 2013-October-22
+Tested up to: 3.8
+Stable tag: 2.6.2
+Last Updated: 2013-December-26
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,7 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 * Now using shortcode display a specific number of most recommended posts of all time or from a specific time period with support to chose the post type.
 
 = Translations =
+* French translation added. Thanks to Murat from [wptheme.fr](http://wptheme.fr/)
 * Portuguese translation added. Thanks to Darlan ten Caten - http://i9solucoesdigitais.com.br/
 * Persian translation added. Thanks to Hossein Soroor Golshani - Thanks to [HSG](http://profiles.wordpress.org/HSG/)
 
@@ -87,6 +88,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.6.2
+* French translation added. Thanks to Murat from [wptheme.fr](http://wptheme.fr/)
 
 = 2.6.1
 * Updates to Persian translation
