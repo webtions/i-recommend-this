@@ -3,8 +3,8 @@ Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 3.3
-Tested up to: 3.8
-Stable tag: 2.6.2
+Tested up to: 3.8.1
+Stable tag: 2.6.3
 Last Updated: 2013-December-26
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -88,6 +88,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.6.3
+* Fixed 3 undefined index errors for disable_unique_ip, link_title_new & link_title_active. Thanks to [sebabornia](http://wordpress.org/support/profile/sebabornia)
 
 = 2.6.2
 * French translation added. Thanks to Murat from [wptheme.fr](http://wptheme.fr/)

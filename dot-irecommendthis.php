@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.6.2
+ * Version: 2.6.3
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -38,7 +38,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 	class DOT_IRecommendThis {
 
-		public $version = '2.6.0';
+		public $version = '2.6.2';
+		public $db_version = '2.6.2';
 
 		/*--------------------------------------------*
 		 * Constructor
@@ -93,7 +94,11 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 				$this->register_plugin_version();
 
-				add_option("dot_irecommendthis_db_version", $dot_irecommendthis_db_version);
+				if ( $this->db_version != '' ) {
+					update_option( 'dot_irecommendthis_db_version', $this->db_version );
+				}
+
+				//add_option("dot_irecommendthis_db_version", $dot_irecommendthis_db_version);
 			}
 
 		} // end activate
@@ -560,23 +565,22 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			$post_ID = $id ? $id : get_the_ID();
 			global $post;
 
-			/*
 
-			Check if Unique IP saving is required or disabled
+			$options = get_option( 'dot_irecommendthis_settings' );
+			if( !isset($options['text_zero_suffix']) ) $options['text_zero_suffix'] = '';
+			if( !isset($options['text_one_suffix']) ) $options['text_one_suffix'] = '';
+			if( !isset($options['text_more_suffix']) ) $options['text_more_suffix'] = '';
+			if( !isset($options['link_title_new']) ) $options['link_title_new'] = '';
+			if( !isset($options['link_title_active']) ) $options['link_title_active'] = '';
+			if( !isset($options['disable_unique_ip']) ) $options['disable_unique_ip'] = '0'; //Check if Unique IP saving is required or disabled
 
-			*/
-			if( !isset($options['disable_unique_ip']) ) $options['disable_unique_ip'] = '0';
+
 
 			if( $options['disable_unique_ip'] != '1' ) {
 
 				$voteStatusByIp = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = '$post_ID' AND ip = '$ip'");
 			}
 
-
-			$options = get_option( 'dot_irecommendthis_settings' );
-			if( !isset($options['text_zero_suffix']) ) $options['text_zero_suffix'] = '';
-			if( !isset($options['text_one_suffix']) ) $options['text_one_suffix'] = '';
-			if( !isset($options['text_more_suffix']) ) $options['text_more_suffix'] = '';
 
 			$output = $this->dot_recommend_this($post_ID, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix']);
 
