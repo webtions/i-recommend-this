@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 2.6.5
+ * Version: 3.7.0
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
