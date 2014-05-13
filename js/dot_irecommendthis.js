@@ -1,6 +1,6 @@
 jQuery(document).ready(function($){
 
-	$('.dot-irecommendthis').live('click',
+	$('.dot-irecommendthis').on('click',
 	    function() {
     		var link = $(this);
     		if(link.hasClass('active')) return false;

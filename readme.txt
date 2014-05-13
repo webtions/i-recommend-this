@@ -2,9 +2,9 @@
 Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
-Requires at least: 3.3
+Requires at least: 3.7
 Tested up to: 3.9.1
-Stable tag: 2.6.4
+Stable tag: 2.6.5
 Last Updated: 2014-May-13
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -88,6 +88,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 2.6.5
+* Removed deprecaed JQuery function live with on in dot_irecommendthis.js
 
 = 2.6.4
 * Moved enqueued JS from wp_head() to wp_footer().
