@@ -4,8 +4,8 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 3.7
 Tested up to: 3.9.1
-Stable tag: 3.7.0
-Last Updated: 2014-May-13
+Stable tag: 3.7.1
+Last Updated: 2014-June-18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 3.7.1
+* Spanish translation added. Thanks to Andrew Kurtis from [WebHostingHub](http://www.webhostinghub.com/)
 
 = 3.7.0
 * Added to remove resolve wrong tags set for this plugin earlier. My sincere apologies for the extra update mess.
