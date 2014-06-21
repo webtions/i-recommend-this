@@ -4,8 +4,8 @@ Donate link: http://www.dreamsonline.net
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 3.7
 Tested up to: 3.9.1
-Stable tag: 3.7.1
-Last Updated: 2014-June-18
+Stable tag: 3.7.2
+Last Updated: 2014-June-21
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 3.7.2
+* Updated 'dot_irecommendthis.js' file to make plugin work even when the like button is on a hidden element. Thanks to [forthewinn](http://wordpress.org/support/profile/forthewinn). [Support Ticket](http://wordpress.org/support/topic/recommendation-to-fix-usage-in-hiddenexpanding-elements)
 
 = 3.7.1
 * Spanish translation added. Thanks to Andrew Kurtis from [WebHostingHub](http://www.webhostinghub.com/)
