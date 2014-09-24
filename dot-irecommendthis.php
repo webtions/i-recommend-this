@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: http://www.harishchouhan.com/personal-projects/i-recommend-this/
  * Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version: 3.7.2
+ * Version: 3.7.3
  * Author: Harish Chouhan
  * Author URI: http://www.harishchouhan.com
  * Author Email: me@harishchouhan.com
@@ -671,53 +671,70 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 		function dot_recommended_top_posts( $atts, $content = null )
 		{
-		    // get our variable from $atts
-		    extract(shortcode_atts(array(
-		        'container' => 'li',
-		        'number' => '10',
-		        'post_type' => 'post',
-		        'year' => '',
-		        'monthnum' => '',
-		        'show_count' => '1',
-		    ), $atts));
 
-		    global $wpdb;
+			// define attributes and their defaults
+			// get our variable from $atts
+			$atts = shortcode_atts( array(
+				'container' => 'li',
+				'number' => '10',
+				'post_type' => 'post',
+				'year' => '',
+				'monthnum' => '',
+				'show_count' => '1',
+			), $atts );
 
-		    $request = "SELECT * FROM $wpdb->posts, $wpdb->postmeta";
-		    $request .= " WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id";
+			global $wpdb;
 
-		    if ($year != '') {
-		        $request .= " AND YEAR(post_date) = '$year'";
-		    }
+				// empty params array to hold params for prepared statement
+				$params = array();
 
-		    if ($monthnum != '') {
-		        $request .= " AND MONTH(post_date) = '$monthnum'";
-		    }
+				// build query string
+				$sql = "SELECT * FROM $wpdb->posts, $wpdb->postmeta WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id";
 
-		    $request .= " AND post_status='publish' AND post_type='$post_type' AND meta_key='_recommended'";
-		    $request .= " ORDER BY $wpdb->postmeta.meta_value+0 DESC LIMIT $number";
-		    $posts = $wpdb->get_results($request);
+				// add year
+				if( '' !== $atts['year'] ) {
+					$sql .= ' AND YEAR(post_date) = %d';
+					$params[] = $atts['year'];
+				}
 
-		    $return = '';
+				// add monthnum
+				if( '' !== $atts['monthnum'] ) {
+					$sql .= ' AND MONTH(post_date) = %d';
+					$params[] = $atts['monthnum'];
+				}
 
+				// add post WHERE
+				$sql .= " AND post_status = 'publish' AND post_type = %s AND meta_key = '_recommended'";
+				$params[] = $atts['post_type'];
 
-		    foreach ($posts as $item) {
-		        $post_title = stripslashes($item->post_title);
-		        $permalink = get_permalink($item->ID);
-		        $post_count = $item->meta_value;
+				// add order by and limit
+				$sql .= " ORDER BY {$wpdb->postmeta}.meta_value+0 DESC LIMIT %d";
+				$params[] = $atts['number'];
 
-		        $return .= '<' . $container . '>';
-		        $return .= '<a href="' . $permalink . '" title="' . $post_title.'" rel="nofollow">' . $post_title . '</a> ';
+				// prepare sql statement
+				$query = $wpdb->prepare( $sql, $params );
 
-		        if ( $show_count == '1') {
-		            $return .= '<span class="votes">' . $post_count . '</span> ';
-		        }
+				// execute query
+				$posts = $wpdb->get_results( $query );
 
-		        //$return .= get_the_post_thumbnail($item->ID, 'showcase-thumbnail');
-		        $return .= '</' . $container . '>';
+				$return = '';
 
-		    }
-		    return $return;
+			foreach ($posts as $item) {
+				$post_title = stripslashes( $item->post_title );
+				$permalink = get_permalink( $item->ID );
+				$post_count = $item->meta_value;
+
+				$return .= '<' . esc_html( $atts['container'] ) . '>';
+				$return .= '<a href="' . esc_url( $permalink ) . '" title="' . esc_attr( $post_title ) .'" rel="nofollow">' . esc_html( $post_title ) . '</a> ';
+
+				if ( $atts['show_count'] == '1') {
+					$return .= '<span class="votes">' . esc_html( $post_count ) . '</span> ';
+				}
+
+				$return .= '</' . esc_html( $atts['container'] ) . '>';
+
+			}
+			return $return;
 
 		}	//dot_recommended_top_posts
 
@@ -866,7 +883,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 	}
 
 	function dot_column_register_sortable( $columns ) {
-	    $columns['likes'] = 'likes';
+		$columns['likes'] = 'likes';
 		return $columns;
 	}
 
@@ -883,6 +900,6 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 	add_filter('request', 'dot_column_orderby');
 	add_filter('manage_edit-post_sortable_columns', 'dot_column_register_sortable');
 	add_filter('manage_posts_columns', 'dot_columns_head');
-    add_action('manage_posts_custom_column', 'dot_column_content', 10, 2);
+	add_action('manage_posts_custom_column', 'dot_column_content', 10, 2);
 
 ?>

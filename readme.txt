@@ -1,56 +1,66 @@
 === Plugin Name ===
-Contributors: hchouhan, dreamsonline, dreamsmedia, Benoit "LeBen" Burgener
-Donate link: http://www.dreamsonline.net
+Contributors: hchouhan, themeist, dreamsmedia, Benoit "LeBen" Burgener
+Donate link: http://themeist.co
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
-Requires at least: 3.7
-Tested up to: 3.9.1
-Stable tag: 3.7.2
-Last Updated: 2014-June-21
+Requires at least: 4.0
+Tested up to: 4.0
+Stable tag: 3.7.3
+Last Updated: 2014-September-24
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 This plugin allows your visitors to simply like/recommend your posts instead of comment on it.
 
-
 == Description ==
 
 This plugin allows your visitors to simply like/recommend your posts instead of comment on it.
 
+= Features of I Recommend This =
 
-= This plugin includes =
-* A counter to display the number of "like" and to vote.
-* A widget and a function to display the X most liked posts.
-* A preference pane with some options.
-* Saves Cookie as well as users IP address to disable voting on the same post again
-* Displays Number of likes on Post Edit page along with sorting option Thanks to [HSG](http://profiles.wordpress.org/HSG/)
+- A counter to display the number of "like" and to vote.
+- A widget and a function to display the X most liked posts.
+- Saves Cookie as well as users IP address to disable voting on the same post again.
+- Displays Number of likes on Post Edit page along with sorting option. [HSG](http://profiles.wordpress.org/HSG/)
+- A preference pane with some options.
 
+** Advanced Options **
 
-= Advanced Options =
 * Hide count if count is zero
 * Set a default messages when count is zero, one or more
-* Choose between a "Thumbs Up" or a "Heart" icon to allow recommending on a post
-* Disable CSS to allow you to add your own styling rules
+* Choose between a "Thumbs Up" or a "Heart" icon to allow post recommending.
+* Disable plugin CSS to allow you to add your own styling rules
 * Disable saving of IP address in the table.
 
-= Shortcodes =
-* You can add the voting link to any page using shortcodes
-* Now using shortcode display a specific number of most recommended posts of all time or from a specific time period with support to chose the post type.
+** Shortcodes **
 
-= Translations =
-* French translation added. Thanks to Murat from [wptheme.fr](http://wptheme.fr/)
-* Portuguese translation added. Thanks to Darlan ten Caten - http://i9solucoesdigitais.com.br/
-* Persian translation added. Thanks to Hossein Soroor Golshani - Thanks to [HSG](http://profiles.wordpress.org/HSG/)
-
-This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin and has been modified after getting requests for the changes I had made on my website.
-
-Please report any bugs you find via http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/ or via WordPress forums.
+- Add the voting link to any page using shortcodes
+- Display specific number of most recommended posts of all time or from a specific time period with support for custom post types.
 
 = Examples of how the plugin has been used =
 
-* [Flat UI Design Gallery](http://flattrendz.com) - Example usage in website Design Gallery
-* [Harish's blog](http://www.harishchouhan.com/blog/) -
-* [OnePageMania.com](http://onepagemania.com/) -
+- [Flat UI Design Gallery](http://flattrendz.com)
+- [Harish's blog](http://www.harishchouhan.com/blog/)
+- [OnePageMania.com](http://onepagemania.com/)
 
+= Translations =
+
+- English (en_US) - Harish Chouhan
+- French (fr_FR) - Murat [wptheme.fr](http://wptheme.fr/)
+- Portuguese (pt_BR) - [Darlan ten Caten](http://i9solucoesdigitais.com.br/)
+- Persian (fa_IR) - [Hossein Soroor Golshani](http://profiles.wordpress.org/HSG/)
+- Spanish (es_ES) - [Andrew Kurtis - WebHostingHub](http://www.webhostinghub.com/)
+
+If you have created your own language pack (or have an update of an existing one) you can send in your .PO and .MO files so we can bundle it into I Recommend This plugin. You can [download the latest POT file](http://plugins.svn.wordpress.org/i-recommend-this/trunk/languages/dot-en.po), and [PO files in each language](http://plugins.svn.wordpress.org/i-recommend-this/trunk/languages/).
+
+
+This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin and has been modified after getting requests for the changes I had made on my website.
+
+Please report any bugs you find via  [Support Forum](https://wordpress.org/support/plugin/i-recommend-this) or via comment on http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/
+
+> ** For Developers **
+>
+> If you're a developer and want to contribute, head over to [I Recommend This plugin on GitHub](https://github.com/hchouhan/I-Recommend-This)
+>
 
 = My Links =
 
@@ -88,6 +98,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 3.7.3
+* Fixed a Possible SQL injection vulnerability reported by [Oskar Adin](https://github.com/osadi) and fixed by [Danny van Kooten](https://twitter.com/DannyvanKooten).
 
 = 3.7.2
 * Updated 'dot_irecommendthis.js' file to make plugin work even when the like button is on a hidden element. Thanks to [forthewinn](http://wordpress.org/support/profile/forthewinn). [Support Ticket](http://wordpress.org/support/topic/recommendation-to-fix-usage-in-hiddenexpanding-elements)
