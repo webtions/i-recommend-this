@@ -846,10 +846,10 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 	 * Template Tag
 	 *--------------------------------------------*/
 
-	function dot_irecommendthis()
+	function dot_irecommendthis( $id = null )
 	{
 		global $dot_irecommendthis;
-		echo $dot_irecommendthis->dot_recommend();
+		echo $dot_irecommendthis->dot_recommend( $id );
 
 	}
 
