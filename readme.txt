@@ -4,8 +4,8 @@ Donate link: http://themeist.co
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 4.0
 Tested up to: 4.0
-Stable tag: 3.7.3
-Last Updated: 2014-September-24
+Stable tag: 3.7.4
+Last Updated: 2014-October-08
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,6 +98,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 3.7.4
+* The template tag now accepts a POST ID, thanks to [Oskar Adin](https://github.com/osadi).
 
 = 3.7.3
 * Fixed a Possible SQL injection vulnerability reported by [Oskar Adin](https://github.com/osadi) and fixed by [Danny van Kooten](https://twitter.com/DannyvanKooten).
