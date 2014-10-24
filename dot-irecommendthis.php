@@ -724,8 +724,12 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 				$permalink = get_permalink( $item->ID );
 				$post_count = $item->meta_value;
 
+				$thumb_id = get_post_thumbnail_id($item->ID);
+				$thumb_url = wp_get_attachment_image_src($thumb_id,'thumbnail-size', true);
+				
 				$return .= '<' . esc_html( $atts['container'] ) . '>';
-				$return .= '<a href="' . esc_url( $permalink ) . '" title="' . esc_attr( $post_title ) .'" rel="nofollow">' . esc_html( $post_title ) . '</a> ';
+
+				$return .= '<a href="' . esc_url( $permalink ) . '" title="' . esc_attr( $post_title ) .'" rel="nofollow">' . esc_html( $post_title ) . '<img src="' . esc_attr( $thumb_url[0] ) . '"/>' .' </a> ';
 
 				if ( $atts['show_count'] == '1') {
 					$return .= '<span class="votes">' . esc_html( $post_count ) . '</span> ';
