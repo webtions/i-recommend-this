@@ -48,6 +48,7 @@ This plugin allows your visitors to simply like/recommend your posts instead of 
 - Portuguese (pt_BR) - [Darlan ten Caten](http://i9solucoesdigitais.com.br/)
 - Persian (fa_IR) - [Hossein Soroor Golshani](http://profiles.wordpress.org/HSG/)
 - Spanish (es_ES) - [Andrew Kurtis - WebHostingHub](http://www.webhostinghub.com/)
+- Dutch (nl_NL) - [Tim de Hoog](https://www.timdehoog.nl/)
 
 If you have created your own language pack (or have an update of an existing one) you can send in your .PO and .MO files so we can bundle it into I Recommend This plugin. You can [download the latest POT file](http://plugins.svn.wordpress.org/i-recommend-this/trunk/languages/dot-en.po), and [PO files in each language](http://plugins.svn.wordpress.org/i-recommend-this/trunk/languages/).
 
