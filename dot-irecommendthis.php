@@ -250,7 +250,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			<p><?php _e('<a href="https://twitter.com/harishchouhan" class="twitter-follow-button" data-show-count="false">Follow @harishchouhan</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>', 'i-recommend-this'); ?><br />
-			<?php _e('or Check out our other themes & plugins at <a href="http://www.dreamsonline.net">Dreams Online Themes</a>.', 'i-recommend-this'); ?></p>
+			<?php _e('or Check out our other themes & plugins at <a href="https://themeist.com">Themeist</a>.', 'i-recommend-this'); ?></p>
 			<p><?php _e('This plugin allows your visitors to simply recommend or like your posts instead of commment it.', 'i-recommend-this'); ?></p>
 			<?php
 		}
