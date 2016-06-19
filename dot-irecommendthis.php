@@ -84,7 +84,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 					id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
 					time TIMESTAMP NOT NULL,
 					post_id BIGINT(20) NOT NULL,
-					ip VARCHAR(15) NOT NULL,
+					ip VARCHAR(45) NOT NULL,
 					UNIQUE KEY id (id)
 				);";
 
