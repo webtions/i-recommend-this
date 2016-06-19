@@ -3,9 +3,8 @@ Contributors: hchouhan, themeist, dreamsmedia, Benoit "LeBen" Burgener
 Donate link: http://themeist.co
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 4.0
-Tested up to: 4.2.1
+Tested up to: 4.5.2
 Stable tag: 3.7.6
-Last Updated: 2014-May-06
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

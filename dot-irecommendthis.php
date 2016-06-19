@@ -49,7 +49,9 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			register_activation_hook( $file, array( $this, 'activate' ) );
 
 			// Load text domain
-			add_action( 'init', array( &$this, 'load_localisation' ), 0 );
+			//add_action( 'init', array( &$this, 'load_localisation' ), 0 );
+			//add_action( 'plugins_loaded', 'i_recommend_this_load_plugin_textdomain' );
+			add_action( 'plugins_loaded', array( &$this, 'i_recommend_this_load_plugin_textdomain' ), 0 );
 
 			add_action( 'admin_menu', array( &$this, 'dot_irecommendthis_menu' ) );
 			add_action( 'admin_init', array( &$this, 'dot_irecommendthis_settings' ) );
@@ -61,6 +63,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			add_action( 'wp_ajax_nopriv_dot-irecommendthis', array( &$this, 'ajax_callback' ) );
 			add_shortcode( 'dot_recommends', array( &$this, 'shortcode' ) );
 			add_shortcode( 'dot_recommended_posts', array( &$this, 'dot_recommended_top_posts' ) );
+
 
 		} // end constructor
 
@@ -105,17 +108,24 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			}
 		} // End register_plugin_version()
 
-		/*--------------------------------------------*
-		 * Localisation | Public | 1.4.6 | Return : void
-		 *--------------------------------------------*/
+		/**
+		 * Load the plugin text domain for translation.
+		 *
+		 * @since    1.4.6
+		 */
+		public function load_localisation () {
 
-		public function load_localisation ()
-		{
-
-			load_plugin_textdomain( 'dot', false, dirname( plugin_basename( $this->file ) ) . '/languages/' );
+			//load_plugin_textdomain( 'i-recommend-this', false, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/' );
+			//load_plugin_textdomain( 'i-recommend-this', false, dirname( plugin_basename( $this->file ) ) . '/languages/' );
 
 
 		} // End load_localisation()
+
+
+		function i_recommend_this_load_plugin_textdomain() {
+			load_plugin_textdomain( 'i-recommend-this', FALSE, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/' );
+			//load_plugin_textdomain( 'i-recommend-this', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
+		}
 
 
 
