@@ -49,9 +49,10 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			register_activation_hook( $file, array( $this, 'activate' ) );
 
 			// Load text domain
-			//add_action( 'init', array( &$this, 'load_localisation' ), 0 );
+			add_action( 'init', array( &$this, 'load_localisation' ), 0 );
+		
 			//add_action( 'plugins_loaded', 'i_recommend_this_load_plugin_textdomain' );
-			add_action( 'plugins_loaded', array( &$this, 'i_recommend_this_load_plugin_textdomain' ), 0 );
+			//add_action( 'plugins_loaded', array( &$this, 'i_recommend_this_load_plugin_textdomain' ), 0 );
 
 			add_action( 'admin_menu', array( &$this, 'dot_irecommendthis_menu' ) );
 			add_action( 'admin_init', array( &$this, 'dot_irecommendthis_settings' ) );
@@ -116,6 +117,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		public function load_localisation () {
 
 			//load_plugin_textdomain( 'i-recommend-this', false, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/' );
+			load_plugin_textdomain( 'i-recommend-this', false, dirname( plugin_basename( $this->file ) ) . '/languages/' );
 			//load_plugin_textdomain( 'i-recommend-this', false, dirname( plugin_basename( $this->file ) ) . '/languages/' );
 
 
@@ -164,8 +166,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 		function dot_irecommendthis_menu()
 		{
-			$page_title = __('I Recommend This', 'dot');
-			$menu_title = __('I Recommend This', 'dot');
+			$page_title = __('I Recommend This', 'i-recommend-this');
+			$menu_title = __('I Recommend This', 'i-recommend-this');
 			$capability = 'manage_options';
 			$menu_slug = 'dot-irecommendthis';
 			$function =  array( &$this, 'dot_settings_page');
@@ -184,27 +186,27 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			add_settings_section( 'dot-irecommendthis', '', array(&$this, 'section_intro'), 'dot-irecommendthis' );
 
-			add_settings_field( 'show_on', __( 'Automatically display on', 'dot' ), array(&$this, 'setting_show_on'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'show_on', __( 'Automatically display on', 'i-recommend-this' ), array(&$this, 'setting_show_on'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'text_zero_suffix', __( 'Text after 0 Count', 'dot' ), array(&$this, 'setting_text_zero_suffix'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'text_zero_suffix', __( 'Text after 0 Count', 'i-recommend-this' ), array(&$this, 'setting_text_zero_suffix'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'text_one_suffix', __( 'Text after 1 Count', 'dot' ), array(&$this, 'setting_text_one_suffix'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'text_one_suffix', __( 'Text after 1 Count', 'i-recommend-this' ), array(&$this, 'setting_text_one_suffix'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'text_more_suffix', __( 'Text after more than 1 Count', 'dot' ), array(&$this, 'setting_text_more_suffix'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'text_more_suffix', __( 'Text after more than 1 Count', 'i-recommend-this' ), array(&$this, 'setting_text_more_suffix'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'link_title_new', __( 'Title for New posts', 'dot' ), array(&$this, 'setting_link_title_new'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'link_title_new', __( 'Title for New posts', 'i-recommend-this' ), array(&$this, 'setting_link_title_new'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'link_title_active', __( 'Title for already voted posts', 'dot' ), array(&$this, 'setting_link_title_active'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'link_title_active', __( 'Title for already voted posts', 'i-recommend-this' ), array(&$this, 'setting_link_title_active'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'disable_css', __( 'Disable CSS', 'dot' ), array(&$this, 'setting_disable_css'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'disable_css', __( 'Disable CSS', 'i-recommend-this' ), array(&$this, 'setting_disable_css'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'hide_zero', __( 'Hide Zero Count', 'dot' ), array(&$this, 'setting_hide_zero'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'hide_zero', __( 'Hide Zero Count', 'i-recommend-this' ), array(&$this, 'setting_hide_zero'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'disable_unique_ip', __( 'Disable IP saving', 'dot' ), array(&$this, 'setting_disable_unique_ip'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'disable_unique_ip', __( 'Disable IP saving', 'i-recommend-this' ), array(&$this, 'setting_disable_unique_ip'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'recommend_style', __( 'Choose a style', 'dot' ), array(&$this, 'setting_recommend_style'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'recommend_style', __( 'Choose a style', 'i-recommend-this' ), array(&$this, 'setting_recommend_style'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
-			add_settings_field( 'instructions', __( 'Shortcode and Template Tag', 'dot' ), array(&$this, 'setting_instructions'), 'dot-irecommendthis', 'dot-irecommendthis' );
+			add_settings_field( 'instructions', __( 'Shortcode and Template Tag', 'i-recommend-this' ), array(&$this, 'setting_instructions'), 'dot-irecommendthis', 'dot-irecommendthis' );
 
 		}	//dot_irecommendthis_settings
 
@@ -232,7 +234,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 								<form action="options.php" method="post">
 									<?php settings_fields( 'dot-irecommendthis' ); ?>
 									<?php do_settings_sections( 'dot-irecommendthis' ); ?>
-									<p class="submit"><input type="submit" class="button-primary" value="<?php _e( 'Save Changes', 'dot' ); ?>" /></p>
+									<p class="submit"><input type="submit" class="button-primary" value="<?php _e( 'Save Changes', 'i-recommend-this' ); ?>" /></p>
 								</form>
 							</div>
 						</div> <!-- //main content -->
@@ -247,9 +249,9 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			?>
 
 			<p><?php _e('<a href="https://twitter.com/harishchouhan" class="twitter-follow-button" data-show-count="false">Follow @harishchouhan</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>', 'dot'); ?><br />
-			<?php _e('or Check out our other themes & plugins at <a href="http://www.dreamsonline.net">Dreams Online Themes</a>.', 'dot'); ?></p>
-			<p><?php _e('This plugin allows your visitors to simply recommend or like your posts instead of commment it.', 'dot'); ?></p>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>', 'i-recommend-this'); ?><br />
+			<?php _e('or Check out our other themes & plugins at <a href="http://www.dreamsonline.net">Dreams Online Themes</a>.', 'i-recommend-this'); ?></p>
+			<p><?php _e('This plugin allows your visitors to simply recommend or like your posts instead of commment it.', 'i-recommend-this'); ?></p>
 			<?php
 		}
 
@@ -261,10 +263,10 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			echo '<input type="hidden" name="dot_irecommendthis_settings[add_to_posts]" value="0" />
 			<label><input type="checkbox" name="dot_irecommendthis_settings[add_to_posts]" value="1"'. (($options['add_to_posts']) ? ' checked="checked"' : '') .' />
-			'. __('Posts', 'dot') .'</label><br />
+			'. __('Posts', 'i-recommend-this') .'</label><br />
 			<input type="hidden" name="dot_irecommendthis_settings[add_to_other]" value="0" />
 			<label><input type="checkbox" name="dot_irecommendthis_settings[add_to_other]" value="1"'. (($options['add_to_other']) ? ' checked="checked"' : '') .' />
-			'. __('All other pages like Index, Archive, etc.', 'dot') .'</label><br />';
+			'. __('All other pages like Index, Archive, etc.', 'i-recommend-this') .'</label><br />';
 		}
 
 		function setting_hide_zero()
@@ -274,7 +276,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			echo '<input type="hidden" name="dot_irecommendthis_settings[hide_zero]" value="0" />
 			<label><input type="checkbox" name="dot_irecommendthis_settings[hide_zero]" value="1"'. (($options['hide_zero']) ? ' checked="checked"' : '') .' />' .
-			__('Hide count if count is zero', 'dot') . '</label>';
+			__('Hide count if count is zero', 'i-recommend-this') . '</label>';
 		}
 
 		function setting_disable_unique_ip()
@@ -284,7 +286,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			echo '<input type="hidden" name="dot_irecommendthis_settings[disable_unique_ip]" value="0" />
 			<label><input type="checkbox" name="dot_irecommendthis_settings[disable_unique_ip]" value="1"'. (($options['disable_unique_ip']) ? ' checked="checked"' : '') .' />' .
-			__('Disable saving of IP Address. Will only save cookies to track user votes.', 'dot') . '</label>';
+			__('Disable saving of IP Address. Will only save cookies to track user votes.', 'i-recommend-this') . '</label>';
 		}
 
 		function setting_disable_css()
@@ -294,7 +296,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 			echo '<input type="hidden" name="dot_irecommendthis_settings[disable_css]" value="0" />
 			<label><input type="checkbox" name="dot_irecommendthis_settings[disable_css]" value="1"'. (($options['disable_css']) ? ' checked="checked"' : '') .' />' .
-			__('I want to use my own CSS styles', 'dot') . '</label>';
+			__('I want to use my own CSS styles', 'i-recommend-this') . '</label>';
 		}
 
 		function setting_text_zero_suffix()
@@ -303,7 +305,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['text_zero_suffix']) ) $options['text_zero_suffix'] = '';
 
 			echo '<input type="text" name="dot_irecommendthis_settings[text_zero_suffix]" class="regular-text" value="'. $options['text_zero_suffix'] .'" /><br />
-			<span class="description">'. __('Text to display after zero count. Leave blank for no text after the count.', 'dot') .'</span>';
+			<span class="description">'. __('Text to display after zero count. Leave blank for no text after the count.', 'i-recommend-this') .'</span>';
 		}
 
 		function setting_text_one_suffix() {
@@ -311,7 +313,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['text_one_suffix']) ) $options['text_one_suffix'] = '';
 
 			echo '<input type="text" name="dot_irecommendthis_settings[text_one_suffix]" class="regular-text" value="'. $options['text_one_suffix'] .'" /><br />
-			<span class="description">'. __('Text to display after 1 person has recommended. Leave blank for no text after the count.', 'dot') .'</span>';
+			<span class="description">'. __('Text to display after 1 person has recommended. Leave blank for no text after the count.', 'i-recommend-this') .'</span>';
 		}
 
 		function setting_text_more_suffix()
@@ -320,7 +322,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['text_more_suffix']) ) $options['text_more_suffix'] = '';
 
 			echo '<input type="text" name="dot_irecommendthis_settings[text_more_suffix]" class="regular-text" value="'. $options['text_more_suffix'] .'" /><br />
-			<span class="description">'. __('Text to display after more than 1 person have recommended. Leave blank for no text after the count.', 'dot') .'</span>';
+			<span class="description">'. __('Text to display after more than 1 person have recommended. Leave blank for no text after the count.', 'i-recommend-this') .'</span>';
 		}
 
 		function setting_link_title_new()
@@ -329,7 +331,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['link_title_new']) ) $options['link_title_new'] = '';
 
 			echo '<input type="text" name="dot_irecommendthis_settings[link_title_new]" class="regular-text" value="'. $options['link_title_new'] .'" /><br />
-			<span class="description">'. __('Link Title element for posts not yet voted by a user.', 'dot') .'</span>';
+			<span class="description">'. __('Link Title element for posts not yet voted by a user.', 'i-recommend-this') .'</span>';
 		}
 
 		function setting_link_title_active()
@@ -338,7 +340,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['link_title_active']) ) $options['link_title_active'] = '';
 
 			echo '<input type="text" name="dot_irecommendthis_settings[link_title_active]" class="regular-text" value="'. $options['link_title_active'] .'" /><br />
-			<span class="description">'. __('Link Title element for posts already voted by a user.', 'dot') .'</span>';
+			<span class="description">'. __('Link Title element for posts already voted by a user.', 'i-recommend-this') .'</span>';
 		}
 
 		function setting_recommend_style()
@@ -347,19 +349,19 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 			if( !isset($options['recommend_style']) ) $options['recommend_style'] = '0';
 
 			echo '<label><input type="radio" name="dot_irecommendthis_settings[recommend_style]" value="0"'. (($options['recommend_style']) == "0" ? 'checked' : '') .' />
-			'. __('Default style - Thumb', 'dot') .'</label><br />
+			'. __('Default style - Thumb', 'i-recommend-this') .'</label><br />
 
 			<label><input type="radio" name="dot_irecommendthis_settings[recommend_style]" value="1"'. (($options['recommend_style']) == "1" ? 'checked' : '') .' />
-			'. __('Heart', 'dot') .'</label><br />';
+			'. __('Heart', 'i-recommend-this') .'</label><br />';
 		}
 
 		function setting_instructions()
 		{
-			echo '<p>'. __('To use I Recomment This in your posts and pages you can use the shortcode:', 'dot') .'</p>
+			echo '<p>'. __('To use I Recomment This in your posts and pages you can use the shortcode:', 'i-recommend-this') .'</p>
 			<p><code>[dot_recommends]</code></p>
-			<p>'. __('To use I Recomment This manually in your theme template use the following PHP code:', 'dot') .'</p>
+			<p>'. __('To use I Recomment This manually in your theme template use the following PHP code:', 'i-recommend-this') .'</p>
 			<p><code>&lt;?php if( function_exists(\'dot_irecommendthis\') ) dot_irecommendthis(); ?&gt;</code></p>
-			<p>'. __('To show top recommended post from a particular date use below shortcode', 'dot') .'</p>
+			<p>'. __('To show top recommended post from a particular date use below shortcode', 'i-recommend-this') .'</p>
 			<p><code>[dot_recommended_posts container=\'div\' post_type=\'showcase\' number=\'10\' year=\'2013\' monthnum=\'7\']</code></p>';
 		}
 
@@ -602,7 +604,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 					if( $options['link_title_new'] == '' ) {
 
-						$title = __('Recommend this', 'dot');
+						$title = __('Recommend this', 'i-recommend-this');
 
 					} else {
 
@@ -617,7 +619,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 					if( $options['link_title_active'] == '' ) {
 
-						$title = __('You already recommended this', 'dot');
+						$title = __('You already recommended this', 'i-recommend-this');
 
 					} else {
 
@@ -635,7 +637,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 					if( $options['link_title_new'] == '' ) {
 
-						$title = __('Recommend this', 'dot');
+						$title = __('Recommend this', 'i-recommend-this');
 
 					} else {
 
@@ -650,7 +652,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 					if( $options['link_title_active'] == '' ) {
 
-						$title = __('You already recommended this', 'dot');
+						$title = __('You already recommended this', 'i-recommend-this');
 
 					} else {
 
@@ -782,8 +784,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 				if (!is_array( $options ))
 				{
 					$options = array(
-					'title' => __('Most recommended posts', 'dot'),
-					'number' => __('5', 'dot'),
+					'title' => __('Most recommended posts', 'i-recommend-this'),
+					'number' => __('5', 'i-recommend-this'),
 					'show_count' => '0'
 					);
 				}
@@ -801,14 +803,14 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 				echo $after_widget;
 			}
 
-			wp_register_sidebar_widget('most_recommended_posts', __('Most recommended posts', 'dot'), 'widget_most_recommended_posts');
+			wp_register_sidebar_widget('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'widget_most_recommended_posts');
 
 			function options_widget_most_recommended_posts() {
 				$options = get_option("most_recommended_posts");
 
 				if (!is_array( $options )) {
 					$options = array(
-					'title' => __('Most recommended posts', 'dot'),
+					'title' => __('Most recommended posts', 'i-recommend-this'),
 					'number' => __('5', 'dot'),
 					'show_count' => '0'
 					);
@@ -824,18 +826,18 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 					update_option("most_recommended_posts", $options);
 				}
 				?>
-				<p><label for="mrp-title"><?php _e('Title:', 'dot'); ?><br />
+				<p><label for="mrp-title"><?php _e('Title:', 'i-recommend-this'); ?><br />
 				<input class="widefat" type="text" id="mrp-title" name="mrp-title" value="<?php echo $options['title'];?>" /></label></p>
 
-				<p><label for="mrp-number"><?php _e('Number of posts to show:', 'dot'); ?><br />
+				<p><label for="mrp-number"><?php _e('Number of posts to show:', 'i-recommend-this'); ?><br />
 				<input type="text" id="mrp-number" name="mrp-number" style="width: 25px;" value="<?php echo $options['number'];?>" /> <small>(max. 15)</small></label></p>
 
-				<p><label for="mrp-show-count"><input type="checkbox" id="mrp-show-count" name="mrp-show-count" value="1"<?php if($options['show_count'] == '1') echo 'checked="checked"'; ?> /> <?php _e('Show post count', 'dot'); ?></label></p>
+				<p><label for="mrp-show-count"><input type="checkbox" id="mrp-show-count" name="mrp-show-count" value="1"<?php if($options['show_count'] == '1') echo 'checked="checked"'; ?> /> <?php _e('Show post count', 'i-recommend-this'); ?></label></p>
 
 				<input type="hidden" id="mrp-submit" name="mrp-submit" value="1" />
 				<?php
 			}
-			wp_register_widget_control('most_recommended_posts', __('Most recommended posts', 'dot'), 'options_widget_most_recommended_posts');
+			wp_register_widget_control('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'options_widget_most_recommended_posts');
 		}
 
 
@@ -879,13 +881,13 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 	*--------------------------------------------*/
 
 	function dot_columns_head($defaults) {
-		$defaults['likes'] = __('Likes', 'dot');
+		$defaults['likes'] = __('Likes', 'i-recommend-this');
 		return $defaults;
 	}
 
 	function dot_column_content($column_name, $post_ID) {
 		if ($column_name == 'likes')
-			echo get_post_meta($post_ID, '_recommended', true) . ' ' . __('like', 'dot');
+			echo get_post_meta($post_ID, '_recommended', true) . ' ' . __('like', 'i-recommend-this');
 	}
 
 	function dot_column_register_sortable( $columns ) {
