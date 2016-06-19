@@ -1,6 +1,6 @@
 === Plugin Name ===
-Contributors: hchouhan, themeist, dreamsmedia, Benoit "LeBen" Burgener
-Donate link: http://themeist.co
+Contributors: themeist, hchouhan
+Donate link: http://themeist.com
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 4.0
 Tested up to: 4.5.2
