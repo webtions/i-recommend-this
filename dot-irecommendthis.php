@@ -447,6 +447,7 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 		function dot_recommend_this($post_id, $text_zero_suffix = false, $text_one_suffix = false, $text_more_suffix = false, $action = 'get')
 		{
+		    global $wpdb;
 			if(!is_numeric($post_id)) return;
 			$text_zero_suffix = strip_tags($text_zero_suffix);
 			$text_one_suffix = strip_tags($text_one_suffix);
@@ -517,10 +518,9 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 
 					} else {
-
-						global $wpdb;
-						$ip = $_SERVER['REMOTE_ADDR'];
-						$voteStatusByIp = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = '$post_id' AND ip = '$ip'");
+                        $ip = $_SERVER['REMOTE_ADDR'];
+						$sql = $wpdb->prepare("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip );
+						$voteStatusByIp = $wpdb->get_var( $sql );
 
 						if ( isset($_COOKIE['dot_irecommendthis_'. $post_id]) || $voteStatusByIp != 0 ) {
 							return $recommended;
@@ -529,7 +529,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 						$recommended++;
 						update_post_meta($post_id, '_recommended', $recommended);
 						setcookie('dot_irecommendthis_'. $post_id, time(), time()+3600*24*365, '/');
-						$wpdb->query("INSERT INTO ".$wpdb->prefix."irecommendthis_votes VALUES ('', NOW(), '$post_id', '$ip')");
+						$sql = $wpdb->prepare( "INSERT INTO ".$wpdb->prefix."irecommendthis_votes VALUES ('', NOW(), %d, %s )", $post_id, $ip );
+						$wpdb->query( $sql );
 
 					}
 
@@ -568,11 +569,9 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 		{
 
 
-			global $wpdb;
+			global $wpdb, $post;
 			$ip = $_SERVER['REMOTE_ADDR'];
 			$post_ID = $id ? $id : get_the_ID();
-			global $post;
-
 
 			$options = get_option( 'dot_irecommendthis_settings' );
 			if( !isset($options['text_zero_suffix']) ) $options['text_zero_suffix'] = '';
@@ -585,8 +584,8 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 
 
 			if( $options['disable_unique_ip'] != '1' ) {
-
-				$voteStatusByIp = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = '$post_ID' AND ip = '$ip'");
+                $sql = $wpdb->prepare( "SELECT COUNT(*) FROM ".$wpdb->prefix."irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_ID, $ip );
+				$voteStatusByIp = $wpdb->get_var( $sql );
 			}
 
 
@@ -910,4 +909,3 @@ if ( ! class_exists( 'DOT_IRecommendThis' ) )
 	add_filter('manage_posts_columns', 'dot_columns_head');
 	add_action('manage_posts_custom_column', 'dot_column_content', 10, 2);
 
-?>
