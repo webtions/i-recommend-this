@@ -3,8 +3,8 @@ Contributors: themeist, hchouhan
 Donate link: http://themeist.com
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 4.0
-Tested up to: 4.5.2
-Stable tag: 3.7.7
+Tested up to: 4.9.4
+Stable tag: 3.7.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,6 +98,9 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 3.7.8
+* Vulnerabilities fixed by DannyvanKooten
 
 = 3.7.7
 * Dutch Translation added by Tim de Hoog
