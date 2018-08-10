@@ -5,36 +5,39 @@ class DOT_IRecommendThis
 
 	public $version = '2.6.2';
 	public $db_version = '2.6.2';
+	public $file;
+
 
 	/*--------------------------------------------*
 	 * Constructor
 	 *--------------------------------------------*/
+	public function __construct( $file ) {
+		$this->file = $file;	
+	}
 
 	//function __construct($file)
-	function __construct()
+	function add_hooks()
 	{
-		//$this->file = $file;
-
 		// Run this on activation / deactivation
 		//register_activation_hook($file, array($this, 'activate'));
-		register_activation_hook(array($this, 'activate'));
+		register_activation_hook($this->file, array($this, 'activate'));
 
 		// Load text domain
-		add_action('init', array(&$this, 'load_localisation'), 0);
+		add_action('init', array($this, 'load_localisation'), 0);
 
 		//add_action( 'plugins_loaded', 'i_recommend_this_load_plugin_textdomain' );
-		//add_action( 'plugins_loaded', array( &$this, 'i_recommend_this_load_plugin_textdomain' ), 0 );
+		//add_action( 'plugins_loaded', array( $this, 'i_recommend_this_load_plugin_textdomain' ), 0 );
 
-		add_action('admin_menu', array(&$this, 'dot_irecommendthis_menu'));
-		add_action('admin_init', array(&$this, 'dot_irecommendthis_settings'));
-		add_action('init', array(&$this, 'add_widget_most_recommended_posts'));
-		add_action('wp_enqueue_scripts', array(&$this, 'dot_enqueue_scripts'));
-		add_filter('the_content', array(&$this, 'dot_content'));
-		add_action('publish_post', array(&$this, 'dot_setup_recommends'));
-		add_action('wp_ajax_dot-irecommendthis', array(&$this, 'ajax_callback'));
-		add_action('wp_ajax_nopriv_dot-irecommendthis', array(&$this, 'ajax_callback'));
-		add_shortcode('dot_recommends', array(&$this, 'shortcode'));
-		add_shortcode('dot_recommended_posts', array(&$this, 'dot_recommended_top_posts'));
+		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
+		add_action('admin_init', array($this, 'dot_irecommendthis_settings'));
+		add_action('init', array($this, 'add_widget_most_recommended_posts'));
+		add_action('wp_enqueue_scripts', array($this, 'dot_enqueue_scripts'));
+		add_filter('the_content', array($this, 'dot_content'));
+		add_action('publish_post', array($this, 'dot_setup_recommends'));
+		add_action('wp_ajax_dot-irecommendthis', array($this, 'ajax_callback'));
+		add_action('wp_ajax_nopriv_dot-irecommendthis', array($this, 'ajax_callback'));
+		add_shortcode('dot_recommends', array($this, 'shortcode'));
+		add_shortcode('dot_recommended_posts', array($this, 'dot_recommended_top_posts'));
 
 
 	} // end constructor

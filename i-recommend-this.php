@@ -28,5 +28,5 @@ require_once dirname( __FILE__ ) . '/includes/class-i-recommend-this.php';
 
 // create instance of plugin class
 global $themeist_i_recommend_this;
-$themeist_i_recommend_this = new DOT_IRecommendThis();
+$themeist_i_recommend_this = new DOT_IRecommendThis( __FILE__ );
 $themeist_i_recommend_this->add_hooks();
