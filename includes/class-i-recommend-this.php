@@ -5,14 +5,14 @@ class DOT_IRecommendThis
 
 	public $version = '2.6.2';
 	public $db_version = '2.6.2';
-	public $file;
+	public $plugin_file;
 
 
 	/*--------------------------------------------*
 	 * Constructor
 	 *--------------------------------------------*/
 	public function __construct( $file ) {
-		$this->file = $file;	
+		$this->plugin_file = $file;	
 	}
 
 	//function __construct($file)
@@ -20,7 +20,7 @@ class DOT_IRecommendThis
 	{
 		// Run this on activation / deactivation
 		//register_activation_hook($file, array($this, 'activate'));
-		register_activation_hook($this->file, array($this, 'activate'));
+		register_activation_hook($this->plugin_file, array($this, 'activate'));
 
 		// Load text domain
 		add_action('init', array($this, 'load_localisation'), 0);
@@ -91,21 +91,8 @@ class DOT_IRecommendThis
 	 */
 	public function load_localisation()
 	{
-
-		//load_plugin_textdomain( 'i-recommend-this', false, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/' );
-		load_plugin_textdomain('i-recommend-this', false, dirname(plugin_basename($this->file)) . '/languages/');
-		//load_plugin_textdomain( 'i-recommend-this', false, dirname( plugin_basename( $this->file ) ) . '/languages/' );
-
-
+		load_plugin_textdomain('i-recommend-this', false, dirname(plugin_basename($this->plugin_file)) . '/languages/');
 	} // End load_localisation()
-
-
-	function i_recommend_this_load_plugin_textdomain()
-	{
-		load_plugin_textdomain('i-recommend-this', FALSE, dirname(dirname(plugin_basename(__FILE__))) . '/languages/');
-		//load_plugin_textdomain( 'i-recommend-this', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
-	}
-
 
 	/*--------------------------------------------*
 	 * Enqueue Scripts
@@ -120,12 +107,12 @@ class DOT_IRecommendThis
 		if ($options['disable_css'] == '0') {
 
 			if ($options['recommend_style'] == '0') {
-				wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis.css', __FILE__));
+				wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis.css', $this->plugin_file ));
 			} else {
-				wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis-heart.css', __FILE__));
+				wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis-heart.css', $this->plugin_file ));
 			}
 		}
-		wp_register_script('dot-irecommendthis', plugins_url('/js/dot_irecommendthis.js', __FILE__), 'jquery', '2.6.0', 'in_footer');
+		wp_register_script('dot-irecommendthis', plugins_url('/js/dot_irecommendthis.js', $this->plugin_file ), 'jquery', '2.6.0', 'in_footer');
 
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('dot-irecommendthis');
