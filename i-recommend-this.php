@@ -1,33 +1,22 @@
 <?php
 /*
-Plugin Name: I Recommend This
-Plugin URI: https://themeist.com/plugins/wordpress/i-recommend-this/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page
-Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
-Version: 3.7.8
-Author: themeist
-Author URI: https://themeist.com/
-Text Domain: i-recommend-this
-Domain Path: /languages
-License: GPL v3
+ * Plugin Name:       I Recommend This
+ * Plugin URI:        https://themeist.com/plugins/wordpress/i-recommend-this/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page
+ * Description:       This plugin allows your visitors to simply recommend or like your posts instead of commment it.
+ * Version:           3.7.8
+ * Author:            Themeist, Harish Chouhan
+ * Author URI:        https://themeist.com/
+ * Author Email:      support@themeist.com
+ * Text Domain:       i-recommend-this
+ * License:           GPL-3.0
+ * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
+ * Domain Path:       /languages
+ */
 
-I Recommend This WordPress Plugin
-Copyright (C) 2012-2016, Harish Chouhan, me@harishchouhan.com
+if ( ! defined( 'WPINC' ) ) {
+    die;
+}
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-if (!defined('ABSPATH')) exit; // Exit if accessed directly
 if (!class_exists('DOT_IRecommendThis')) {
 
 
