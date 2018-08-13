@@ -16,7 +16,7 @@ class DOT_IRecommendThis
 	}
 
 	//function __construct($file)
-	function add_hooks()
+	public function add_hooks()
 	{
 		// Run this on activation / deactivation
 		//register_activation_hook($file, array($this, 'activate'));

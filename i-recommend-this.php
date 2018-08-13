@@ -14,12 +14,12 @@
  */
 
 if ( ! defined( 'WPINC' ) ) {
-    die;
+	die;
 }
 
 // do nothing if class is already defined
 if( class_exists( 'DOT_IRecommendThis' ) ) {
-    return;
+	return;
 }
 
 // require includes
@@ -32,3 +32,8 @@ require_once dirname( __FILE__ ) . '/admin/class-i-recommend-this-admin.php';
 global $themeist_i_recommend_this;
 $themeist_i_recommend_this = new DOT_IRecommendThis( __FILE__ );
 $themeist_i_recommend_this->add_hooks();
+
+// create instance of plugin class
+global $themeist_i_recommend_this_admin;
+$themeist_i_recommend_this_admin = new Themeist_IRecommendThis_Admin( __FILE__ );
+$themeist_i_recommend_this_admin->add_admin_hooks();

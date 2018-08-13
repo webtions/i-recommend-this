@@ -2,15 +2,11 @@
 
 class Themeist_IRecommendThis_Admin {
 
-	//function __construct($file)
-	function add_admin_hooks()
+	public function add_admin_hooks()
 	{
-
 		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
 		add_action('admin_init', array($this, 'dot_irecommendthis_settings'));
-
-
-	} // end constructor
+	}
 
 	public function dot_irecommendthis_menu() {
 		$page_title = __('I Recommend This', 'i-recommend-this');
