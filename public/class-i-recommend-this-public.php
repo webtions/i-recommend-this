@@ -2,7 +2,12 @@
 
 class Themeist_IRecommendThis_Admin {
 
-	public function dot_irecommendthis_menu() {
+	/*--------------------------------------------*
+	 * Admin Menu
+	 *--------------------------------------------*/
+
+	function dot_irecommendthis_menu()
+	{
 		$page_title = __('I Recommend This', 'i-recommend-this');
 		$menu_title = __('I Recommend This', 'i-recommend-this');
 		$capability = 'manage_options';
@@ -10,9 +15,15 @@ class Themeist_IRecommendThis_Admin {
 		$function = array(&$this, 'dot_settings_page');
 		add_options_page($page_title, $menu_title, $capability, $menu_slug, $function);
 
-	}
+	}    //dot_irecommendthis_menu
 
-	public function dot_irecommendthis_settings() {
+
+	/*--------------------------------------------*
+	 * Settings & Settings Page
+	 *--------------------------------------------*/
+
+	public function dot_irecommendthis_settings() // whitelist options
+	{
 		register_setting('dot-irecommendthis', 'dot_irecommendthis_settings', array(&$this, 'settings_validate'));
 
 		add_settings_section('dot-irecommendthis', '', array(&$this, 'section_intro'), 'dot-irecommendthis');
@@ -39,9 +50,12 @@ class Themeist_IRecommendThis_Admin {
 
 		add_settings_field('instructions', __('Shortcode and Template Tag', 'i-recommend-this'), array(&$this, 'setting_instructions'), 'dot-irecommendthis', 'dot-irecommendthis');
 
-	}
+	}    //dot_irecommendthis_settings
 
-	public function dot_settings_page() {
+
+
+	public function dot_settings_page()
+	{
 		?>
 		<div class="wrap">
 			<?php screen_icon(); ?>
@@ -72,9 +86,12 @@ class Themeist_IRecommendThis_Admin {
 		</div>
 		<?php
 
-	}
+	} //dot_settings_page
 
-	public function section_intro() {
+
+
+	function section_intro()
+	{
 		?>
 
 		<p><?php _e('<a href="https://twitter.com/harishchouhan" class="twitter-follow-button" data-show-count="false">Follow @harishchouhan</a>
@@ -86,7 +103,7 @@ class Themeist_IRecommendThis_Admin {
 		<?php
 	}
 
-	public function setting_show_on()
+	function setting_show_on()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['add_to_posts'])) $options['add_to_posts'] = '0';
@@ -100,7 +117,7 @@ class Themeist_IRecommendThis_Admin {
 		' . __('All other pages like Index, Archive, etc.', 'i-recommend-this') . '</label><br />';
 	}
 
-	public function setting_hide_zero()
+	function setting_hide_zero()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['hide_zero'])) $options['hide_zero'] = '0';
@@ -110,7 +127,7 @@ class Themeist_IRecommendThis_Admin {
 			__('Hide count if count is zero', 'i-recommend-this') . '</label>';
 	}
 
-	public function setting_disable_unique_ip()
+	function setting_disable_unique_ip()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['disable_unique_ip'])) $options['disable_unique_ip'] = '0';
@@ -120,7 +137,7 @@ class Themeist_IRecommendThis_Admin {
 			__('Disable saving of IP Address. Will only save cookies to track user votes.', 'i-recommend-this') . '</label>';
 	}
 
-	public function setting_disable_css()
+	function setting_disable_css()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['disable_css'])) $options['disable_css'] = '0';
@@ -130,7 +147,7 @@ class Themeist_IRecommendThis_Admin {
 			__('I want to use my own CSS styles', 'i-recommend-this') . '</label>';
 	}
 
-	public function setting_text_zero_suffix()
+	function setting_text_zero_suffix()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['text_zero_suffix'])) $options['text_zero_suffix'] = '';
@@ -139,7 +156,7 @@ class Themeist_IRecommendThis_Admin {
 		<span class="description">' . __('Text to display after zero count. Leave blank for no text after the count.', 'i-recommend-this') . '</span>';
 	}
 
-	public function setting_text_one_suffix()
+	function setting_text_one_suffix()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['text_one_suffix'])) $options['text_one_suffix'] = '';
@@ -148,7 +165,7 @@ class Themeist_IRecommendThis_Admin {
 		<span class="description">' . __('Text to display after 1 person has recommended. Leave blank for no text after the count.', 'i-recommend-this') . '</span>';
 	}
 
-	public function setting_text_more_suffix()
+	function setting_text_more_suffix()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['text_more_suffix'])) $options['text_more_suffix'] = '';
@@ -157,7 +174,7 @@ class Themeist_IRecommendThis_Admin {
 		<span class="description">' . __('Text to display after more than 1 person have recommended. Leave blank for no text after the count.', 'i-recommend-this') . '</span>';
 	}
 
-	public function setting_link_title_new()
+	function setting_link_title_new()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['link_title_new'])) $options['link_title_new'] = '';
@@ -166,7 +183,7 @@ class Themeist_IRecommendThis_Admin {
 		<span class="description">' . __('Link Title element for posts not yet voted by a user.', 'i-recommend-this') . '</span>';
 	}
 
-	public function setting_link_title_active()
+	function setting_link_title_active()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['link_title_active'])) $options['link_title_active'] = '';
@@ -175,7 +192,7 @@ class Themeist_IRecommendThis_Admin {
 		<span class="description">' . __('Link Title element for posts already voted by a user.', 'i-recommend-this') . '</span>';
 	}
 
-	public function setting_recommend_style()
+	function setting_recommend_style()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['recommend_style'])) $options['recommend_style'] = '0';
@@ -187,7 +204,7 @@ class Themeist_IRecommendThis_Admin {
 		' . __('Heart', 'i-recommend-this') . '</label><br />';
 	}
 
-	public function setting_instructions()
+	function setting_instructions()
 	{
 		echo '<p>' . __('To use I Recomment This in your posts and pages you can use the shortcode:', 'i-recommend-this') . '</p>
 		<p><code>[dot_recommends]</code></p>
@@ -197,7 +214,7 @@ class Themeist_IRecommendThis_Admin {
 		<p><code>[dot_recommended_posts container=\'div\' post_type=\'showcase\' number=\'10\' year=\'2013\' monthnum=\'7\']</code></p>';
 	}
 
-	public function settings_validate($input)
+	function settings_validate($input)
 	{
 		return $input;
 	}

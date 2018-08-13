@@ -24,6 +24,8 @@ if( class_exists( 'DOT_IRecommendThis' ) ) {
 
 // require includes
 require_once dirname( __FILE__ ) . '/includes/class-i-recommend-this.php';
+require_once dirname( __FILE__ ) . '/admin/class-i-recommend-this-admin.php';
+
 //require_once dirname( __FILE__ ) . '/includes/functions.php';
 
 // create instance of plugin class
