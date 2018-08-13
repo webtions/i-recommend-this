@@ -43,7 +43,6 @@ class Themeist_IRecommendThis_Admin {
 
 		add_settings_field('recommend_style', __('Choose a style', 'i-recommend-this'), array(&$this, 'setting_recommend_style'), 'dot-irecommendthis', 'dot-irecommendthis');
 
-		add_settings_field('instructions', __('Shortcode and Template Tag', 'i-recommend-this'), array(&$this, 'setting_instructions'), 'dot-irecommendthis', 'dot-irecommendthis');
 
 	}
 
@@ -186,16 +185,6 @@ class Themeist_IRecommendThis_Admin {
 
 		<label><input type="radio" name="dot_irecommendthis_settings[recommend_style]" value="1"' . (($options['recommend_style']) == "1" ? 'checked' : '') . ' />
 		' . __('Heart', 'i-recommend-this') . '</label><br />';
-	}
-
-	public function setting_instructions()
-	{
-		echo '<p>' . __('To use I Recomment This in your posts and pages you can use the shortcode:', 'i-recommend-this') . '</p>
-		<p><code>[dot_recommends]</code></p>
-		<p>' . __('To use I Recomment This manually in your theme template use the following PHP code:', 'i-recommend-this') . '</p>
-		<p><code>&lt;?php if( function_exists(\'dot_irecommendthis\') ) dot_irecommendthis(); ?&gt;</code></p>
-		<p>' . __('To show top recommended post from a particular date use below shortcode', 'i-recommend-this') . '</p>
-		<p><code>[dot_recommended_posts container=\'div\' post_type=\'showcase\' number=\'10\' year=\'2013\' monthnum=\'7\']</code></p>';
 	}
 
 	public function settings_validate($input)
