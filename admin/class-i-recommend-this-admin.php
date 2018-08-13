@@ -49,7 +49,7 @@ class Themeist_IRecommendThis_Admin {
 	public function dot_settings_page() {
 		?>
 		<div class="wrap">
-			<h2>"I Recommend This" Options</h2>
+			<h2>I Recommend This: Settings</h2>
 			<div class="metabox-holder has-right-sidebar">
 				<!-- SIDEBAR -->
 				<div class="inner-sidebar">
