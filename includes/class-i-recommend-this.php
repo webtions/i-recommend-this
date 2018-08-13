@@ -28,8 +28,6 @@ class DOT_IRecommendThis
 		//add_action( 'plugins_loaded', 'i_recommend_this_load_plugin_textdomain' );
 		//add_action( 'plugins_loaded', array( $this, 'i_recommend_this_load_plugin_textdomain' ), 0 );
 
-		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
-		add_action('admin_init', array($this, 'dot_irecommendthis_settings'));
 		add_action('init', array($this, 'add_widget_most_recommended_posts'));
 		add_action('wp_enqueue_scripts', array($this, 'dot_enqueue_scripts'));
 		add_filter('the_content', array($this, 'dot_content'));
