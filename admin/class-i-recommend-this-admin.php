@@ -49,7 +49,6 @@ class Themeist_IRecommendThis_Admin {
 	public function dot_settings_page() {
 		?>
 		<div class="wrap">
-			<?php screen_icon(); ?>
 			<h2>"I Recommend This" Options</h2>
 			<div class="metabox-holder has-right-sidebar">
 				<!-- SIDEBAR -->
