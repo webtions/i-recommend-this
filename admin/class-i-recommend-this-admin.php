@@ -18,8 +18,8 @@ class Themeist_IRecommendThis_Admin {
 		if( $pagenow === 'plugins.php' ) {
 			add_filter( 'plugin_action_links_' . $this->plugin_file, array( $this, 'add_plugin_settings_link' ), 10, 2 );
 			add_filter( 'plugin_row_meta', array( $this, 'add_plugin_meta_links'), 10, 2 );
+			//add_filter( 'plugin_row_meta', 'add_plugin_meta_links', 10, 2 );
 		}
-
 
 		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
 		add_action('admin_init', array($this, 'dot_irecommendthis_settings'));
@@ -66,14 +66,30 @@ class Themeist_IRecommendThis_Admin {
 	 * @return array
 	 */
 	public function add_plugin_settings_link( $links, $file ) {
-		if( $file !== $this->plugin_file ) {
-			return $links;
-		}
+		// if( $file !== $this->plugin_file ) {
+		//  return $links;
+		// }
 
 		$settings_link = '<a href="' . admin_url( 'options-general.php?page=dot-irecommendthis' ) . '">'. __( 'Settings', 'dot-irecommendthis' ) . '</a>';
 		array_unshift( $links, $settings_link );
 		return $links;
 	}
+
+
+	public function add_plugin_meta_links( $links, $file ) {
+
+		if ( strpos( $file, 'i-recommend-this.php' ) !== false ) {
+			$new_links = array(
+					'donate' => '<a href="https://www.paypal.me/harishchouhan" target="_blank">Donate</a>',
+					'Documentation' => '<a href="https://themeist.com/docs/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page" target="_blank">Documentation</a>'
+				);
+
+			$links = array_merge( $links, $new_links );
+		}
+
+		return $links;
+	}
+
 
 	/**
 	 * Adds meta links to the plugin in the WP Admin > Plugins screen
@@ -83,12 +99,15 @@ class Themeist_IRecommendThis_Admin {
 	 *
 	 * @return array
 	 */
-	public function add_plugin_meta_links( $links, $file ) {
+	public function add_plugin_meta_links2( $links, $file ) {
 		if( $file !== $this->plugin_file ) {
+		//if( 'i-recommend-this.php' !== $this->plugin_file ) {
 			return $links;
+
+			//$links[] = '<a href="https://themeist.com/docs/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page">'. __( 'Documentation', 'i-recommend-this' ) . '</a>';
 		}
 
-		$links[] = '<a href="https://themeist.com/docs/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page">'. __( 'Documentation', 'i-recommend-this' ) . '</a>';
+		$links[] = '<a href="https://themeist.com/docs/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page">'. __( '2Documentation', 'i-recommend-this' ) . '</a>';
 
 		/**
 		 * Filters meta links shown on the Plugins overview page
@@ -97,14 +116,14 @@ class Themeist_IRecommendThis_Admin {
 		 *
 		 * @since 3.8
 		 * @param array $links
-         * @ignore
+		 * @ignore
 		 */
 		//$links = (array) apply_filters( 'themeist_irt_admin_plugin_meta_links', $links );
 
 		return $links;
 	}
 
-/*	public function dot_irecommendthis_plugin_links($links)
+/*  public function dot_irecommendthis_plugin_links($links)
 	{
 		return array_merge(
 			array(
@@ -160,7 +179,7 @@ class Themeist_IRecommendThis_Admin {
 <?php
 
 
-//$plugin = plugin_basename(__FILE__); 
+//$plugin = plugin_basename(__FILE__);
 echo $this->plugin_file;
 ?>
 					<!--<div class="postbox">
