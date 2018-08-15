@@ -12,10 +12,3 @@ function dot_irecommendthis($id = null)
 	echo $dot_irecommendthis->dot_recommend($id);
 
 }
-
-/*--------------------------------------------*
- * Settings Menu
- *--------------------------------------------*/
-
-
-

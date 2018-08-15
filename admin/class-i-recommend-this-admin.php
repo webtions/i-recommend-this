@@ -16,9 +16,8 @@ class Themeist_IRecommendThis_Admin {
 
 		// Hooks for Plugins overview page
 		if( $pagenow === 'plugins.php' ) {
-			add_filter( 'plugin_action_links_' . $this->plugin_file, array( $this, 'add_plugin_settings_link' ), 10, 2 );
+			add_filter( 'plugin_action_links', array( $this, 'add_plugin_settings_link' ), 10, 2 );
 			add_filter( 'plugin_row_meta', array( $this, 'add_plugin_meta_links'), 10, 2 );
-			//add_filter( 'plugin_row_meta', 'add_plugin_meta_links', 10, 2 );
 		}
 
 		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
@@ -66,18 +65,16 @@ class Themeist_IRecommendThis_Admin {
 	 * @return array
 	 */
 	public function add_plugin_settings_link( $links, $file ) {
-		// if( $file !== $this->plugin_file ) {
-		//  return $links;
-		// }
+		if ( $file == plugin_basename($this->plugin_file) ) {
 
-		$settings_link = '<a href="' . admin_url( 'options-general.php?page=dot-irecommendthis' ) . '">'. __( 'Settings', 'dot-irecommendthis' ) . '</a>';
-		array_unshift( $links, $settings_link );
+			$settings_link = '<a href="' . admin_url( 'options-general.php?page=dot-irecommendthis' ) . '">'. __( 'Settings', 'dot-irecommendthis' ) . '</a>';
+			array_unshift( $links, $settings_link );
+		}
 		return $links;
 	}
 
 
 	public function add_plugin_meta_links( $links, $file ) {
-
 		if ( strpos( $file, 'i-recommend-this.php' ) !== false ) {
 			$new_links = array(
 					'donate' => '<a href="https://www.paypal.me/harishchouhan" target="_blank">Donate</a>',
@@ -86,7 +83,6 @@ class Themeist_IRecommendThis_Admin {
 
 			$links = array_merge( $links, $new_links );
 		}
-
 		return $links;
 	}
 
@@ -180,7 +176,11 @@ class Themeist_IRecommendThis_Admin {
 
 
 //$plugin = plugin_basename(__FILE__);
-echo $this->plugin_file;
+//echo $this->plugin_file;
+//echo plugin_dir_path( $this->plugin_file );
+//echo plugin_dir_path( dirname($this->plugin_file) );
+echo plugin_basename($this->plugin_file);
+//echo plugin_basename(dirname(__FILE__));
 ?>
 					<!--<div class="postbox">
 						<h3><span>Metabox 1</span></h3>

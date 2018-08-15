@@ -47,5 +47,30 @@ $themeist_i_recommend_this_public = new Themeist_IRecommendThis_Public( __FILE__
 $themeist_i_recommend_this_public->add_public_hooks();
 
 
+/*--------------------------------------------*
+ * Settings Menu
+ *--------------------------------------------*/
+
+
+//add_filter( 'plugin_action_links', 'wpse_25030_settings_plugin_link', 10, 2 );
+
+function wpse_25030_settings_plugin_link( $links, $file )
+{
+    if ( $file == plugin_basename(dirname(__FILE__) . '/i-recommend-this.php') ) 
+    {
+        /*
+         * Insert the link at the beginning
+         */
+        //$in = '<a href="options-general.php?page=dot-irecommendthis">' . __('Settings','mtt') . '</a>';
+        $in = '<a href="'. $file . '">' . __('Settings','mtt') . '</a>';
+        array_unshift($links, $in);
+
+        /*
+         * Insert at the end
+         */
+        // $links[] = '<a href="options-general.php?page=many-tips-together">'.__('Settings','mtt').'</a>';
+    }
+    return $links;
+}
 
 
