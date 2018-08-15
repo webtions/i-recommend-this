@@ -2,13 +2,22 @@
 
 class Themeist_IRecommendThis_Admin {
 
+	public function __construct( $file ) {
+		$this->plugin_file = $file;
+	}
+
 	public function add_admin_hooks()
 	{
 		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
 		add_action('admin_init', array($this, 'dot_irecommendthis_settings'));
 		add_action('publish_post', array($this, 'dot_setup_recommends'));
-		add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'dot_irecommendthis_plugin_links');
+		add_filter('plugin_action_links_' . $this->plugin_file, 'dot_irecommendthis_plugin_links');
 		//add_filter( 'plugin_action_links', 'dot_irecommendthis_plugin_links', 10, 5 );
+		//
+		add_filter('request', 'dot_column_orderby');
+		add_filter('manage_edit-post_sortable_columns', 'dot_column_register_sortable');
+		add_filter('manage_posts_columns', 'dot_columns_head');
+		add_action('manage_posts_custom_column', 'dot_column_content', 10, 2);
 	}
 
 	public function dot_irecommendthis_menu() {
@@ -21,7 +30,7 @@ class Themeist_IRecommendThis_Admin {
 
 	}
 
-	function dot_irecommendthis_plugin_links($links)
+	public function dot_irecommendthis_plugin_links($links)
 	{
 		return array_merge(
 			array(
@@ -210,6 +219,40 @@ class Themeist_IRecommendThis_Admin {
 	public function settings_validate($input)
 	{
 		return $input;
+	}
+
+	/*--------------------------------------------*
+	* Add Likes Column In Post Manage Page
+	*--------------------------------------------*/
+
+	function dot_columns_head($defaults)
+	{
+		$defaults['likes'] = __('Likes', 'i-recommend-this');
+		return $defaults;
+	}
+
+	function dot_column_content($column_name, $post_ID)
+	{
+		if ($column_name == 'likes')
+			echo get_post_meta($post_ID, '_recommended', true) . ' ' . __('like', 'i-recommend-this');
+	}
+
+	function dot_column_register_sortable($columns)
+	{
+		$columns['likes'] = 'likes';
+		return $columns;
+	}
+
+	function dot_column_orderby($vars)
+	{
+		if (isset($vars['orderby']) && 'likes' == $vars['orderby']) {
+			$vars = array_merge($vars, array(
+				'meta_key' => '_recommended',
+				'orderby' => 'meta_value'
+			));
+		}
+
+		return $vars;
 	}
 
 }
