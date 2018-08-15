@@ -7,6 +7,8 @@ class Themeist_IRecommendThis_Admin {
 		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
 		add_action('admin_init', array($this, 'dot_irecommendthis_settings'));
 		add_action('publish_post', array($this, 'dot_setup_recommends'));
+		add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'dot_irecommendthis_plugin_links');
+		//add_filter( 'plugin_action_links', 'dot_irecommendthis_plugin_links', 10, 5 );
 	}
 
 	public function dot_irecommendthis_menu() {
@@ -17,6 +19,16 @@ class Themeist_IRecommendThis_Admin {
 		$function = array(&$this, 'dot_settings_page');
 		add_options_page($page_title, $menu_title, $capability, $menu_slug, $function);
 
+	}
+
+	function dot_irecommendthis_plugin_links($links)
+	{
+		return array_merge(
+			array(
+				'settings' => '<a href="' . get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=dot-irecommendthis">' . __('Settings', 'dot-irecommendthis') . '</a>'
+			),
+			$links
+		);
 	}
 
 	function dot_setup_recommends($post_id)
