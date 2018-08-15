@@ -6,6 +6,7 @@ class Themeist_IRecommendThis_Admin {
 	{
 		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
 		add_action('admin_init', array($this, 'dot_irecommendthis_settings'));
+		add_action('publish_post', array($this, 'dot_setup_recommends'));
 	}
 
 	public function dot_irecommendthis_menu() {
@@ -15,6 +16,14 @@ class Themeist_IRecommendThis_Admin {
 		$menu_slug = 'dot-irecommendthis';
 		$function = array(&$this, 'dot_settings_page');
 		add_options_page($page_title, $menu_title, $capability, $menu_slug, $function);
+
+	}
+
+	function dot_setup_recommends($post_id)
+	{
+		if (!is_numeric($post_id)) return;
+
+		add_post_meta($post_id, '_recommended', '0', true);
 
 	}
 

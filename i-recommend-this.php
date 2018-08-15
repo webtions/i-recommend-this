@@ -25,6 +25,7 @@ if( class_exists( 'DOT_IRecommendThis' ) ) {
 // require includes
 require_once dirname( __FILE__ ) . '/includes/class-i-recommend-this.php';
 require_once dirname( __FILE__ ) . '/admin/class-i-recommend-this-admin.php';
+require_once dirname( __FILE__ ) . '/public/class-i-recommend-this-public.php';
 
 //require_once dirname( __FILE__ ) . '/includes/functions.php';
 
@@ -37,3 +38,8 @@ $themeist_i_recommend_this->add_hooks();
 global $themeist_i_recommend_this_admin;
 $themeist_i_recommend_this_admin = new Themeist_IRecommendThis_Admin( __FILE__ );
 $themeist_i_recommend_this_admin->add_admin_hooks();
+
+// create instance of plugin class
+global $themeist_i_recommend_this_public;
+$themeist_i_recommend_this_public = new Themeist_IRecommendThis_Public( __FILE__ );
+$themeist_i_recommend_this_public->add_public_hooks();
