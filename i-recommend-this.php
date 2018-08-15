@@ -22,6 +22,9 @@ if( class_exists( 'DOT_IRecommendThis' ) ) {
 	return;
 }
 
+define( 'THEMEIST_IRT_VERSION', '3.7.8' );
+define( 'THEMEIST_IRT_DB_VERSION', '2.6.2' );
+
 // require includes
 require_once dirname( __FILE__ ) . '/includes/class-i-recommend-this.php';
 require_once dirname( __FILE__ ) . '/admin/class-i-recommend-this-admin.php';
@@ -42,3 +45,7 @@ $themeist_i_recommend_this_admin->add_admin_hooks();
 global $themeist_i_recommend_this_public;
 $themeist_i_recommend_this_public = new Themeist_IRecommendThis_Public( __FILE__ );
 $themeist_i_recommend_this_public->add_public_hooks();
+
+
+
+

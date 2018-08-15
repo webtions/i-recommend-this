@@ -2,18 +2,29 @@
 
 class Themeist_IRecommendThis_Admin {
 
-	public function __construct( $file ) {
-		$this->plugin_file = $file;
+	/**
+	 * @param string $plugin_file
+	 */
+	public function __construct( $plugin_file ) {
+		$this->plugin_file = $plugin_file;
 	}
 
-	public function add_admin_hooks()
-	{
+	public function add_admin_hooks() {
+		global $pagenow;
+
+		add_filter( 'admin_footer_text', array( $this, 'footer_text' ) );
+
+		// Hooks for Plugins overview page
+		if( $pagenow === 'plugins.php' ) {
+			add_filter( 'plugin_action_links_' . $this->plugin_file, array( $this, 'add_plugin_settings_link' ), 10, 2 );
+			add_filter( 'plugin_row_meta', array( $this, 'add_plugin_meta_links'), 10, 2 );
+		}
+
+
 		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
 		add_action('admin_init', array($this, 'dot_irecommendthis_settings'));
 		add_action('publish_post', array($this, 'dot_setup_recommends'));
-		add_filter('plugin_action_links_' . $this->plugin_file, 'dot_irecommendthis_plugin_links');
-		//add_filter( 'plugin_action_links', 'dot_irecommendthis_plugin_links', 10, 5 );
-		//
+
 		add_filter('request', 'dot_column_orderby');
 		add_filter('manage_edit-post_sortable_columns', 'dot_column_register_sortable');
 		add_filter('manage_posts_columns', 'dot_columns_head');
@@ -30,7 +41,70 @@ class Themeist_IRecommendThis_Admin {
 
 	}
 
-	public function dot_irecommendthis_plugin_links($links)
+	/**
+	 * Ask for a plugin review in the WP Admin footer, if this is one of the plugin pages.
+	 *
+	 * @param $text
+	 *
+	 * @return string
+	 */
+	public function footer_text( $text ) {
+
+		if(! empty( $_GET['page'] ) && strpos( $_GET['page'], 'dot-irecommendthis' ) === 0 ) {
+			$text = sprintf( 'If you enjoy using <strong>I Recommend this</strong>, please <a href="%s" target="_blank">leave us a ★★★★★ rating</a>. A <strong style="text-decoration: underline;">huge</strong> thank you in advance!', 'https://wordpress.org/support/view/plugin-reviews/i-recommend-this?rate=5#postform' );
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Add the settings link to the Plugins overview
+	 *
+	 * @param array $links
+	 * @param       $file
+	 *
+	 * @return array
+	 */
+	public function add_plugin_settings_link( $links, $file ) {
+		if( $file !== $this->plugin_file ) {
+			return $links;
+		}
+
+		$settings_link = '<a href="' . admin_url( 'options-general.php?page=dot-irecommendthis' ) . '">'. __( 'Settings', 'dot-irecommendthis' ) . '</a>';
+		array_unshift( $links, $settings_link );
+		return $links;
+	}
+
+	/**
+	 * Adds meta links to the plugin in the WP Admin > Plugins screen
+	 *
+	 * @param array $links
+	 * @param string $file
+	 *
+	 * @return array
+	 */
+	public function add_plugin_meta_links( $links, $file ) {
+		if( $file !== $this->plugin_file ) {
+			return $links;
+		}
+
+		$links[] = '<a href="https://themeist.com/docs/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page">'. __( 'Documentation', 'i-recommend-this' ) . '</a>';
+
+		/**
+		 * Filters meta links shown on the Plugins overview page
+		 *
+		 * This takes an array of strings
+		 *
+		 * @since 3.8
+		 * @param array $links
+         * @ignore
+		 */
+		//$links = (array) apply_filters( 'themeist_irt_admin_plugin_meta_links', $links );
+
+		return $links;
+	}
+
+/*	public function dot_irecommendthis_plugin_links($links)
 	{
 		return array_merge(
 			array(
@@ -38,7 +112,7 @@ class Themeist_IRecommendThis_Admin {
 			),
 			$links
 		);
-	}
+	}*/
 
 	function dot_setup_recommends($post_id)
 	{
@@ -83,6 +157,12 @@ class Themeist_IRecommendThis_Admin {
 			<div class="metabox-holder has-right-sidebar">
 				<!-- SIDEBAR -->
 				<div class="inner-sidebar">
+<?php
+
+
+//$plugin = plugin_basename(__FILE__); 
+echo $this->plugin_file;
+?>
 					<!--<div class="postbox">
 						<h3><span>Metabox 1</span></h3>
 						<div class="inside">

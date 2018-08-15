@@ -2,15 +2,30 @@
 
 class DOT_IRecommendThis {
 
-	public $version = '2.6.2';
-	public $db_version = '2.6.2';
+	protected $plugin_slug;
+
+	protected $version;
+
+	protected $db_version;
+
 	public $plugin_file;
 
-
-	/*--------------------------------------------*
-	 * Constructor
-	 *--------------------------------------------*/
 	public function __construct( $file ) {
+
+		if ( defined( 'THEMEIST_IRT_VERSION' ) ) {
+			$this->version = THEMEIST_IRT_VERSION;
+		} else {
+			$this->version = '3.7.8';
+		}
+
+		if ( defined( 'THEMEIST_IRT_DB_VERSION' ) ) {
+			$this->db_version = THEMEIST_IRT_DB_VERSION;
+		} else {
+			$this->db_version = '2.6.2';
+		}
+
+		$this->plugin_slug = 'i-recommend-this';
+
 		$this->plugin_file = $file;
 	}
 
@@ -18,13 +33,10 @@ class DOT_IRecommendThis {
 		// Run this on activation / deactivation
 		register_activation_hook($this->plugin_file, array($this, 'activate'));
 
-		// Load text domain
 		add_action('init', array($this, 'load_localisation'), 0);
 		//add_action( 'plugins_loaded', 'i_recommend_this_load_plugin_textdomain' );
 		//add_action( 'plugins_loaded', array( $this, 'i_recommend_this_load_plugin_textdomain' ), 0 );
-
 	}
-
 
 	/*--------------------------------------------*
 	 * Activate
@@ -56,7 +68,7 @@ class DOT_IRecommendThis {
 		}
 	}
 
-	private function register_plugin_version() {
+	public function register_plugin_version() {
 		if ($this->version != '') {
 			update_option('dot-irecommendthis' . '-version', $this->version);
 		}
@@ -69,6 +81,10 @@ class DOT_IRecommendThis {
 	 */
 	public function load_localisation() {
 		load_plugin_textdomain('i-recommend-this', false, dirname(plugin_basename($this->plugin_file)) . '/languages/');
+	}
+
+	public function get_version() {
+		return $this->version;
 	}
 
 }
