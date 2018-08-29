@@ -10,7 +10,9 @@ class Themeist_IRecommendThis {
 
 	public $plugin_file;
 
-	public function __construct( $file ) {
+	public function __construct( $plugin_file ) {
+
+		$this->plugin_file = $plugin_file;
 
 		if ( defined( 'THEMEIST_IRT_VERSION' ) ) {
 			$this->version = THEMEIST_IRT_VERSION;
@@ -26,7 +28,7 @@ class Themeist_IRecommendThis {
 
 		$this->plugin_slug = 'i-recommend-this';
 
-		$this->plugin_file = $file;
+
 	}
 
 	public function add_hooks() {

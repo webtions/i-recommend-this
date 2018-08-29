@@ -2,12 +2,19 @@
 
 class Themeist_IRecommendThis_Public {
 
+	/**
+	 * @param string $plugin_file
+	 */
+	public function __construct( $plugin_file ) {
+		$this->plugin_file = $plugin_file;
+	}
+
 	public function add_public_hooks() {
+		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
 		add_action('init', array($this, 'add_widget_most_recommended_posts'));
-		add_action('wp_enqueue_scripts', array($this, 'dot_enqueue_scripts'));
-		add_filter('the_content', array($this, 'dot_content'));
 		add_action('wp_ajax_dot-irecommendthis', array($this, 'ajax_callback'));
 		add_action('wp_ajax_nopriv_dot-irecommendthis', array($this, 'ajax_callback'));
+		add_filter('the_content', array($this, 'dot_content'));
 		add_shortcode('dot_recommends', array($this, 'shortcode'));
 		add_shortcode('dot_recommended_posts', array($this, 'dot_recommended_top_posts'));
 	}
@@ -16,7 +23,7 @@ class Themeist_IRecommendThis_Public {
 	 * Enqueue Scripts
 	 *--------------------------------------------*/
 
-	function dot_enqueue_scripts()
+	function enqueue_scripts()
 	{
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['disable_css'])) $options['disable_css'] = '0';
@@ -25,9 +32,9 @@ class Themeist_IRecommendThis_Public {
 		if ($options['disable_css'] == '0') {
 
 			if ($options['recommend_style'] == '0') {
-				wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis.css', $this->plugin_file ));
+				wp_enqueue_style( 'dot-irecommendthis', plugins_url('/css/dot-irecommendthis.css', $this->plugin_file ) );
 			} else {
-				wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis-heart.css', $this->plugin_file ));
+				wp_enqueue_style( 'dot-irecommendthis', plugins_url('/css/dot-irecommendthis-heart.css', $this->plugin_file ) );
 			}
 		}
 		wp_register_script('dot-irecommendthis', plugins_url('/js/dot_irecommendthis.js', $this->plugin_file ), 'jquery', '2.6.0', 'in_footer');
