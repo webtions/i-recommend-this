@@ -24,10 +24,13 @@ class Themeist_IRecommendThis_Admin {
 		add_action('admin_init', array($this, 'dot_irecommendthis_settings'));
 		add_action('publish_post', array($this, 'dot_setup_recommends'));
 
+		/*
+		Enable with better control in 3.8.2
 		add_filter('request', 'dot_column_orderby');
 		add_filter('manage_edit-post_sortable_columns', 'dot_column_register_sortable');
 		add_filter('manage_posts_columns', 'dot_columns_head');
 		add_action('manage_posts_custom_column', 'dot_column_content', 10, 2);
+		*/
 	}
 
 	public function dot_irecommendthis_menu() {
