@@ -161,7 +161,7 @@ class Themeist_IRecommendThis_Admin {
 
 		add_settings_field('hide_zero', __('Hide Zero Count', 'i-recommend-this'), array(&$this, 'setting_hide_zero'), 'dot-irecommendthis', 'dot-irecommendthis');
 
-		add_settings_field('disable_unique_ip', __('Disable IP saving', 'i-recommend-this'), array(&$this, 'setting_disable_unique_ip'), 'dot-irecommendthis', 'dot-irecommendthis');
+		add_settings_field('disable_unique_ip', __('Enable IP saving', 'i-recommend-this'), array(&$this, 'setting_enable_unique_ip'), 'dot-irecommendthis', 'dot-irecommendthis');
 
 		add_settings_field('recommend_style', __('Choose a style', 'i-recommend-this'), array(&$this, 'setting_recommend_style'), 'dot-irecommendthis', 'dot-irecommendthis');
 
@@ -241,14 +241,14 @@ echo plugin_basename($this->plugin_file);
 			__('Hide count if count is zero', 'i-recommend-this') . '</label>';
 	}
 
-	public function setting_disable_unique_ip()
+	public function setting_enable_unique_ip()
 	{
 		$options = get_option('dot_irecommendthis_settings');
-		if (!isset($options['disable_unique_ip'])) $options['disable_unique_ip'] = '0';
+		if (!isset($options['enable_unique_ip'])) $options['enable_unique_ip'] = '0';
 
-		echo '<input type="hidden" name="dot_irecommendthis_settings[disable_unique_ip]" value="0" />
-		<label><input type="checkbox" name="dot_irecommendthis_settings[disable_unique_ip]" value="1"' . (($options['disable_unique_ip']) ? ' checked="checked"' : '') . ' />' .
-			__('Disable saving of IP Address. Will only save cookies to track user votes.', 'i-recommend-this') . '</label>';
+		echo '<input type="hidden" name="dot_irecommendthis_settings[enable_unique_ip]" value="0" />
+		<label><input type="checkbox" name="dot_irecommendthis_settings[enable_unique_ip]" value="1"' . (($options['enable_unique_ip']) ? ' checked="checked"' : '') . ' />' .
+			__('Enable saving of IP Address. Will save IP & cookies to track user votes.', 'i-recommend-this') . '</label>';
 	}
 
 	public function setting_disable_css()
