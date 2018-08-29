@@ -18,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // do nothing if class is already defined
-if( class_exists( 'DOT_IRecommendThis' ) ) {
+if( class_exists( 'Themeist_IRecommendThis' ) ) {
 	return;
 }
 
@@ -33,7 +33,7 @@ require_once dirname( __FILE__ ) . '/includes/functions.php';
 
 // create instance of plugin class
 global $themeist_i_recommend_this;
-$themeist_i_recommend_this = new DOT_IRecommendThis( __FILE__ );
+$themeist_i_recommend_this = new Themeist_IRecommendThis( __FILE__ );
 $themeist_i_recommend_this->add_hooks();
 
 // create instance of plugin class

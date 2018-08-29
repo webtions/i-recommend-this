@@ -1,6 +1,6 @@
 <?php
 
-class DOT_IRecommendThis {
+class Themeist_IRecommendThis {
 
 	protected $plugin_slug;
 
