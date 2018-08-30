@@ -175,16 +175,6 @@ class Themeist_IRecommendThis_Admin {
 			<div class="metabox-holder has-right-sidebar">
 				<!-- SIDEBAR -->
 				<div class="inner-sidebar">
-<?php
-
-
-//$plugin = plugin_basename(__FILE__);
-//echo $this->plugin_file;
-//echo plugin_dir_path( $this->plugin_file );
-//echo plugin_dir_path( dirname($this->plugin_file) );
-echo plugin_basename($this->plugin_file);
-//echo plugin_basename(dirname(__FILE__));
-?>
 					<!--<div class="postbox">
 						<h3><span>Metabox 1</span></h3>
 						<div class="inside">
@@ -207,7 +197,6 @@ echo plugin_basename($this->plugin_file);
 			</div> <!-- //metabox-holder -->
 		</div>
 		<?php
-
 	}
 
 	public function section_intro() {
