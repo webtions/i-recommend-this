@@ -165,25 +165,15 @@ class Themeist_IRecommendThis_Public {
 				$recommended = get_post_meta($post_id, '_recommended', true);
 
 				$options = get_option('dot_irecommendthis_settings');
-				if (!isset($options['disable_unique_ip'])) $options['disable_unique_ip'] = '0';
+				if (!isset($options['enable_unique_ip'])) $options['enable_unique_ip'] = '0';
 
 				/*
 
 				Check if Unique IP saving is required or disabled
 
 				*/
-				if ($options['disable_unique_ip'] != 0) {
+				if ($options['enable_unique_ip'] != 0) {
 
-					if (isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
-						return $recommended;
-					}
-
-					$recommended++;
-					update_post_meta($post_id, '_recommended', $recommended);
-					setcookie('dot_irecommendthis_' . $post_id, time(), time() + 3600 * 24 * 365, '/');
-
-
-				} else {
 					$ip = $_SERVER['REMOTE_ADDR'];
 					$sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
 					$voteStatusByIp = $wpdb->get_var($sql);
@@ -197,6 +187,16 @@ class Themeist_IRecommendThis_Public {
 					setcookie('dot_irecommendthis_' . $post_id, time(), time() + 3600 * 24 * 365, '/');
 					$sql = $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "irecommendthis_votes VALUES ('', NOW(), %d, %s )", $post_id, $ip);
 					$wpdb->query($sql);
+
+				} else {
+
+					if (isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
+						return $recommended;
+					}
+
+					$recommended++;
+					update_post_meta($post_id, '_recommended', $recommended);
+					setcookie('dot_irecommendthis_' . $post_id, time(), time() + 3600 * 24 * 365, '/');
 
 				}
 
@@ -247,7 +247,7 @@ class Themeist_IRecommendThis_Public {
 		if (!isset($options['text_more_suffix'])) $options['text_more_suffix'] = '';
 		if (!isset($options['link_title_new'])) $options['link_title_new'] = '';
 		if (!isset($options['link_title_active'])) $options['link_title_active'] = '';
-		if (!isset($options['disable_unique_ip'])) $options['disable_unique_ip'] = '0'; //Check if Unique IP saving is required or disabled
+		if (!isset($options['enable_unique_ip'])) $options['enable_unique_ip'] = '0'; //Check if Unique IP saving is required or disabled
 
 
 		$output = $this->dot_recommend_this($post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix']);
@@ -255,9 +255,13 @@ class Themeist_IRecommendThis_Public {
 
 		//if ( isset($_COOKIE['dot_irecommendthis_'. $post_id]) && $voteStatusByIp != 0 ) {
 
-		if ($options['disable_unique_ip'] != '0') {
+		if ($options['enable_unique_ip'] != '0') {
 
-			if (!isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
+			$sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
+			$voteStatusByIp = $wpdb->get_var($sql);
+
+
+			if (!isset($_COOKIE['dot_irecommendthis_' . $post_id]) && $voteStatusByIp == 0) {
 				$class = 'dot-irecommendthis';
 
 
@@ -286,13 +290,10 @@ class Themeist_IRecommendThis_Public {
 				}
 			}
 
+
 		} else {
 
-			$sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
-			$voteStatusByIp = $wpdb->get_var($sql);
-
-
-			if (!isset($_COOKIE['dot_irecommendthis_' . $post_id]) && $voteStatusByIp == 0) {
+			if (!isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
 				$class = 'dot-irecommendthis';
 
 
