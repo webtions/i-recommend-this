@@ -170,31 +170,13 @@ class Themeist_IRecommendThis_Admin {
 
 	public function dot_settings_page() {
 		?>
-		<div class="wrap">
-			<h2>I Recommend This: Settings</h2>
-			<div class="metabox-holder has-right-sidebar">
-				<!-- SIDEBAR -->
-				<div class="inner-sidebar">
-					<!--<div class="postbox">
-						<h3><span>Metabox 1</span></h3>
-						<div class="inside">
-							<p>Hi, I'm metabox 1!</p>
-						</div>
-					</div>-->
-				</div> <!-- //inner-sidebar -->
-
-				<!-- MAIN CONTENT -->
-				<div id="post-body">
-					<div id="post-body-content">
-						<form action="options.php" method="post">
-							<?php settings_fields('dot-irecommendthis'); ?>
-							<?php do_settings_sections('dot-irecommendthis'); ?>
-							<p class="submit"><input type="submit" class="button-primary"
-													 value="<?php _e('Save Changes', 'i-recommend-this'); ?>"/></p>
-						</form>
-					</div>
-				</div> <!-- //main content -->
-			</div> <!-- //metabox-holder -->
+		<div id="irecommendthis-settings" class="wrap irecommendthis-settings">
+			<h1>I Recommend This: Settings</h1>
+			<form action="options.php" method="post">
+				<?php settings_fields('dot-irecommendthis'); ?>
+				<?php do_settings_sections('dot-irecommendthis'); ?>
+				<p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes', 'i-recommend-this'); ?>"/></p>
+			</form>
 		</div>
 		<?php
 	}
