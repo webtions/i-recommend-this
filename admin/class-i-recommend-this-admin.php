@@ -219,7 +219,7 @@ class Themeist_IRecommendThis_Admin {
 
 		echo '<input type="hidden" name="dot_irecommendthis_settings[enable_unique_ip]" value="0" />
 		<label><input type="checkbox" name="dot_irecommendthis_settings[enable_unique_ip]" value="1"' . (($options['enable_unique_ip']) ? ' checked="checked"' : '') . ' />' .
-			__('Enable saving of IP Address. Will save IP & cookies to track user votes.', 'i-recommend-this') . '</label>';
+			__('Enable saving of IP Address (will affect GDPR). Cookies are saved by default but enabling this option will save IP & cookies to track user votes and a user be blocked from saving same post multiple times.', 'i-recommend-this') . '</label>';
 	}
 
 	public function setting_disable_css()
