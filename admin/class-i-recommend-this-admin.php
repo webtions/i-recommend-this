@@ -307,9 +307,43 @@ class Themeist_IRecommendThis_Admin {
 		' . __('Heart', 'i-recommend-this') . '</label><br />';
 	}
 
-	public function settings_validate($input)
-	{
-		return $input;
+	public function settings_validate($input) {
+		$new_input = array();
+
+		if( isset( $input['add_to_posts'] ) )
+			$new_input['add_to_posts'] = absint( $input['add_to_posts'] );
+
+		if( isset( $input['add_to_other'] ) )
+			$new_input['add_to_other'] = absint( $input['add_to_other'] );
+
+		if( isset( $input['text_zero_suffix'] ) )
+			$new_input['text_zero_suffix'] = sanitize_text_field( $input['text_zero_suffix'] );
+
+		if( isset( $input['text_one_suffix'] ) )
+			$new_input['text_one_suffix'] = sanitize_text_field( $input['text_one_suffix'] );
+
+		if( isset( $input['text_more_suffix'] ) )
+			$new_input['text_more_suffix'] = sanitize_text_field( $input['text_more_suffix'] );
+
+		if( isset( $input['link_title_new'] ) )
+			$new_input['link_title_new'] = sanitize_text_field( $input['link_title_new'] );
+
+		if( isset( $input['link_title_active'] ) )
+			$new_input['link_title_active'] = sanitize_text_field( $input['link_title_active'] );
+
+		if( isset( $input['disable_css'] ) )
+			$new_input['disable_css'] = absint( $input['disable_css'] );
+
+		if( isset( $input['hide_zero'] ) )
+			$new_input['hide_zero'] = absint( $input['hide_zero'] );
+
+		if( isset( $input['enable_unique_ip'] ) )
+			$new_input['enable_unique_ip'] = absint( $input['enable_unique_ip'] );
+
+		if( isset( $input['recommend_style'] ) )
+			$new_input['recommend_style'] = absint( $input['recommend_style'] );
+
+		return $new_input;
 	}
 
 	/*--------------------------------------------*
