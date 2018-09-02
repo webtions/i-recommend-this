@@ -17,7 +17,7 @@ class Themeist_IRecommendThis {
 		if ( defined( 'THEMEIST_IRT_VERSION' ) ) {
 			$this->version = THEMEIST_IRT_VERSION;
 		} else {
-			$this->version = '3.7.8';
+			$this->version = '3.8.0';
 		}
 
 		if ( defined( 'THEMEIST_IRT_DB_VERSION' ) ) {
