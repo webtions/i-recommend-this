@@ -332,7 +332,7 @@ class Themeist_IRecommendThis_Admin {
 	* Add Likes Column In Post Manage Page
 	*--------------------------------------------*/
 
-	function dot_columns_head($defaults)
+/*	function dot_columns_head($defaults)
 	{
 		$defaults['likes'] = __('Likes', 'i-recommend-this');
 		return $defaults;
@@ -360,6 +360,6 @@ class Themeist_IRecommendThis_Admin {
 		}
 
 		return $vars;
-	}
+	}*/
 
 }

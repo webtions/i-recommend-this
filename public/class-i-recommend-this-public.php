@@ -409,18 +409,13 @@ class Themeist_IRecommendThis_Public {
 
 	}    //dot_recommended_top_posts
 
-
-
-
 	/*--------------------------------------------*
 	 * Widget
 	 *--------------------------------------------*/
 
-	function add_widget_most_recommended_posts()
-	{
+	function add_widget_most_recommended_posts() {
 
-		function most_recommended_posts($numberOf, $before, $after, $show_count, $post_type = "post", $raw = false)
-		{
+		function most_recommended_posts($numberOf, $before, $after, $show_count, $post_type = "post", $raw = false) {
 			global $wpdb;
 
 			$request = "SELECT * FROM $wpdb->posts, $wpdb->postmeta";
@@ -443,8 +438,7 @@ class Themeist_IRecommendThis_Public {
 			endif;
 		}
 
-		function widget_most_recommended_posts($args)
-		{
+		function widget_most_recommended_posts($args) {
 			extract($args);
 			$options = get_option("most_recommended_posts");
 			if (!is_array($options)) {
@@ -470,8 +464,7 @@ class Themeist_IRecommendThis_Public {
 
 		wp_register_sidebar_widget('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'widget_most_recommended_posts');
 
-		function options_widget_most_recommended_posts()
-		{
+		function options_widget_most_recommended_posts() {
 			$options = get_option("most_recommended_posts");
 
 			if (!is_array($options)) {
