@@ -11,7 +11,8 @@ class Themeist_IRecommendThis_Public {
 
 	public function add_public_hooks() {
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
-		add_action('init', array($this, 'add_widget_most_recommended_posts'));
+		//add_action('init', array($this, 'widget_most_recommended_posts'));
+		add_action('widgets_init', array($this, 'widget_most_recommended_posts'));
 		add_action('wp_ajax_dot-irecommendthis', array($this, 'ajax_callback'));
 		add_action('wp_ajax_nopriv_dot-irecommendthis', array($this, 'ajax_callback'));
 		add_filter('the_content', array($this, 'dot_content'));
@@ -413,7 +414,7 @@ class Themeist_IRecommendThis_Public {
 	 * Widget
 	 *--------------------------------------------*/
 
-	function add_widget_most_recommended_posts() {
+	function add_widget_most_recommended_posts_old() {
 
 		function most_recommended_posts($numberOf, $before, $after, $show_count, $post_type = "post", $raw = false) {
 			global $wpdb;
@@ -464,6 +465,8 @@ class Themeist_IRecommendThis_Public {
 
 		wp_register_sidebar_widget('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'widget_most_recommended_posts');
 
+
+		/* Form */
 		function options_widget_most_recommended_posts() {
 			$options = get_option("most_recommended_posts");
 
@@ -473,18 +476,6 @@ class Themeist_IRecommendThis_Public {
 					'number' => __('5', 'dot'),
 					'show_count' => '0'
 				);
-			}
-
-
-			if (isset($_POST['mrp-submit'])) {
-				$options['title'] = htmlspecialchars($_POST['mrp-title']);
-				$options['number'] = htmlspecialchars($_POST['mrp-number']);
-				$options['show_count'] = $_POST['mrp-show-count'];
-				if ($options['number'] > 15) {
-					$options['number'] = 15;
-				}
-
-				update_option("most_recommended_posts", $options);
 			}
 			?>
 			<p><label for="mrp-title"><?php _e('Title:', 'i-recommend-this'); ?><br/>
@@ -503,10 +494,29 @@ class Themeist_IRecommendThis_Public {
 
 			<input type="hidden" id="mrp-submit" name="mrp-submit" value="1"/>
 			<?php
+
+			if (isset($_POST['mrp-submit'])) {
+				$options['title'] = htmlspecialchars($_POST['mrp-title']);
+				$options['number'] = htmlspecialchars($_POST['mrp-number']);
+				$options['show_count'] = $_POST['mrp-show-count'];
+				if ($options['number'] > 15) {
+					$options['number'] = 15;
+				}
+
+				update_option("most_recommended_posts", $options);
+			}
 		}
 
 		wp_register_widget_control('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'options_widget_most_recommended_posts');
+
 	}
 
+	function widget_most_recommended_posts() {
+
+		require_once dirname( $this->plugin_file ) . '/public/class-widget-most-recommended-posts.php';
+
+		register_widget( 'Themeist_Most_Recommend_Posts_Widget' );
+
+	}
 
 }
