@@ -12,7 +12,7 @@ class Themeist_IRecommendThis_Public {
 	public function add_public_hooks() {
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
 		//add_action('init', array($this, 'widget_most_recommended_posts'));
-		add_action('widgets_init', array($this, 'widget_most_recommended_posts'));
+		//add_action('widgets_init', array($this, 'widget_most_recommended_posts'));
 		add_action('wp_ajax_dot-irecommendthis', array($this, 'ajax_callback'));
 		add_action('wp_ajax_nopriv_dot-irecommendthis', array($this, 'ajax_callback'));
 		add_filter('the_content', array($this, 'dot_content'));
@@ -508,14 +508,6 @@ class Themeist_IRecommendThis_Public {
 		}
 
 		wp_register_widget_control('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'options_widget_most_recommended_posts');
-
-	}
-
-	function widget_most_recommended_posts() {
-
-		require_once dirname( $this->plugin_file ) . '/public/class-widget-most-recommended-posts.php';
-
-		register_widget( 'Themeist_Most_Recommend_Posts_Widget' );
 
 	}
 

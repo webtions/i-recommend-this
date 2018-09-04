@@ -29,6 +29,7 @@ define( 'THEMEIST_IRT_DB_VERSION', '2.6.2' );
 require_once dirname( __FILE__ ) . '/includes/class-i-recommend-this.php';
 require_once dirname( __FILE__ ) . '/admin/class-i-recommend-this-admin.php';
 require_once dirname( __FILE__ ) . '/public/class-i-recommend-this-public.php';
+require_once dirname( __FILE__ ) . '/public/class-widget-most-recommended-posts.php';
 require_once dirname( __FILE__ ) . '/includes/functions.php';
 
 // create instance of plugin class

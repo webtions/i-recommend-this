@@ -30,7 +30,7 @@ function tutsplus_check_for_page_tree() {
 }
 ?>
 <?php
-class Themeist_Most_Recommend_Posts_Widget extends WP_Widget {
+class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 
 	function __construct(  ) {
 
@@ -126,4 +126,14 @@ class Themeist_Most_Recommend_Posts_Widget extends WP_Widget {
 	}
 
 }
+
+function widget_most_recommended_posts() {
+
+	
+
+	register_widget( 'Themeist_Most_Recommended_Posts_Widget' );
+
+}
+add_action('widgets_init', 'widget_most_recommended_posts');
 ?>
+
