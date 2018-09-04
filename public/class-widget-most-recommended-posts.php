@@ -1,139 +1,96 @@
 <?php
-/*******************************************************************************
-function tutsplus_check_for_page_tree() - checks if the current page is in a page tree.
-*******************************************************************************/
-?>
-<?php
-function tutsplus_check_for_page_tree() {
-
-	//start by checking if we're on a page
-	if( is_page() ) {
-
-		global $post;
-
-		// next check if the page has parents
-		if ( $post->post_parent ){
-
-			// fetch the list of ancestors
-			$parents = array_reverse( get_post_ancestors( $post->ID ) );
-
-			// get the top level ancestor
-			return $parents[0];
-
-		}
-
-		// return the id  - this will be the topmost ancestor if there is one, or the current page if not
-		return $post->ID;
-
-	}
-
-}
-?>
-<?php
 class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 
-	function __construct(  ) {
-
+	// Main constructor
+	public function __construct() {
 		parent::__construct(
-
-			// base ID of the widget
-			'tutsplus_list_pages_widget',
-
-			// name of the widget
-			__('List Related Pages', 'tutsplus' ),
-
-			// widget options
-			array (
-				'description' => __( 'Identifies where the current page is in the site structure and displays a list of pages in the same section of the site. Only works on Pages.', 'tutsplus' )
+			'my_custom_widget',
+			__( 'My Custom Widget', 'i-recommend-this' ),
+			array(
+				'customize_selective_refresh' => true,
 			)
-
 		);
-
 	}
-
-	function form( $instance ) {
-
+	// The widget form (for the backend )
+	public function form( $instance ) {
+		// Set widget defaults
 		$defaults = array(
-			'depth' => '-1'
+			'title'    => '',
+			'text'     => '',
+			'checkbox' => '',
 		);
-		$depth = $instance[ 'depth' ];
+		
+		// Parse current settings with defaults
+		extract( wp_parse_args( ( array ) $instance, $defaults ) ); ?>
 
-		// markup for form ?>
+		<?php // Widget Title ?>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'depth' ); ?>">Depth of list:</label>
-			<input class="widefat" type="text" id="<?php echo $this->get_field_id( 'depth' ); ?>" name="<?php echo $this->get_field_name( 'depth' ); ?>" value="<?php echo esc_attr( $depth ); ?>">
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Widget Title', 'i-recommend-this' ); ?></label>
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
 		</p>
 
-	<?php
-	}
+		<?php // Text Field ?>
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'text' ) ); ?>"><?php _e( 'Text:', 'i-recommend-this' ); ?></label>
+			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'text' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'text' ) ); ?>" type="text" value="<?php echo esc_attr( $text ); ?>" />
+		</p>
 
-	function update( $new_instance, $old_instance ) {
+		<?php // Checkbox ?>
+		<p>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'checkbox' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'checkbox' ) ); ?>" type="checkbox" value="1" <?php checked( '1', $checkbox ); ?> />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'checkbox' ) ); ?>"><?php _e( 'Checkbox', 'i-recommend-this' ); ?></label>
+		</p>
 
+	<?php }
+	// Update widget settings
+	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
-		$instance[ 'depth' ] = strip_tags( $new_instance[ 'depth' ] );
+		$instance['title']    = isset( $new_instance['title'] ) ? wp_strip_all_tags( $new_instance['title'] ) : '';
+		$instance['text']     = isset( $new_instance['text'] ) ? wp_strip_all_tags( $new_instance['text'] ) : '';
+		$instance['checkbox'] = isset( $new_instance['checkbox'] ) ? 1 : false;
 		return $instance;
-
 	}
-
-	function widget( $args, $instance ) {
-
-		// kick things off
+	// Display the widget
+	public function widget( $args, $instance ) {
 		extract( $args );
+		// Check the widget options
+		$title    = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
+		$text     = isset( $instance['text'] ) ? $instance['text'] : '';
+		$textarea = isset( $instance['textarea'] ) ?$instance['textarea'] : '';
+		$select   = isset( $instance['select'] ) ? $instance['select'] : '';
+		$checkbox = ! empty( $instance['checkbox'] ) ? $instance['checkbox'] : false;
+		// WordPress core before_widget hook (always include )
 		echo $before_widget;
-		echo $before_title . 'In this section:' . $after_title;
-
-		// run a query if on a page
-		if ( is_page() ) {
-
-			// run the tutsplus_check_for_page_tree function to fetch top level page
-			$ancestor = tutsplus_check_for_page_tree();
-
-			// set the arguments for children of the ancestor page
-			$args = array(
-				'child_of' => $ancestor,
-				'depth' => $instance[ 'depth' ],
-				'title_li' => '',
-			);
-
-			// set a value for get_pages to check if it's empty
-			$list_pages = get_pages( $args );
-
-			// check if $list_pages has values
-			if( $list_pages ) {
-
-				// open a list with the ancestor page at the top
-				?>
-				<ul class="page-tree">
-					<?php // list ancestor page ?>
-					<li class="ancestor">
-						<a href="<?php echo get_permalink( $ancestor ); ?>"><?php echo get_the_title( $ancestor ); ?></a>
-					</li>
-
-					<?php
-					// use wp_list_pages to list subpages of ancestor or current page
-					wp_list_pages( $args );;
-
-
-				// close the page-tree list
-				?>
-				</ul>
-
-			<?php
+		// Display the widget
+		echo '<div class="widget-text wp_widget_plugin_box">';
+			// Display widget title if defined
+			if ( $title ) {
+				echo $before_title . $title . $after_title;
 			}
-		}
-
-
+			// Display text field
+			if ( $text ) {
+				echo '<p>' . $text . '</p>';
+			}
+			// Display textarea field
+			if ( $textarea ) {
+				echo '<p>' . $textarea . '</p>';
+			}
+			// Display select field
+			if ( $select ) {
+				echo '<p>' . $select . '</p>';
+			}
+			// Display something if checkbox is true
+			if ( $checkbox ) {
+				echo '<p>Something awesome</p>';
+			}
+		echo '</div>';
+		// WordPress core after_widget hook (always include )
+		echo $after_widget;
 	}
-
 }
 
+// Register the widget
 function widget_most_recommended_posts() {
-
-	
-
 	register_widget( 'Themeist_Most_Recommended_Posts_Widget' );
-
 }
-add_action('widgets_init', 'widget_most_recommended_posts');
-?>
-
+add_action( 'widgets_init', 'widget_most_recommended_posts' );

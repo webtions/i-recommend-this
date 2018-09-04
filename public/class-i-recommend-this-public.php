@@ -11,7 +11,7 @@ class Themeist_IRecommendThis_Public {
 
 	public function add_public_hooks() {
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
-		//add_action('init', array($this, 'widget_most_recommended_posts'));
+		add_action('init', array($this, 'add_widget_most_recommended_posts_old'));
 		//add_action('widgets_init', array($this, 'widget_most_recommended_posts'));
 		add_action('wp_ajax_dot-irecommendthis', array($this, 'ajax_callback'));
 		add_action('wp_ajax_nopriv_dot-irecommendthis', array($this, 'ajax_callback'));
@@ -439,7 +439,7 @@ class Themeist_IRecommendThis_Public {
 			endif;
 		}
 
-		function widget_most_recommended_posts($args) {
+		function widget_most_recommended_posts_old($args) {
 			extract($args);
 			$options = get_option("most_recommended_posts");
 			if (!is_array($options)) {
@@ -463,7 +463,7 @@ class Themeist_IRecommendThis_Public {
 			echo $after_widget;
 		}
 
-		wp_register_sidebar_widget('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'widget_most_recommended_posts');
+		wp_register_sidebar_widget('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'widget_most_recommended_posts_old');
 
 
 		/* Form */
