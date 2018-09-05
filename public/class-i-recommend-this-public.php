@@ -11,8 +11,6 @@ class Themeist_IRecommendThis_Public {
 
 	public function add_public_hooks() {
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
-		add_action('init', array($this, 'add_widget_most_recommended_posts_old'));
-		//add_action('widgets_init', array($this, 'widget_most_recommended_posts'));
 		add_action('wp_ajax_dot-irecommendthis', array($this, 'ajax_callback'));
 		add_action('wp_ajax_nopriv_dot-irecommendthis', array($this, 'ajax_callback'));
 		add_filter('the_content', array($this, 'dot_content'));
@@ -217,7 +215,6 @@ class Themeist_IRecommendThis_Public {
 				return $dot_irt_html;
 
 				break;
-
 		}
 	}    //dot_recommend_this
 
@@ -225,19 +222,13 @@ class Themeist_IRecommendThis_Public {
 	/*--------------------------------------------*
 	 * Shortcode
 	 *--------------------------------------------*/
-
-	function shortcode($atts)
-	{
+	function shortcode($atts) {
 		extract(shortcode_atts(array('id' => null), $atts));
 		return $this->dot_recommend($id);
 
 	}    //shortcode
 
-
-	function dot_recommend($id = null)
-	{
-
-
+	function dot_recommend($id = null) {
 		global $wpdb, $post;
 		$ip = $_SERVER['REMOTE_ADDR'];
 		$post_id = $id ? $id : get_the_ID();
@@ -250,30 +241,21 @@ class Themeist_IRecommendThis_Public {
 		if (!isset($options['link_title_active'])) $options['link_title_active'] = '';
 		if (!isset($options['enable_unique_ip'])) $options['enable_unique_ip'] = '0'; //Check if Unique IP saving is required or disabled
 
-
 		$output = $this->dot_recommend_this($post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix']);
 
-
 		//if ( isset($_COOKIE['dot_irecommendthis_'. $post_id]) && $voteStatusByIp != 0 ) {
-
 		if ($options['enable_unique_ip'] != '0') {
 
 			$sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
 			$voteStatusByIp = $wpdb->get_var($sql);
 
-
 			if (!isset($_COOKIE['dot_irecommendthis_' . $post_id]) && $voteStatusByIp == 0) {
 				$class = 'dot-irecommendthis';
 
-
 				if ($options['link_title_new'] == '') {
-
 					$title = __('Recommend this', 'i-recommend-this');
-
 				} else {
-
 					$title = $options['link_title_new'];
-
 				}
 
 			} else {
@@ -281,16 +263,11 @@ class Themeist_IRecommendThis_Public {
 				$class = 'dot-irecommendthis active';
 
 				if ($options['link_title_active'] == '') {
-
 					$title = __('You already recommended this', 'i-recommend-this');
-
 				} else {
-
 					$title = $options['link_title_active'];
-
 				}
 			}
-
 
 		} else {
 
@@ -322,7 +299,6 @@ class Themeist_IRecommendThis_Public {
 
 				}
 			}
-
 		}
 
 		$dot_irt_html = '<a href="#" class="' . $class . '" id="dot-irecommendthis-' . $post_id . '" title="' . $title . '">';
@@ -335,12 +311,9 @@ class Themeist_IRecommendThis_Public {
 		//return '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post_ID .'" title="'. $title .'"><i class="icon-heart"></i> '. $output .'</a>';
 	}
 
-
-
 	/*--------------------------------------------*
 	 * Shortcode //dot_recommended_top_posts
 	 *--------------------------------------------*/
-
 	function dot_recommended_top_posts($atts, $content = null)
 	{
 
@@ -407,108 +380,5 @@ class Themeist_IRecommendThis_Public {
 
 		}
 		return $return;
-
 	}    //dot_recommended_top_posts
-
-	/*--------------------------------------------*
-	 * Widget
-	 *--------------------------------------------*/
-
-	function add_widget_most_recommended_posts_old() {
-
-		function most_recommended_posts($numberOf, $before, $after, $show_count, $post_type = "post", $raw = false) {
-			global $wpdb;
-
-			$request = "SELECT * FROM $wpdb->posts, $wpdb->postmeta";
-			$request .= " WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id";
-			$request .= " AND post_status='publish' AND post_type='$post_type' AND meta_key='_recommended'";
-			$request .= " ORDER BY $wpdb->postmeta.meta_value+0 DESC LIMIT $numberOf";
-			$posts = $wpdb->get_results($request);
-
-			if ($raw):
-				return $posts;
-			else:
-				foreach ($posts as $item) {
-					$post_title = stripslashes($item->post_title);
-					$permalink = get_permalink($item->ID);
-					$post_count = $item->meta_value;
-					echo $before . '<a href="' . $permalink . '" title="' . $post_title . '" rel="nofollow">' . $post_title . '</a>';
-					echo $show_count == '1' ? ' (' . $post_count . ')' : '';
-					echo $after;
-				}
-			endif;
-		}
-
-		function widget_most_recommended_posts_old($args) {
-			extract($args);
-			$options = get_option("most_recommended_posts");
-			if (!is_array($options)) {
-				$options = array(
-					'title' => __('Most recommended posts', 'i-recommend-this'),
-					'number' => __('5', 'i-recommend-this'),
-					'show_count' => '0'
-				);
-			}
-			$title = $options['title'];
-			$numberOf = absint( $options['number'] );
-			$show_count = $options['show_count'];
-
-			echo $before_widget;
-			echo $before_title . $title . $after_title;
-			echo '<ul class="mostrecommendedposts">';
-
-			most_recommended_posts($numberOf, '<li>', '</li>', $show_count);
-
-			echo '</ul>';
-			echo $after_widget;
-		}
-
-		wp_register_sidebar_widget('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'widget_most_recommended_posts_old');
-
-
-		/* Form */
-		function options_widget_most_recommended_posts() {
-			$options = get_option("most_recommended_posts");
-
-			if (!is_array($options)) {
-				$options = array(
-					'title' => __('Most recommended posts', 'i-recommend-this'),
-					'number' => __('5', 'dot'),
-					'show_count' => '0'
-				);
-			}
-			?>
-			<p><label for="mrp-title"><?php _e('Title:', 'i-recommend-this'); ?><br/>
-					<input class="widefat" type="text" id="mrp-title" name="mrp-title"
-						   value="<?php echo $options['title']; ?>"/></label></p>
-
-			<p><label for="mrp-number"><?php _e('Number of posts to show:', 'i-recommend-this'); ?><br/>
-					<input type="text" id="mrp-number" name="mrp-number" style="width: 25px;"
-						   value="<?php echo $options['number']; ?>"/>
-					<small>(max. 15)</small>
-				</label></p>
-
-			<p><label for="mrp-show-count"><input type="checkbox" id="mrp-show-count" name="mrp-show-count"
-												  value="1"<?php if ($options['show_count'] == '1') echo 'checked="checked"'; ?> /> <?php _e('Show post count', 'i-recommend-this'); ?>
-				</label></p>
-
-			<input type="hidden" id="mrp-submit" name="mrp-submit" value="1"/>
-			<?php
-
-			if (isset($_POST['mrp-submit'])) {
-				$options['title'] = htmlspecialchars($_POST['mrp-title']);
-				$options['number'] = htmlspecialchars($_POST['mrp-number']);
-				$options['show_count'] = $_POST['mrp-show-count'];
-				if ($options['number'] > 15) {
-					$options['number'] = 15;
-				}
-
-				update_option("most_recommended_posts", $options);
-			}
-		}
-
-		wp_register_widget_control('most_recommended_posts', __('Most recommended posts', 'i-recommend-this'), 'options_widget_most_recommended_posts');
-
-	}
-
 }
