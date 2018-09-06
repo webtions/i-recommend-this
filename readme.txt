@@ -4,7 +4,7 @@ Donate link: http://themeist.com
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 4.0
 Tested up to: 4.9.8
-Stable tag: 3.8.0
+Stable tag: 3.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,6 +98,11 @@ You can also visit the [support center](http://www.dreamsonline.net/wordpress-pl
 
 
 == Changelog ==
+
+= 3.8.1
+* Added data sanitization
+* Separate & recoded widget
+* Support for multiple widget instance
 
 = 3.8.0
 * Added data sanitization
