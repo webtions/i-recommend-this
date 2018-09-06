@@ -89,11 +89,11 @@ class Themeist_IRecommendThis_Public {
 		if (isset($_POST['recommend_id'])) {
 
 			// Click event. Get and Update Count
-			$post_id = str_replace('dot-irecommendthis-', '', intval( $_POST['recommend_id'] ));
+			$post_id = intval( str_replace('dot-irecommendthis-', '',  $_POST['recommend_id'] ) );
 			echo $this->dot_recommend_this($post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'update');
 		} else {
 			// AJAXing data in. Get Count
-			$post_id = str_replace('dot-irecommendthis-', '', intval( $_POST['post_id'] ));
+			$post_id = intval( str_replace('dot-irecommendthis-', '',  $_POST['post_id'] ) );
 			echo $this->dot_recommend_this($post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'get');
 		}
 
