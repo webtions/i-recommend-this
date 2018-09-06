@@ -52,30 +52,6 @@ class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 		return $instance;
 	}
 
-	// Function to format the posts
-	public function display_recommended_posts($numberOf, $before, $after, $show_count, $post_type = "post", $raw = false) {
-		global $wpdb;
-
-		$request = "SELECT * FROM $wpdb->posts, $wpdb->postmeta";
-		$request .= " WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id";
-		$request .= " AND post_status='publish' AND post_type='$post_type' AND meta_key='_recommended'";
-		$request .= " ORDER BY $wpdb->postmeta.meta_value+0 DESC LIMIT $numberOf";
-		$posts = $wpdb->get_results($request);
-
-		if ($raw):
-			return $posts;
-		else:
-			foreach ($posts as $item) {
-				$post_title = stripslashes($item->post_title);
-				$permalink = get_permalink($item->ID);
-				$post_count = $item->meta_value;
-				echo $before . '<a href="' . $permalink . '" title="' . $post_title . '" rel="nofollow">' . $post_title . '</a>';
-				echo $show_count == '1' ? ' (' . $post_count . ')' : '';
-				echo $after;
-			}
-		endif;
-	}
-
 	// Display the widget
 	public function widget( $args, $instance ) {
 		extract( $args );
