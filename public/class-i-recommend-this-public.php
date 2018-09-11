@@ -225,7 +225,7 @@ class Themeist_IRecommendThis_Public {
 	 *--------------------------------------------*/
 	function shortcode($atts) {
 		extract(shortcode_atts(array('id' => null), $atts));
-		return $this->dot_recommend($id);
+		return $this->dot_recommend(intval($id));
 
 	}    //shortcode
 
