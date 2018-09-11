@@ -318,6 +318,9 @@ class Themeist_IRecommendThis_Public {
 	function dot_recommended_top_posts($atts, $content = null)
 	{
 
+		// normalize attribute keys, lowercase
+    	//$atts = array_change_key_case((array)$atts, CASE_LOWER);
+
 		// define attributes and their defaults
 		// get our variable from $atts
 		$atts = shortcode_atts(array(
