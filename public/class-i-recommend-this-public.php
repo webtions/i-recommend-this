@@ -329,6 +329,13 @@ class Themeist_IRecommendThis_Public {
 			'show_count' => '1',
 		), $atts);
 
+		$atts['container'] = sanitize_text_field( $atts['container'] );
+		$atts['number'] = intval( $atts['number'] );
+		$atts['post_type'] = sanitize_text_field( $atts['post_type'] );
+		$atts['year'] = intval( $atts['year'] );
+		$atts['monthnum'] = intval( $atts['monthnum'] );
+		$atts['show_count'] = intval( $atts['show_count'] );
+
 		global $wpdb;
 
 		// empty params array to hold params for prepared statement
