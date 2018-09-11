@@ -373,12 +373,12 @@ class Themeist_IRecommendThis_Public {
 		$return = '';
 
 		foreach ($posts as $item) {
-			$post_title = stripslashes($item->post_title);
+			$post_title = get_the_title($item->ID);
 			$permalink = get_permalink($item->ID);
 			$post_count = $item->meta_value;
 
 			$return .= '<' . esc_html($atts['container']) . '>';
-			$return .= '<a href="' . esc_url($permalink) . '" title="' . esc_attr($post_title) . '" rel="nofollow">' . esc_html($post_title) . '</a> ';
+			$return .= '<a href="' . esc_url($permalink) . '" title="' . esc_html($post_title) . '" rel="nofollow">' . esc_html($post_title) . '</a> ';
 
 			if ($atts['show_count'] == '1') {
 				$return .= '<span class="votes">' . esc_html($post_count) . '</span> ';
