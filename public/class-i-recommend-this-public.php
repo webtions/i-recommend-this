@@ -319,7 +319,7 @@ class Themeist_IRecommendThis_Public {
 	{
 
 		// normalize attribute keys, lowercase
-    	//$atts = array_change_key_case((array)$atts, CASE_LOWER);
+    	$atts = array_change_key_case((array)$atts, CASE_LOWER);
 
 		// define attributes and their defaults
 		// get our variable from $atts
@@ -378,7 +378,7 @@ class Themeist_IRecommendThis_Public {
 		foreach ($posts as $item) {
 			$post_title = get_the_title($item->ID);
 			$permalink = get_permalink($item->ID);
-			$post_count = $item->meta_value;
+			$post_count = intval($item->meta_value);
 
 			$return .= '<' . esc_html($atts['container']) . '>';
 			$return .= '<a href="' . esc_url($permalink) . '" title="' . esc_html($post_title) . '" rel="nofollow">' . esc_html($post_title) . '</a> ';
