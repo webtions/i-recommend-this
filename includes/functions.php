@@ -8,7 +8,7 @@
 
 function dot_irecommendthis($id = null)
 {
-	global $dot_irecommendthis;
-	echo $dot_irecommendthis->dot_recommend($id);
+	global $themeist_i_recommend_this_public;
+	echo $themeist_i_recommend_this_public->dot_recommend($id);
 
 }
