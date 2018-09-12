@@ -3,7 +3,7 @@
  * Plugin Name:       I Recommend This
  * Plugin URI:        https://themeist.com/plugins/wordpress/i-recommend-this/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page
  * Description:       This plugin allows your visitors to simply recommend or like your posts instead of commment it.
- * Version:           3.8.2
+ * Version:           3.8.3
  * Author:            Harish Chouhan, Themeist
  * Author URI:        https://themeist.com/
  * Author Email:      support@themeist.com
@@ -22,7 +22,7 @@ if( class_exists( 'Themeist_IRecommendThis' ) ) {
 	return;
 }
 
-define( 'THEMEIST_IRT_VERSION', '3.8.2' );
+define( 'THEMEIST_IRT_VERSION', '3.8.3' );
 define( 'THEMEIST_IRT_DB_VERSION', '2.6.2' );
 
 // require includes
