@@ -119,19 +119,19 @@ class Themeist_IRecommendThis_Public {
 		switch ($action) {
 
 			case 'get':
-				$recommended = get_post_meta($post_id, '_recommended', true);
-				if (!$recommended) {
-					$recommended = 0;
-					add_post_meta($post_id, '_recommended', $recommended, true);
-				}
+			$recommended = get_post_meta($post_id, '_recommended', true);
+			if (!$recommended) {
+				$recommended = 0;
+				add_post_meta($post_id, '_recommended', $recommended, true);
+			}
 
-				if ($recommended == 0) {
-					$suffix = $text_zero_suffix;
-				} elseif ($recommended == 1) {
-					$suffix = $text_one_suffix;
-				} else {
-					$suffix = $text_more_suffix;
-				}
+			if ($recommended == 0) {
+				$suffix = $text_zero_suffix;
+			} elseif ($recommended == 1) {
+				$suffix = $text_one_suffix;
+			} else {
+				$suffix = $text_more_suffix;
+			}
 
 
 				/*
@@ -160,7 +160,7 @@ class Themeist_IRecommendThis_Public {
 				break;
 
 
-			case 'update':
+				case 'update':
 
 				$recommended = get_post_meta($post_id, '_recommended', true);
 
@@ -174,31 +174,37 @@ class Themeist_IRecommendThis_Public {
 				*/
 				if ($options['enable_unique_ip'] != 0) {
 
-					$ip = $_SERVER['REMOTE_ADDR'];
-					$sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
-					$voteStatusByIp = $wpdb->get_var($sql);
+					$ip = $_SERVER['REMOTE_ADDR']; 
 
-					if (isset($_COOKIE['dot_irecommendthis_' . $post_id]) || $voteStatusByIp != 0) {
-						return $recommended;
+					if($_POST['unrecommend'] == 'true') {
+						$sql = $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
+						$wpdb->query($sql);
+					} else {
+						$sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
+						$voteStatusByIp = $wpdb->get_var($sql);
+						$sql = $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "irecommendthis_votes VALUES ('', NOW(), %d, %s )", $post_id, $ip);
+						$wpdb->query($sql);
 					}
+					
+				} 
 
-					$recommended++;
-					update_post_meta($post_id, '_recommended', $recommended);
+				if (isset($_COOKIE['dot_irecommendthis_' . $post_id]) && $_POST['unrecommend'] == 'false') {
+					return $recommended;
+				}
+
+				if($_POST['unrecommend'] == 'true' ) {
+					setcookie('dot_irecommendthis_' . $post_id, null, -1, '/');
+					$recommended--;
+				}
+				else {
 					setcookie('dot_irecommendthis_' . $post_id, time(), time() + 3600 * 24 * 365, '/');
-					$sql = $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "irecommendthis_votes VALUES ('', NOW(), %d, %s )", $post_id, $ip);
-					$wpdb->query($sql);
-
-				} else {
-
-					if (isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
-						return $recommended;
-					}
-
 					$recommended++;
-					update_post_meta($post_id, '_recommended', $recommended);
-					setcookie('dot_irecommendthis_' . $post_id, time(), time() + 3600 * 24 * 365, '/');
 
 				}
+				update_post_meta($post_id, '_recommended', $recommended);
+
+
+				
 
 
 				if ($recommended == 0) {
@@ -216,7 +222,7 @@ class Themeist_IRecommendThis_Public {
 				return $dot_irt_html;
 
 				break;
-		}
+			}
 	}    //dot_recommend_this
 
 
@@ -319,7 +325,7 @@ class Themeist_IRecommendThis_Public {
 	{
 
 		// normalize attribute keys, lowercase
-    	$atts = array_change_key_case((array)$atts, CASE_LOWER);
+		$atts = array_change_key_case((array)$atts, CASE_LOWER);
 
 		// define attributes and their defaults
 		// get our variable from $atts
