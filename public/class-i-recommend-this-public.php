@@ -193,7 +193,11 @@ class Themeist_IRecommendThis_Public {
 				}
 
 				if($_POST['unrecommend'] == 'true' ) {
-					setcookie('dot_irecommendthis_' . $post_id, null, -1, '/');
+					if (isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
+					    // Set the cookie to expire in the past to delete it
+					    setcookie('dot_irecommendthis_' . $post_id, '', time() - 3600, '/');
+					}
+
 					$recommended--;
 				}
 				else {
