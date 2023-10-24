@@ -41,7 +41,11 @@ class Themeist_IRecommendThis_Public {
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('dot-irecommendthis');
 
-		wp_localize_script('dot-irecommendthis', 'dot_irecommendthis', array('ajaxurl' => admin_url('admin-ajax.php')));
+		$nonce = wp_create_nonce('dot-irecommendthis-nonce');
+		wp_localize_script('dot-irecommendthis', 'dot_irecommendthis', array(
+			'nonce' => $nonce,
+			'ajaxurl' => admin_url('admin-ajax.php')
+		));
 
 	}    //dot_enqueue_scripts
 
@@ -77,30 +81,32 @@ class Themeist_IRecommendThis_Public {
 	 * AJAX Callback
 	 *--------------------------------------------*/
 
-	function ajax_callback($post_id)
-	{
-		$options = get_option('dot_irecommendthis_settings');
-		if (!isset($options['add_to_posts'])) $options['add_to_posts'] = '1';
-		if (!isset($options['add_to_other'])) $options['add_to_other'] = '1';
-		if (!isset($options['text_zero_suffix'])) $options['text_zero_suffix'] = '';
-		if (!isset($options['text_one_suffix'])) $options['text_one_suffix'] = '';
-		if (!isset($options['text_more_suffix'])) $options['text_more_suffix'] = '';
+	function ajax_callback($post_id) {
+		// Verify the nonce
+		if (isset($_POST['security']) || wp_verify_nonce($_POST['security'], 'dot-irecommendthis-nonce')) {
+			$options = get_option('dot_irecommendthis_settings');
+			if (!isset($options['add_to_posts'])) $options['add_to_posts'] = '1';
+			if (!isset($options['add_to_other'])) $options['add_to_other'] = '1';
+			if (!isset($options['text_zero_suffix'])) $options['text_zero_suffix'] = '';
+			if (!isset($options['text_one_suffix'])) $options['text_one_suffix'] = '';
+			if (!isset($options['text_more_suffix'])) $options['text_more_suffix'] = '';
 
-		if (isset($_POST['recommend_id'])) {
-
-			// Click event. Get and Update Count
-			$post_id = intval( str_replace('dot-irecommendthis-', '',  $_POST['recommend_id'] ) );
-			echo $this->dot_recommend_this($post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'update');
+			if (isset($_POST['recommend_id'])) {
+				// Click event. Get and Update Count
+				$post_id = intval(str_replace('dot-irecommendthis-', '', $_POST['recommend_id']));
+				echo $this->dot_recommend_this($post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'update');
+			} else {
+				// AJAXing data in. Get Count
+				$post_id = intval(str_replace('dot-irecommendthis-', '', $_POST['post_id']));
+				echo $this->dot_recommend_this($post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'get');
+			}
 		} else {
-			// AJAXing data in. Get Count
-			$post_id = intval( str_replace('dot-irecommendthis-', '',  $_POST['post_id'] ) );
-			echo $this->dot_recommend_this($post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'get');
+			// Nonce verification failed
+			die('Nonce verification failed. This request is not valid.');
 		}
 
 		exit;
-
-	}    //ajax_callback
-
+	}
 
 	/*--------------------------------------------*
 	 * Main Process
@@ -194,8 +200,8 @@ class Themeist_IRecommendThis_Public {
 
 				if($_POST['unrecommend'] == 'true' ) {
 					if (isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
-					    // Set the cookie to expire in the past to delete it
-					    setcookie('dot_irecommendthis_' . $post_id, '', time() - 3600, '/');
+						// Set the cookie to expire in the past to delete it
+						setcookie('dot_irecommendthis_' . $post_id, '', time() - 3600, '/');
 					}
 
 					$recommended--;
