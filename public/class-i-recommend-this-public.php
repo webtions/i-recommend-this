@@ -140,38 +140,38 @@ class Themeist_IRecommendThis_Public {
 			}
 
 
-				/*
+			/*
 
-				Hides the count is the count is zero.
+			Hides the count is the count is zero.
 
-				*/
-				$options = get_option('dot_irecommendthis_settings');
-				if (!isset($options['hide_zero'])) $options['hide_zero'] = '0';
-
-
-				if (($recommended == 0) && $options['hide_zero'] == 1) {
-
-					$output = '<span class="dot-irecommendthis-count">&nbsp;</span> <span class="dot-irecommendthis-suffix">' . $suffix . '</span>';
-
-					return $output;
-
-				} else {
-
-					$output = '<span class="dot-irecommendthis-count">' . $recommended . '</span> <span class="dot-irecommendthis-suffix">' . $suffix . '</span>';
-
-					return $output;
-
-				}
-
-				break;
+			*/
+			$options = get_option('dot_irecommendthis_settings');
+			if (!isset($options['hide_zero'])) $options['hide_zero'] = '0';
 
 
-				case 'update':
+			if (($recommended == 0) && $options['hide_zero'] == 1) {
 
-				$recommended = get_post_meta($post_id, '_recommended', true);
+				$output = '<span class="dot-irecommendthis-count">&nbsp;</span> <span class="dot-irecommendthis-suffix">' . $suffix . '</span>';
 
-				$options = get_option('dot_irecommendthis_settings');
-				if (!isset($options['enable_unique_ip'])) $options['enable_unique_ip'] = '0';
+				return $output;
+
+			} else {
+
+				$output = '<span class="dot-irecommendthis-count">' . $recommended . '</span> <span class="dot-irecommendthis-suffix">' . $suffix . '</span>';
+
+				return $output;
+
+			}
+
+			break;
+
+
+			case 'update':
+
+			$recommended = get_post_meta($post_id, '_recommended', true);
+
+			$options = get_option('dot_irecommendthis_settings');
+			if (!isset($options['enable_unique_ip'])) $options['enable_unique_ip'] = '0';
 
 				/*
 
@@ -203,7 +203,6 @@ class Themeist_IRecommendThis_Public {
 						// Set the cookie to expire in the past to delete it
 						setcookie('dot_irecommendthis_' . $post_id, '', time() - 3600, '/');
 					}
-
 					$recommended--;
 				}
 				else {
