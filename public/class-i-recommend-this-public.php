@@ -24,32 +24,42 @@ class Themeist_IRecommendThis_Public {
 
 	function enqueue_scripts()
 	{
-		$options = get_option('dot_irecommendthis_settings');
-		if (!isset($options['disable_css'])) $options['disable_css'] = '0';
-		if (!isset($options['recommend_style'])) $options['recommend_style'] = '0';
+	    // Get plugin settings
+	    $options = get_option('dot_irecommendthis_settings');
 
-		if ($options['disable_css'] == '0') {
+	    // Check and set default values for CSS options
+	    if (!isset($options['disable_css'])) {
+	        $options['disable_css'] = '0';
+	    }
+	    if (!isset($options['recommend_style'])) {
+	        $options['recommend_style'] = '0';
+	    }
 
-			if ($options['recommend_style'] == '0') {
-				wp_enqueue_style( 'dot-irecommendthis', plugins_url('/css/dot-irecommendthis.css', $this->plugin_file ) );
-			} else {
-				wp_enqueue_style( 'dot-irecommendthis', plugins_url('/css/dot-irecommendthis-heart.css', $this->plugin_file ) );
-			}
-		}
-		wp_register_script('dot-irecommendthis', plugins_url('/js/dot_irecommendthis.js', $this->plugin_file ), 'jquery', '2.6.0', 'in_footer');
+	    // Enqueue styles if CSS is not disabled
+	    if ($options['disable_css'] == '0') {
+	        if ($options['recommend_style'] == '0') {
+	            // Enqueue the default CSS file
+	            wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis.css', $this->plugin_file));
+	        } else {
+	            // Enqueue an alternate CSS file
+	            wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis-heart.css', $this->plugin_file));
+	        }
+	    }
 
-		wp_enqueue_script('jquery');
-		wp_enqueue_script('dot-irecommendthis');
+	    // Register and enqueue the main JavaScript file
+	    wp_register_script('dot-irecommendthis', plugins_url('/js/dot_irecommendthis.js', $this->plugin_file), array('jquery'), '2.6.0', true);
+	    wp_enqueue_script('dot-irecommendthis');
 
-		$nonce = wp_create_nonce('dot-irecommendthis-nonce');
-		wp_localize_script('dot-irecommendthis', 'dot_irecommendthis', array(
-			'nonce' => $nonce,
-			'ajaxurl' => admin_url('admin-ajax.php')
-		));
+	    // Enqueue jQuery, if not already enqueued
+	    wp_enqueue_script('jquery');
 
-	}    //dot_enqueue_scripts
-
-
+	    // Create a nonce for secure AJAX requests and localize it
+	    $nonce = wp_create_nonce('dot-irecommendthis-nonce');
+	    wp_localize_script('dot-irecommendthis', 'dot_irecommendthis', array(
+	        'nonce' => $nonce,
+	        'ajaxurl' => admin_url('admin-ajax.php')
+	    ));
+	}
 
 	/*--------------------------------------------*
 	 * Content / Front-end view
