@@ -24,41 +24,32 @@ class Themeist_IRecommendThis_Public {
 
 	function enqueue_scripts()
 	{
-	    // Get plugin settings
-	    $options = get_option('dot_irecommendthis_settings');
+		// Get plugin settings
+		$options = get_option('dot_irecommendthis_settings');
 
-	    // Check and set default values for CSS options
-	    if (!isset($options['disable_css'])) {
-	        $options['disable_css'] = '0';
-	    }
-	    if (!isset($options['recommend_style'])) {
-	        $options['recommend_style'] = '0';
-	    }
+		// Validate and set default values for CSS options
+		$disable_css = isset($options['disable_css']) ? intval($options['disable_css']) : 0;
+		$recommend_style = isset($options['recommend_style']) ? intval($options['recommend_style']) : 0;
 
-	    // Enqueue styles if CSS is not disabled
-	    if ($options['disable_css'] == '0') {
-	        if ($options['recommend_style'] == '0') {
-	            // Enqueue the default CSS file
-	            wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis.css', $this->plugin_file));
-	        } else {
-	            // Enqueue an alternate CSS file
-	            wp_enqueue_style('dot-irecommendthis', plugins_url('/css/dot-irecommendthis-heart.css', $this->plugin_file));
-	        }
-	    }
+		// Enqueue styles if CSS is not disabled
+		if ($disable_css === 0) {
+			$css_file = ($recommend_style === 0) ? 'dot-irecommendthis.css' : 'dot-irecommendthis-heart.css';
+			wp_enqueue_style('dot-irecommendthis', plugins_url('/css/' . $css_file, $this->plugin_file));
+		}
 
-	    // Register and enqueue the main JavaScript file
-	    wp_register_script('dot-irecommendthis', plugins_url('/js/dot_irecommendthis.js', $this->plugin_file), array('jquery'), '2.6.0', true);
-	    wp_enqueue_script('dot-irecommendthis');
+		// Register and enqueue the main JavaScript file
+		wp_register_script('dot-irecommendthis', plugins_url('/js/dot_irecommendthis.js', $this->plugin_file), array('jquery'), '2.6.0', true);
+		wp_enqueue_script('dot-irecommendthis');
 
-	    // Enqueue jQuery, if not already enqueued
-	    wp_enqueue_script('jquery');
+		// Enqueue jQuery, if not already enqueued
+		wp_enqueue_script('jquery');
 
-	    // Create a nonce for secure AJAX requests and localize it
-	    $nonce = wp_create_nonce('dot-irecommendthis-nonce');
-	    wp_localize_script('dot-irecommendthis', 'dot_irecommendthis', array(
-	        'nonce' => $nonce,
-	        'ajaxurl' => admin_url('admin-ajax.php')
-	    ));
+		// Create a nonce for secure AJAX requests and localize it
+		$nonce = wp_create_nonce('dot-irecommendthis-nonce');
+		wp_localize_script('dot-irecommendthis', 'dot_irecommendthis', array(
+			'nonce' => $nonce,
+			'ajaxurl' => admin_url('admin-ajax.php')
+		));
 	}
 
 	/*--------------------------------------------*
@@ -121,110 +112,24 @@ class Themeist_IRecommendThis_Public {
 	/*--------------------------------------------*
 	 * Main Process
 	 *--------------------------------------------*/
-
-
 	function dot_recommend_this($post_id, $text_zero_suffix = false, $text_one_suffix = false, $text_more_suffix = false, $action = 'get')
 	{
 		global $wpdb;
+
 		if (!is_numeric($post_id)) return;
+
 		$text_zero_suffix = sanitize_text_field($text_zero_suffix);
 		$text_one_suffix = sanitize_text_field($text_one_suffix);
 		$text_more_suffix = sanitize_text_field($text_more_suffix);
 
-
 		switch ($action) {
-
 			case 'get':
-			$recommended = get_post_meta($post_id, '_recommended', true);
-			if (!$recommended) {
-				$recommended = 0;
-				add_post_meta($post_id, '_recommended', $recommended, true);
-			}
+				$recommended = get_post_meta($post_id, '_recommended', true);
 
-			if ($recommended == 0) {
-				$suffix = $text_zero_suffix;
-			} elseif ($recommended == 1) {
-				$suffix = $text_one_suffix;
-			} else {
-				$suffix = $text_more_suffix;
-			}
-
-
-			/*
-
-			Hides the count is the count is zero.
-
-			*/
-			$options = get_option('dot_irecommendthis_settings');
-			if (!isset($options['hide_zero'])) $options['hide_zero'] = '0';
-
-
-			if (($recommended == 0) && $options['hide_zero'] == 1) {
-
-				$output = '<span class="dot-irecommendthis-count">&nbsp;</span> <span class="dot-irecommendthis-suffix">' . $suffix . '</span>';
-
-				return $output;
-
-			} else {
-
-				$output = '<span class="dot-irecommendthis-count">' . $recommended . '</span> <span class="dot-irecommendthis-suffix">' . $suffix . '</span>';
-
-				return $output;
-
-			}
-
-			break;
-
-
-			case 'update':
-
-			$recommended = get_post_meta($post_id, '_recommended', true);
-
-			$options = get_option('dot_irecommendthis_settings');
-			if (!isset($options['enable_unique_ip'])) $options['enable_unique_ip'] = '0';
-
-				/*
-
-				Check if Unique IP saving is required or disabled
-
-				*/
-				if ($options['enable_unique_ip'] != 0) {
-
-					$ip = $_SERVER['REMOTE_ADDR']; 
-
-					if($_POST['unrecommend'] == 'true') {
-						$sql = $wpdb->prepare("DELETE FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
-						$wpdb->query($sql);
-					} else {
-						$sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
-						$voteStatusByIp = $wpdb->get_var($sql);
-						$sql = $wpdb->prepare("INSERT INTO " . $wpdb->prefix . "irecommendthis_votes VALUES ('', NOW(), %d, %s )", $post_id, $ip);
-						$wpdb->query($sql);
-					}
-					
-				} 
-
-				if (isset($_COOKIE['dot_irecommendthis_' . $post_id]) && $_POST['unrecommend'] == 'false') {
-					return $recommended;
+				if (!$recommended) {
+					$recommended = 0;
+					add_post_meta($post_id, '_recommended', $recommended, true);
 				}
-
-				if($_POST['unrecommend'] == 'true' ) {
-					if (isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
-						// Set the cookie to expire in the past to delete it
-						setcookie('dot_irecommendthis_' . $post_id, '', time() - 3600, '/');
-					}
-					$recommended--;
-				}
-				else {
-					setcookie('dot_irecommendthis_' . $post_id, time(), time() + 3600 * 24 * 365, '/');
-					$recommended++;
-
-				}
-				update_post_meta($post_id, '_recommended', $recommended);
-
-
-				
-
 
 				if ($recommended == 0) {
 					$suffix = $text_zero_suffix;
@@ -234,15 +139,67 @@ class Themeist_IRecommendThis_Public {
 					$suffix = $text_more_suffix;
 				}
 
-				$output = '<span class="dot-irecommendthis-count">' . $recommended . '</span> <span class="dot-irecommendthis-suffix">' . $suffix . '</span>';
+				// Check if zero should be hidden
+				$options = get_option('dot_irecommendthis_settings');
+				$hide_zero = isset($options['hide_zero']) ? $options['hide_zero'] : '0';
 
-				$dot_irt_html = apply_filters('dot_irt_before_count', $output);
+				if ($recommended == 0 && $hide_zero == 1) {
+					$output = '<span class="dot-irecommendthis-count">&nbsp;</span> <span class="dot-irecommendthis-suffix">' . esc_html($suffix) . '</span>';
+				} else {
+					$output = '<span class="dot-irecommendthis-count">' . esc_html($recommended) . '</span> <span class="dot-irecommendthis-suffix">' . esc_html($suffix) . '</span>';
+				}
 
-				return $dot_irt_html;
+				return apply_filters('dot_irt_before_count', $output);
 
-				break;
-			}
-	}    //dot_recommend_this
+			case 'update':
+				$recommended = get_post_meta($post_id, '_recommended', true);
+
+				$options = get_option('dot_irecommendthis_settings');
+				$enable_unique_ip = isset($options['enable_unique_ip']) ? $options['enable_unique_ip'] : '0';
+
+				if ($enable_unique_ip != 0) {
+					$ip = sanitize_text_field($_SERVER['REMOTE_ADDR']);
+
+					if ($_POST['unrecommend'] == 'true') {
+						$sql = $wpdb->prepare("DELETE FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
+						$wpdb->query($sql);
+					} else {
+						$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
+						$voteStatusByIp = $wpdb->get_var($sql);
+						$sql = $wpdb->prepare("INSERT INTO {$wpdb->prefix}irecommendthis_votes VALUES ('', NOW(), %d, %s )", $post_id, $ip);
+						$wpdb->query($sql);
+					}
+				}
+
+				if (isset($_COOKIE['dot_irecommendthis_' . $post_id]) && $_POST['unrecommend'] == 'false') {
+					return $recommended;
+				}
+
+				if ($_POST['unrecommend'] == 'true') {
+					if (isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
+						// Set the cookie to expire in the past to delete it
+						setcookie('dot_irecommendthis_' . $post_id, '', time() - 3600, '/');
+					}
+					$recommended--;
+				} else {
+					setcookie('dot_irecommendthis_' . $post_id, time(), time() + 3600 * 24 * 365, '/');
+					$recommended++;
+				}
+
+				update_post_meta($post_id, '_recommended', $recommended);
+
+				if ($recommended == 0) {
+					$suffix = $text_zero_suffix;
+				} elseif ($recommended == 1) {
+					$suffix = $text_one_suffix;
+				} else {
+					$suffix = $text_more_suffix;
+				}
+
+				$output = '<span class="dot-irecommendthis-count">' . esc_html($recommended) . '</span> <span class="dot-irecommendthis-suffix">' . esc_html($suffix) . '</span>';
+				return apply_filters('dot_irt_before_count', $output);
+		}
+	}
 
 
 	/*--------------------------------------------*
@@ -256,146 +213,103 @@ class Themeist_IRecommendThis_Public {
 
 	function dot_recommend($id = null) {
 		global $wpdb, $post;
-		$ip = $_SERVER['REMOTE_ADDR'];
+
+		$ip = sanitize_text_field($_SERVER['REMOTE_ADDR']);
 		$post_id = $id ? $id : get_the_ID();
 
 		$options = get_option('dot_irecommendthis_settings');
-		if (!isset($options['text_zero_suffix'])) $options['text_zero_suffix'] = '';
-		if (!isset($options['text_one_suffix'])) $options['text_one_suffix'] = '';
-		if (!isset($options['text_more_suffix'])) $options['text_more_suffix'] = '';
-		if (!isset($options['link_title_new'])) $options['link_title_new'] = '';
-		if (!isset($options['link_title_active'])) $options['link_title_active'] = '';
-		if (!isset($options['enable_unique_ip'])) $options['enable_unique_ip'] = '0'; //Check if Unique IP saving is required or disabled
+		$default_options = array(
+			'text_zero_suffix' => '',
+			'text_one_suffix' => '',
+			'text_more_suffix' => '',
+			'link_title_new' => '',
+			'link_title_active' => '',
+			'enable_unique_ip' => '0',
+		);
+		$options = wp_parse_args($options, $default_options);
 
 		$output = $this->dot_recommend_this($post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix']);
 
-		//if ( isset($_COOKIE['dot_irecommendthis_'. $post_id]) && $voteStatusByIp != 0 ) {
+		$voteStatusByIp = 0;
 		if ($options['enable_unique_ip'] != '0') {
-
-			$sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $wpdb->prefix . "irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
+			$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip);
 			$voteStatusByIp = $wpdb->get_var($sql);
-
-			if (!isset($_COOKIE['dot_irecommendthis_' . $post_id]) && $voteStatusByIp == 0) {
-				$class = 'dot-irecommendthis';
-
-				if ($options['link_title_new'] == '') {
-					$title = __('Recommend this', 'i-recommend-this');
-				} else {
-					$title = $options['link_title_new'];
-				}
-
-			} else {
-
-				$class = 'dot-irecommendthis active';
-
-				if ($options['link_title_active'] == '') {
-					$title = __('You already recommended this', 'i-recommend-this');
-				} else {
-					$title = $options['link_title_active'];
-				}
-			}
-
-		} else {
-
-			if (!isset($_COOKIE['dot_irecommendthis_' . $post_id])) {
-				$class = 'dot-irecommendthis';
-
-
-				if ($options['link_title_new'] == '') {
-
-					$title = __('Recommend this', 'i-recommend-this');
-
-				} else {
-
-					$title = $options['link_title_new'];
-
-				}
-
-			} else {
-
-				$class = 'dot-irecommendthis active';
-
-				if ($options['link_title_active'] == '') {
-
-					$title = __('You already recommended this', 'i-recommend-this');
-
-				} else {
-
-					$title = $options['link_title_active'];
-
-				}
-			}
 		}
 
-		$dot_irt_html = '<a href="#" class="' . $class . '" id="dot-irecommendthis-' . $post_id . '" title="' . $title . '">';
+		if (!isset($_COOKIE['dot_irecommendthis_' . $post_id]) && $voteStatusByIp == 0) {
+			$class = 'dot-irecommendthis';
+			$title = empty($options['link_title_new']) ? __('Recommend this', 'i-recommend-this') : $options['link_title_new'];
+		} else {
+			$class = 'dot-irecommendthis active';
+			$title = empty($options['link_title_active']) ? __('You already recommended this', 'i-recommend-this') : $options['link_title_active'];
+		}
 
+		$dot_irt_html = '<a href="#" class="' . esc_attr($class) . '" id="dot-irecommendthis-' . $post_id . '" title="' . esc_attr($title) . '">';
 		$dot_irt_html .= apply_filters('dot_irt_before_count', $output);
 		$dot_irt_html .= '</a>';
 
 		return $dot_irt_html;
-
-		//return '<a href="#" class="'. $class .'" id="dot-irecommendthis-'. $post_ID .'" title="'. $title .'"><i class="icon-heart"></i> '. $output .'</a>';
 	}
+
 
 	/*--------------------------------------------*
 	 * Shortcode //dot_recommended_top_posts
 	 *--------------------------------------------*/
 	function dot_recommended_top_posts($atts, $content = null)
 	{
+		// Define attributes and their defaults
+		$atts = shortcode_atts(
+			array(
+				'container' => 'li',
+				'number' => 10,
+				'post_type' => 'post',
+				'year' => '',
+				'monthnum' => '',
+				'show_count' => 1,
+			),
+			$atts
+		);
 
-		// normalize attribute keys, lowercase
-		$atts = array_change_key_case((array)$atts, CASE_LOWER);
-
-		// define attributes and their defaults
-		// get our variable from $atts
-		$atts = shortcode_atts(array(
-			'container' => 'li',
-			'number' => '10',
-			'post_type' => 'post',
-			'year' => '',
-			'monthnum' => '',
-			'show_count' => '1',
-		), $atts);
-
-		$atts['container'] = sanitize_text_field( $atts['container'] );
-		$atts['number'] = intval( $atts['number'] );
-		$atts['post_type'] = sanitize_text_field( $atts['post_type'] );
-		$atts['year'] = intval( $atts['year'] );
-		$atts['monthnum'] = intval( $atts['monthnum'] );
-		$atts['show_count'] = intval( $atts['show_count'] );
+		// Sanitize and validate attributes
+		$atts['container'] = sanitize_text_field($atts['container']);
+		$atts['number'] = intval($atts['number']);
+		$atts['post_type'] = sanitize_text_field($atts['post_type']);
+		$atts['year'] = intval($atts['year']);
+		$atts['monthnum'] = intval($atts['monthnum']);
+		$atts['show_count'] = intval($atts['show_count']);
 
 		global $wpdb;
 
-		// empty params array to hold params for prepared statement
+		// Initialize an empty array to hold parameters for the prepared statement
 		$params = array();
 
-		// build query string
+		// Build the query string
 		$sql = "SELECT * FROM $wpdb->posts, $wpdb->postmeta WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id";
 
-		// add year
-		if ('' !== $atts['year']) {
+		// Add year
+		if ($atts['year'] !== '') {
 			$sql .= ' AND YEAR(post_date) = %d';
 			$params[] = $atts['year'];
 		}
 
-		// add monthnum
-		if ('' !== $atts['monthnum']) {
+		// Add monthnum
+		if ($atts['monthnum'] !== '') {
 			$sql .= ' AND MONTH(post_date) = %d';
 			$params[] = $atts['monthnum'];
 		}
 
-		// add post WHERE
+		// Add post WHERE
 		$sql .= " AND post_status = 'publish' AND post_type = %s AND meta_key = '_recommended'";
 		$params[] = $atts['post_type'];
 
-		// add order by and limit
+		// Add order by and limit
 		$sql .= " ORDER BY {$wpdb->postmeta}.meta_value+0 DESC LIMIT %d";
 		$params[] = $atts['number'];
 
-		// prepare sql statement
+		// Prepare the SQL statement
 		$query = $wpdb->prepare($sql, $params);
 
-		// execute query
+		// Execute the query
 		$posts = $wpdb->get_results($query);
 
 		$return = '';
@@ -408,13 +322,13 @@ class Themeist_IRecommendThis_Public {
 			$return .= '<' . esc_html($atts['container']) . '>';
 			$return .= '<a href="' . esc_url($permalink) . '" title="' . esc_html($post_title) . '" rel="nofollow">' . esc_html($post_title) . '</a> ';
 
-			if ($atts['show_count'] == '1') {
+			if ($atts['show_count'] == 1) {
 				$return .= '<span class="votes">' . esc_html($post_count) . '</span> ';
 			}
 
 			$return .= '</' . esc_html($atts['container']) . '>';
-
 		}
+
 		return $return;
-	}    //dot_recommended_top_posts
+	}
 }

@@ -5,19 +5,18 @@ class Themeist_IRecommendThis_Admin {
 	/**
 	 * @param string $plugin_file
 	 */
-	public function __construct( $plugin_file ) {
+	public function __construct($plugin_file) {
 		$this->plugin_file = $plugin_file;
 	}
 
 	public function add_admin_hooks() {
 		global $pagenow;
 
-		add_filter( 'admin_footer_text', array( $this, 'footer_text' ) );
+		add_filter('admin_footer_text', array($this, 'footer_text'));
 
-		// Hooks for Plugins overview page
-		if( $pagenow === 'plugins.php' ) {
-			add_filter( 'plugin_action_links', array( $this, 'add_plugin_settings_link' ), 10, 2 );
-			add_filter( 'plugin_row_meta', array( $this, 'add_plugin_meta_links'), 10, 2 );
+		if ($pagenow === 'plugins.php') {
+			add_filter('plugin_action_links', array($this, 'add_plugin_settings_link'), 10, 2);
+			add_filter('plugin_row_meta', array($this, 'add_plugin_meta_links'), 10, 2);
 		}
 
 		add_action('admin_menu', array($this, 'dot_irecommendthis_menu'));
@@ -36,11 +35,10 @@ class Themeist_IRecommendThis_Admin {
 	public function dot_irecommendthis_menu() {
 		$page_title = __('I Recommend This', 'i-recommend-this');
 		$menu_title = __('I Recommend This', 'i-recommend-this');
-		$capability = 'manage_options';
+		$capability = 'manage_options'; // Set the appropriate capability
 		$menu_slug = 'dot-irecommendthis';
 		$function = array(&$this, 'dot_settings_page');
 		add_options_page($page_title, $menu_title, $capability, $menu_slug, $function);
-
 	}
 
 	/**
@@ -50,10 +48,10 @@ class Themeist_IRecommendThis_Admin {
 	 *
 	 * @return string
 	 */
-	public function footer_text( $text ) {
+	public function footer_text($text) {
 
-		if(! empty( $_GET['page'] ) && strpos( $_GET['page'], 'dot-irecommendthis' ) === 0 ) {
-			$text = sprintf( 'If you enjoy using <strong>I Recommend this</strong>, please <a href="%s" target="_blank">leave us a ★★★★★ rating</a>. A <strong style="text-decoration: underline;">huge</strong> thank you in advance!', 'https://wordpress.org/support/view/plugin-reviews/i-recommend-this?rate=5#postform' );
+		if (!empty($_GET['page']) && strpos(sanitize_text_field($_GET['page']), 'dot-irecommendthis') === 0) {
+			$text = sprintf('If you enjoy using <strong>I Recommend this</strong>, please <a href="%s" target="_blank">leave us a ★★★★★ rating</a>. A <strong style="text-decoration: underline;">huge</strong> thank you in advance!', esc_url('https://wordpress.org/support/view/plugin-reviews/i-recommend-this?rate=5#postform'));
 		}
 
 		return $text;
@@ -63,32 +61,30 @@ class Themeist_IRecommendThis_Admin {
 	 * Add the settings link to the Plugins overview
 	 *
 	 * @param array $links
-	 * @param       $file
+	 * @param $file
 	 *
 	 * @return array
 	 */
-	public function add_plugin_settings_link( $links, $file ) {
-		if ( $file == plugin_basename($this->plugin_file) ) {
+	public function add_plugin_settings_link($links, $file) {
+		if ($file == plugin_basename($this->plugin_file)) {
 
-			$settings_link = '<a href="' . admin_url( 'options-general.php?page=dot-irecommendthis' ) . '">'. __( 'Settings', 'dot-irecommendthis' ) . '</a>';
-			array_unshift( $links, $settings_link );
+			$settings_link = '<a href="' . esc_url(admin_url('options-general.php?page=dot-irecommendthis')) . '">'. __( 'Settings', 'dot-irecommendthis' ) . '</a>';
+			array_unshift($links, $settings_link);
 		}
 		return $links;
 	}
 
-
-	public function add_plugin_meta_links( $links, $file ) {
-		if ( strpos( $file, 'i-recommend-this.php' ) !== false ) {
+	public function add_plugin_meta_links($links, $file) {
+		if (strpos($file, 'i-recommend-this.php') !== false) {
 			$new_links = array(
-					'donate' => '<a href="https://www.paypal.me/harishchouhan" target="_blank">Donate</a>',
-					'Documentation' => '<a href="https://themeist.com/docs/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page" target="_blank">Documentation</a>'
-				);
+				'donate' => '<a href="https://www.paypal.me/harishchouhan" target="_blank">Donate</a>',
+				'Documentation' => '<a href="https://themeist.com/docs/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page" target="_blank">Documentation</a>'
+			);
 
-			$links = array_merge( $links, $new_links );
+			$links = array_merge($links, $new_links);
 		}
 		return $links;
 	}
-
 
 	/**
 	 * Adds meta links to the plugin in the WP Admin > Plugins screen
@@ -98,11 +94,10 @@ class Themeist_IRecommendThis_Admin {
 	 *
 	 * @return array
 	 */
-	public function add_plugin_meta_links2( $links, $file ) {
-		if( $file !== $this->plugin_file ) {
-		//if( 'i-recommend-this.php' !== $this->plugin_file ) {
+	public function add_plugin_meta_links2($links, $file) {
+		if ($file !== $this->plugin_file) {
+			//if( 'i-recommend-this.php' !== $this->plugin_file ) {
 			return $links;
-
 			//$links[] = '<a href="https://themeist.com/docs/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page">'. __( 'Documentation', 'i-recommend-this' ) . '</a>';
 		}
 
@@ -132,8 +127,7 @@ class Themeist_IRecommendThis_Admin {
 		);
 	}*/
 
-	function dot_setup_recommends($post_id)
-	{
+	function dot_setup_recommends($post_id) {
 		if (!is_numeric($post_id)) return;
 
 		add_post_meta($post_id, '_recommended', '0', true);
@@ -164,8 +158,6 @@ class Themeist_IRecommendThis_Admin {
 		add_settings_field('disable_unique_ip', __('Enable IP saving', 'i-recommend-this'), array(&$this, 'setting_enable_unique_ip'), 'dot-irecommendthis', 'dot-irecommendthis');
 
 		add_settings_field('recommend_style', __('Choose a style', 'i-recommend-this'), array(&$this, 'setting_recommend_style'), 'dot-irecommendthis', 'dot-irecommendthis');
-
-
 	}
 
 	public function dot_settings_page() {
@@ -183,13 +175,11 @@ class Themeist_IRecommendThis_Admin {
 
 	public function section_intro() {
 		?>
-
 		<p><?php _e('This plugin allows your visitors to simply recommend or like your posts instead of commment it.', 'i-recommend-this'); ?></p>
 		<?php
 	}
 
-	public function setting_show_on()
-	{
+	public function setting_show_on() {
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['add_to_posts'])) $options['add_to_posts'] = '0';
 		if (!isset($options['add_to_other'])) $options['add_to_other'] = '0';
@@ -202,8 +192,7 @@ class Themeist_IRecommendThis_Admin {
 		' . __('All other pages like Index, Archive, etc.', 'i-recommend-this') . '</label><br />';
 	}
 
-	public function setting_hide_zero()
-	{
+	public function setting_hide_zero() {
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['hide_zero'])) $options['hide_zero'] = '0';
 
@@ -212,8 +201,7 @@ class Themeist_IRecommendThis_Admin {
 			__('Hide count if count is zero', 'i-recommend-this') . '</label>';
 	}
 
-	public function setting_enable_unique_ip()
-	{
+	public function setting_enable_unique_ip() {
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['enable_unique_ip'])) $options['enable_unique_ip'] = '0';
 
@@ -222,8 +210,7 @@ class Themeist_IRecommendThis_Admin {
 			__('Enable saving of IP Address (will affect GDPR). Cookies are saved by default but enabling this option will save IP & cookies to track user votes and a user be blocked from saving same post multiple times.', 'i-recommend-this') . '</label>';
 	}
 
-	public function setting_disable_css()
-	{
+	public function setting_disable_css() {
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['disable_css'])) $options['disable_css'] = '0';
 
@@ -232,48 +219,43 @@ class Themeist_IRecommendThis_Admin {
 			__('I want to use my own CSS styles', 'i-recommend-this') . '</label>';
 	}
 
-	public function setting_text_zero_suffix()
-	{
+	public function setting_text_zero_suffix() {
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['text_zero_suffix'])) $options['text_zero_suffix'] = '';
 
-		echo '<input type="text" name="dot_irecommendthis_settings[text_zero_suffix]" class="regular-text" value="' . $options['text_zero_suffix'] . '" /><br />
+		echo '<input type="text" name="dot_irecommendthis_settings[text_zero_suffix]" class="regular-text" value="' . esc_attr($options['text_zero_suffix']) . '" /><br />
 		<span class="description">' . __('Text to display after zero count. Leave blank for no text after the count.', 'i-recommend-this') . '</span>';
 	}
 
-	public function setting_text_one_suffix()
-	{
+	public function setting_text_one_suffix() {
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['text_one_suffix'])) $options['text_one_suffix'] = '';
 
-		echo '<input type="text" name="dot_irecommendthis_settings[text_one_suffix]" class="regular-text" value="' . $options['text_one_suffix'] . '" /><br />
+		echo '<input type="text" name="dot_irecommendthis_settings[text_one_suffix]" class="regular-text" value="' . esc_attr($options['text_one_suffix']) . '" /><br />
 		<span class="description">' . __('Text to display after 1 person has recommended. Leave blank for no text after the count.', 'i-recommend-this') . '</span>';
 	}
 
-	public function setting_text_more_suffix()
-	{
+	public function setting_text_more_suffix() {
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['text_more_suffix'])) $options['text_more_suffix'] = '';
 
-		echo '<input type="text" name="dot_irecommendthis_settings[text_more_suffix]" class="regular-text" value="' . $options['text_more_suffix'] . '" /><br />
+		echo '<input type="text" name="dot_irecommendthis_settings[text_more_suffix]" class="regular-text" value="' . esc_attr($options['text_more_suffix']) . '" /><br />
 		<span class="description">' . __('Text to display after more than 1 person have recommended. Leave blank for no text after the count.', 'i-recommend-this') . '</span>';
 	}
 
-	public function setting_link_title_new()
-	{
+	public function setting_link_title_new() {
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['link_title_new'])) $options['link_title_new'] = '';
 
-		echo '<input type="text" name="dot_irecommendthis_settings[link_title_new]" class="regular-text" value="' . $options['link_title_new'] . '" /><br />
+		echo '<input type="text" name="dot_irecommendthis_settings[link_title_new]" class="regular-text" value="' . esc_attr($options['link_title_new']) . '" /><br />
 		<span class="description">' . __('Link Title element for posts not yet voted by a user.', 'i-recommend-this') . '</span>';
 	}
 
-	public function setting_link_title_active()
-	{
+	public function setting_link_title_active() {
 		$options = get_option('dot_irecommendthis_settings');
 		if (!isset($options['link_title_active'])) $options['link_title_active'] = '';
 
-		echo '<input type="text" name="dot_irecommendthis_settings[link_title_active]" class="regular-text" value="' . $options['link_title_active'] . '" /><br />
+		echo '<input type="text" name="dot_irecommendthis_settings[link_title_active]" class="regular-text" value="' . esc_attr($options['link_title_active']) . '" /><br />
 		<span class="description">' . __('Link Title element for posts already voted by a user.', 'i-recommend-this') . '</span>';
 	}
 
@@ -290,42 +272,18 @@ class Themeist_IRecommendThis_Admin {
 	}
 
 	public function settings_validate($input) {
-		$new_input = array();
+		$input['show_on'] = !empty($input['show_on']) ? $input['show_on'] : '0';
+		$input['text_zero_suffix'] = sanitize_text_field($input['text_zero_suffix']);
+		$input['text_one_suffix'] = sanitize_text_field($input['text_one_suffix']);
+		$input['text_more_suffix'] = sanitize_text_field($input['text_more_suffix']);
+		$input['link_title_new'] = sanitize_text_field($input['link_title_new']);
+		$input['link_title_active'] = sanitize_text_field($input['link_title_active']);
+		$input['disable_css'] = !empty($input['disable_css']) ? '1' : '0';
+		$input['hide_zero'] = !empty($input['hide_zero']) ? '1' : '0';
+		$input['enable_unique_ip'] = !empty($input['enable_unique_ip']) ? '1' : '0';
+		$input['recommend_style'] = !empty($input['recommend_style']) ? '1' : '0';
 
-		if( isset( $input['add_to_posts'] ) )
-			$new_input['add_to_posts'] = absint( $input['add_to_posts'] );
-
-		if( isset( $input['add_to_other'] ) )
-			$new_input['add_to_other'] = absint( $input['add_to_other'] );
-
-		if( isset( $input['text_zero_suffix'] ) )
-			$new_input['text_zero_suffix'] = sanitize_text_field( $input['text_zero_suffix'] );
-
-		if( isset( $input['text_one_suffix'] ) )
-			$new_input['text_one_suffix'] = sanitize_text_field( $input['text_one_suffix'] );
-
-		if( isset( $input['text_more_suffix'] ) )
-			$new_input['text_more_suffix'] = sanitize_text_field( $input['text_more_suffix'] );
-
-		if( isset( $input['link_title_new'] ) )
-			$new_input['link_title_new'] = sanitize_text_field( $input['link_title_new'] );
-
-		if( isset( $input['link_title_active'] ) )
-			$new_input['link_title_active'] = sanitize_text_field( $input['link_title_active'] );
-
-		if( isset( $input['disable_css'] ) )
-			$new_input['disable_css'] = absint( $input['disable_css'] );
-
-		if( isset( $input['hide_zero'] ) )
-			$new_input['hide_zero'] = absint( $input['hide_zero'] );
-
-		if( isset( $input['enable_unique_ip'] ) )
-			$new_input['enable_unique_ip'] = absint( $input['enable_unique_ip'] );
-
-		if( isset( $input['recommend_style'] ) )
-			$new_input['recommend_style'] = absint( $input['recommend_style'] );
-
-		return $new_input;
+		return $input;
 	}
 
 	/*--------------------------------------------*
