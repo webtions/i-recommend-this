@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: themeist, hchouhan
-Donate link: http://themeist.com
+Donate link: https://themeist.com
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
-Requires at least: 4.0
-Tested up to: 4.9.8
-Stable tag: 3.8.3
+Requires at least: 6.0
+Tested up to: 6.3.2
+Stable tag: 3.9.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -91,13 +91,18 @@ Shortcode
 
 == Frequently Asked Questions ==
 
-Take a look at the [official "I Recommend This" FAQ](http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/).
+Take a look at the [official "I Recommend This" FAQ](https://themeist.com/plugins/wordpress/i-recommend-this/).
 
-You can also visit the [support center](http://www.dreamsonline.net/wordpress-plugins/i-recommend-this/) and start a discussion if needed.
+You can also visit the [support center](https://wordpress.org/support/plugin/i-recommend-this/) and start a discussion if needed.
 
 
 
 == Changelog ==
+
+= 3.9.0
+* Added support for un-recommending/un-liking a post
+* Fixed data sanitization
+* Fixed data escaping
 
 = 3.8.1
 * Added data sanitization
