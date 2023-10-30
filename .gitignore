@@ -1,0 +1,9 @@
+node_modules
+vendor/
+*.DS_Store
+*.zip
+*.vscode
+*.rej
+**/*.map
+.ignore
+.github_token

@@ -14,12 +14,12 @@
  */
 
 if ( ! defined( 'WPINC' ) ) {
-	die;
+    die;
 }
 
 // do nothing if class is already defined
 if( class_exists( 'Themeist_IRecommendThis' ) ) {
-	return;
+    return;
 }
 
 define( 'THEMEIST_IRT_VERSION', '3.8.3' );
