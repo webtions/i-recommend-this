@@ -91,11 +91,14 @@ Shortcode
 
 == Frequently Asked Questions ==
 
+#### Where can I learn more about this plugin?
 Take a look at the [official "I Recommend This" FAQ](https://themeist.com/plugins/wordpress/i-recommend-this/).
 
+#### How to get support?
 You can also visit the [support center](https://wordpress.org/support/plugin/i-recommend-this/) and start a discussion if needed.
 
-
+#### Reporting Security Bugs
+Please report security bugs found in the source code through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/i-recommend-this). The Patchstack team will assist you with verification, CVE assignment and take care of notifying the developers of this plugin.
 
 == Changelog ==
 
