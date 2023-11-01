@@ -2,7 +2,7 @@
 /*
 Plugin Name: I Recommend This
 Plugin URI: https://themeist.com/plugins/wordpress/i-recommend-this/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page
-Description: This plugin allows your visitors to simply recommend or like your posts instead of commment it.
+Description: This plugin allows your visitors to recommend or like your posts.
 Version: 3.9.0
 Author: Harish Chouhan, Themeist
 Author URI: https://themeist.com/
