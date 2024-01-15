@@ -15,7 +15,7 @@ Domain Path: /languages
 phpcs:disable PSR1.Files.SideEffects
 */
 
-if(! defined('WPINC') ) {
+if ( ! defined('WPINC') ) {
 	die;
 }
 
@@ -25,14 +25,14 @@ if(class_exists('Themeist_IRecommendThis') ) {
 }
 
 define('THEMEIST_IRT_VERSION', '3.9.0');
-define('THEMEIST_IRT_DB_VERSION', '2.6.2');
+   define('THEMEIST_IRT_DB_VERSION', '2.6.2'); 
 
 // require includes
-require_once dirname(__FILE__) . '/includes/class-i-recommend-this.php';
-require_once dirname(__FILE__) . '/admin/class-i-recommend-this-admin.php';
-require_once dirname(__FILE__) . '/public/class-i-recommend-this-public.php';
-require_once dirname(__FILE__) . '/public/class-widget-most-recommended-posts.php';
-require_once dirname(__FILE__) . '/includes/functions.php';
+require_once dirname( __FILE__ ) . '/includes/class-i-recommend-this.php';
+require_once dirname( __FILE__ ) . '/admin/class-i-recommend-this-admin.php';
+require_once dirname( __FILE__ ) . '/public/class-i-recommend-this-public.php';
+require_once dirname( __FILE__ ) . '/public/class-widget-most-recommended-posts.php';
+require_once dirname( __FILE__ ) . '/includes/functions.php';
 
 // create instance of plugin class
 global $themeist_i_recommend_this;

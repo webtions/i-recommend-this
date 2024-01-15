@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSave": true,
+    "[php]": {
+        "editor.defaultFormatter": "wongjn.php-sniffer"
+    },
+    "phpSniffer.autoDetect": true,
+    "phpSniffer.standard": "WordPress",
+    "editor.insertSpaces": false
+}
