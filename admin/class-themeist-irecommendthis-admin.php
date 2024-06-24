@@ -193,7 +193,7 @@ class Themeist_IRecommendThis_Admin {
 	 * Display an intro section on the settings page.
 	 */
 	public function section_intro() {
-		echo '<p>' . esc_html__( 'Configure settings for the I Recommend This plugin.', 'i-recommend-this' ) . '</p>';
+		echo '<p>' . esc_html__( 'This plugin allows your visitors to simply recommend or like your posts instead of commment it.', 'i-recommend-this' ) . '</p>';
 	}
 
 	/**
@@ -426,6 +426,7 @@ class Themeist_IRecommendThis_Admin {
 			$vars = array_merge(
 				$vars,
 				array(
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Ignoring warning for meta_key usage as it is necessary for functionality.
 					'meta_key' => '_recommended',
 					'orderby'  => 'meta_value_num', // Use meta_value_num for numeric sorting.
 				)
