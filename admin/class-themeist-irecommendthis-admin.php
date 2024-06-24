@@ -43,27 +43,27 @@ class Themeist_IRecommendThis_Admin {
 		}
 
 		// Add menu and settings page for the plugin.
-		add_action( 'admin_menu', array( $this, 'dot_irecommendthis_menu' ) );
+		add_action( 'admin_menu', array( $this, 'irecommendthis_menu' ) );
 		add_action( 'admin_init', array( $this, 'dot_irecommendthis_settings' ) );
 
 		// Setup recommendation functionality on post publish.
-		add_action( 'publish_post', array( $this, 'dot_setup_recommends' ) );
+		add_action( 'publish_post', array( $this, 'irecommendthis_setup_recommends' ) );
 
 		// Add hooks for column and sorting.
-		add_filter( 'manage_posts_columns', array( $this, 'dot_columns_head' ) );
-		add_action( 'manage_posts_custom_column', array( $this, 'dot_column_content' ), 10, 2 );
-		add_filter( 'manage_edit-post_sortable_columns', array( $this, 'dot_column_register_sortable' ) );
-		add_filter( 'request', array( $this, 'dot_column_orderby' ) );
+		add_filter( 'manage_posts_columns', array( $this, 'irecommendthis_columns_head' ) );
+		add_action( 'manage_posts_custom_column', array( $this, 'irecommendthis_column_content' ), 10, 2 );
+		add_filter( 'manage_edit-post_sortable_columns', array( $this, 'irecommendthis_column_register_sortable' ) );
+		add_filter( 'request', array( $this, 'irecommendthis_column_orderby' ) );
 	}
 
 	/**
 	 * Add the plugin's menu to the WordPress admin.
 	 */
-	public function dot_irecommendthis_menu() {
+	public function irecommendthis_menu() {
 		$page_title = __( 'I Recommend This', 'i-recommend-this' );
 		$menu_title = __( 'I Recommend This', 'i-recommend-this' );
 		$capability = 'manage_options'; // Set the appropriate capability.
-		$menu_slug  = 'dot-irecommendthis';
+		$menu_slug  = 'irecommendthis-settings';
 		$function   = array( $this, 'dot_settings_page' );
 		add_options_page( $page_title, $menu_title, $capability, $menu_slug, $function );
 	}
@@ -78,7 +78,7 @@ class Themeist_IRecommendThis_Admin {
 	public function add_plugin_settings_link( $links, $file ) {
 		if ( plugin_basename( $this->plugin_file ) === $file ) {
 
-			$settings_link = '<a href="' . esc_url( admin_url( 'options-general.php?page=dot-irecommendthis' ) ) . '">' . __( 'Settings', 'i-recommend-this' ) . '</a>';
+			$settings_link = '<a href="' . esc_url( admin_url( 'options-general.php?page=irecommendthis-settings' ) ) . '">' . __( 'Settings', 'i-recommend-this' ) . '</a>';
 			array_unshift( $links, $settings_link );
 		}
 		return $links;
@@ -108,7 +108,7 @@ class Themeist_IRecommendThis_Admin {
 	 *
 	 * @param int $post_id Post ID.
 	 */
-	public function dot_setup_recommends( $post_id ) {
+	public function irecommendthis_setup_recommends( $post_id ) {
 		if ( ! is_numeric( $post_id ) ) {
 			return;
 		}
@@ -380,7 +380,7 @@ class Themeist_IRecommendThis_Admin {
 	 * @param array $defaults Default column headers.
 	 * @return array Modified column headers.
 	 */
-	public function dot_columns_head( $defaults ) {
+	public function irecommendthis_columns_head( $defaults ) {
 		$defaults['likes'] = __( 'Likes', 'i-recommend-this' );
 		return $defaults;
 	}
@@ -393,7 +393,7 @@ class Themeist_IRecommendThis_Admin {
 	 * @param bool   $is_return   Whether to return the content (default: false).
 	 * @return string|null Content if $is_return is true, null if output directly.
 	 */
-	public function dot_column_content( $column_name, $post_ID, $is_return = false ) {
+	public function irecommendthis_column_content( $column_name, $post_ID, $is_return = false ) {
 		if ( 'likes' === $column_name ) {
 			$content = get_post_meta( $post_ID, '_recommended', true ) . ' ' . __( 'like', 'i-recommend-this' );
 
@@ -410,7 +410,7 @@ class Themeist_IRecommendThis_Admin {
 	 * @param array $columns Existing columns.
 	 * @return array Modified columns.
 	 */
-	public function dot_column_register_sortable( $columns ) {
+	public function irecommendthis_column_register_sortable( $columns ) {
 		$columns['likes'] = 'likes';
 		return $columns;
 	}
@@ -421,7 +421,7 @@ class Themeist_IRecommendThis_Admin {
 	 * @param array $vars The current query variables.
 	 * @return array Modified query variables.
 	 */
-	public function dot_column_orderby( $vars ) {
+	public function irecommendthis_column_orderby( $vars ) {
 		if ( isset( $vars['orderby'] ) && 'likes' === $vars['orderby'] ) {
 			$vars = array_merge(
 				$vars,
