@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+		{
+			"label": "phpcs",
+			"type": "shell",
+			"command": "~/.composer/vendor/bin/phpcs",
+			"args": [
+				"--standard=WordPress",
+				"${file}"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"detail": "Run PHP CodeSniffer"
+		}
+	]
+}
