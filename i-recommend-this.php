@@ -29,7 +29,7 @@ define( 'THEMEIST_IRT_DB_VERSION', '2.6.2' );
 
 // Require includes.
 require_once __DIR__ . '/includes/class-i-recommend-this.php';
-require_once __DIR__ . '/admin/class-i-recommend-this-admin.php';
+require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';
 require_once __DIR__ . '/public/class-i-recommend-this-public.php';
 require_once __DIR__ . '/public/class-widget-most-recommended-posts.php';
 require_once __DIR__ . '/includes/functions.php';
