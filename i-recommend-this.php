@@ -30,7 +30,11 @@ define( 'THEMEIST_IRT_DB_VERSION', '2.6.2' );
 // Require includes.
 require_once __DIR__ . '/includes/class-themeist-irecommendthis.php';
 require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';
-require_once __DIR__ . '/public/class-i-recommend-this-public.php';
+require_once __DIR__ . '/public/class-themeist-irecommendthis-public.php';
+require_once __DIR__ . '/public/class-themeist-irecommendthis-ajax.php';
+//require_once __DIR__ . '/public/class-themeist-irecommendthis-scripts.php';
+require_once __DIR__ . '/public/class-themeist-irecommendthis-content.php';
+require_once __DIR__ . '/public/class-themeist-irecommendthis-top-posts.php';
 require_once __DIR__ . '/public/class-themeist-most-recommended-posts-widget.php';
 require_once __DIR__ . '/public/register-widget.php';
 require_once __DIR__ . '/includes/functions.php';
@@ -49,3 +53,19 @@ $themeist_i_recommend_this_admin->add_admin_hooks();
 global $themeist_i_recommend_this_public;
 $themeist_i_recommend_this_public = new Themeist_IRecommendThis_Public( __FILE__ );
 $themeist_i_recommend_this_public->add_public_hooks();
+
+global $themeist_i_recommend_this_ajax;
+$themeist_i_recommend_this_ajax = new Themeist_IRecommendThis_Ajax( __FILE__ );
+$themeist_i_recommend_this_ajax->add_ajax_hooks();
+
+global $themeist_i_recommend_this_scripts;
+$themeist_i_recommend_this_scripts = new Themeist_IRecommendThis_Scripts( __FILE__ );
+$themeist_i_recommend_this_scripts->add_scripts_hooks();
+
+global $themeist_i_recommend_this_content;
+$themeist_i_recommend_this_content = new Themeist_IRecommendThis_Content( __FILE__ );
+$themeist_i_recommend_this_content->add_content_hooks();
+
+global $themeist_i_recommend_this_top_posts;
+$themeist_i_recommend_this_top_posts = new Themeist_IRecommendThis_Top_Posts( __FILE__ );
+$themeist_i_recommend_this_top_posts->add_top_posts_hooks();

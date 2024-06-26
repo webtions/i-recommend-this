@@ -1,14 +1,34 @@
 <?php
+/**
+ * Public class for handling front-end operations of the I Recommend This plugin.
+ *
+ * @package IRecommendThis
+ */
 
+/**
+ * Class Themeist_IRecommendThis_Public
+ */
 class Themeist_IRecommendThis_Public {
 
 	/**
-	 * @param string $plugin_file
+	 * Plugin file path.
+	 *
+	 * @var string
+	 */
+	private $plugin_file;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param string $plugin_file The main plugin file path.
 	 */
 	public function __construct( $plugin_file ) {
 		$this->plugin_file = $plugin_file;
 	}
 
+	/**
+	 * Add public hooks.
+	 */
 	public function add_public_hooks() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_dot-irecommendthis', array( $this, 'ajax_callback' ) );
@@ -18,33 +38,31 @@ class Themeist_IRecommendThis_Public {
 		add_shortcode( 'dot_recommended_posts', array( $this, 'dot_recommended_top_posts' ) );
 	}
 
-	/*
-	--------------------------------------------*
-	 * Enqueue Scripts
-	 *--------------------------------------------*/
-
-	function enqueue_scripts() {
-		// Get plugin settings
+	/**
+	 * Enqueue Scripts.
+	 */
+	public function enqueue_scripts() {
+		// Get plugin settings.
 		$options = get_option( 'dot_irecommendthis_settings' );
 
-		// Validate and set default values for CSS options
+		// Validate and set default values for CSS options.
 		$disable_css     = isset( $options['disable_css'] ) ? intval( $options['disable_css'] ) : 0;
 		$recommend_style = isset( $options['recommend_style'] ) ? intval( $options['recommend_style'] ) : 0;
 
-		// Enqueue styles if CSS is not disabled
-		if ( $disable_css === 0 ) {
-			$css_file = ( $recommend_style === 0 ) ? 'dot-irecommendthis.css' : 'dot-irecommendthis-heart.css';
-			wp_enqueue_style( 'dot-irecommendthis', plugins_url( '/css/' . $css_file, $this->plugin_file ) );
+		// Enqueue styles if CSS is not disabled.
+		if ( 0 === $disable_css ) {
+			$css_file = ( 0 === $recommend_style ) ? 'dot-irecommendthis.css' : 'dot-irecommendthis-heart.css';
+			wp_enqueue_style( 'dot-irecommendthis', plugins_url( '/css/' . $css_file, $this->plugin_file ), array(), '1.0.0' ); // Add version here.
 		}
 
-		// Register and enqueue the main JavaScript file
+		// Register and enqueue the main JavaScript file.
 		wp_register_script( 'dot-irecommendthis', plugins_url( '/js/dot_irecommendthis.js', $this->plugin_file ), array( 'jquery' ), '2.6.0', true );
 		wp_enqueue_script( 'dot-irecommendthis' );
 
-		// Enqueue jQuery, if not already enqueued
+		// Enqueue jQuery, if not already enqueued.
 		wp_enqueue_script( 'jquery' );
 
-		// Create a nonce for secure AJAX requests and localize it
+		// Create a nonce for secure AJAX requests and localize it.
 		$nonce = wp_create_nonce( 'dot-irecommendthis-nonce' );
 		wp_localize_script(
 			'dot-irecommendthis',
@@ -56,20 +74,21 @@ class Themeist_IRecommendThis_Public {
 		);
 	}
 
-	/*
-	--------------------------------------------*
-	 * Content / Front-end view
-	 *--------------------------------------------*/
-
-	function dot_content( $content ) {
-		// Don't show on custom page templates or pages
+	/**
+	 * Filter content to include recommendation link.
+	 *
+	 * @param string $content The content of the post.
+	 * @return string The content with the recommendation link.
+	 */
+	public function dot_content( $content ) {
+		// Don't show on custom page templates or pages.
 		if ( is_page_template() || is_page() || is_front_page() ) {
 			return $content;
 		}
 
-		// Don't show after excerpts
+		// Don't show after excerpts.
 		global $wp_current_filter;
-		if ( in_array( 'get_the_excerpt', (array) $wp_current_filter ) ) {
+		if ( in_array( 'get_the_excerpt', (array) $wp_current_filter, true ) ) {
 			return $content;
 		}
 
@@ -89,64 +108,67 @@ class Themeist_IRecommendThis_Public {
 		}
 
 		return $content;
-	}    //dot_content
+	}
 
-	/*
-	--------------------------------------------*
-	 * AJAX Callback
-	 *--------------------------------------------*/
+	/**
+	 * AJAX callback to handle recommendations.
+	 */
+	public function ajax_callback() {
+		// Verify the nonce.
+		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'dot-irecommendthis-nonce' ) ) {
+			wp_die( 'Nonce verification failed. This request is not valid.' );
+		}
 
-	function ajax_callback( $post_id ) {
-		// Verify the nonce
-		if ( isset( $_POST['security'] ) || wp_verify_nonce( $_POST['security'], 'dot-irecommendthis-nonce' ) ) {
-			$options = get_option( 'dot_irecommendthis_settings' );
-			if ( ! isset( $options['add_to_posts'] ) ) {
-				$options['add_to_posts'] = '1';
-			}
-			if ( ! isset( $options['add_to_other'] ) ) {
-				$options['add_to_other'] = '1';
-			}
-			if ( ! isset( $options['text_zero_suffix'] ) ) {
-				$options['text_zero_suffix'] = '';
-			}
-			if ( ! isset( $options['text_one_suffix'] ) ) {
-				$options['text_one_suffix'] = '';
-			}
-			if ( ! isset( $options['text_more_suffix'] ) ) {
-				$options['text_more_suffix'] = '';
-			}
+		$options = get_option( 'dot_irecommendthis_settings' );
+		if ( ! isset( $options['add_to_posts'] ) ) {
+			$options['add_to_posts'] = '1';
+		}
+		if ( ! isset( $options['add_to_other'] ) ) {
+			$options['add_to_other'] = '1';
+		}
+		if ( ! isset( $options['text_zero_suffix'] ) ) {
+			$options['text_zero_suffix'] = '';
+		}
+		if ( ! isset( $options['text_one_suffix'] ) ) {
+			$options['text_one_suffix'] = '';
+		}
+		if ( ! isset( $options['text_more_suffix'] ) ) {
+			$options['text_more_suffix'] = '';
+		}
 
-			if ( isset( $_POST['recommend_id'] ) ) {
-				// Click event. Get and Update Count
-				$post_id = intval( str_replace( 'dot-irecommendthis-', '', $_POST['recommend_id'] ) );
-				echo $this->dot_recommend_this( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'update' );
-			} else {
-				// AJAXing data in. Get Count
-				$post_id = intval( str_replace( 'dot-irecommendthis-', '', $_POST['post_id'] ) );
-				echo $this->dot_recommend_this( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'get' );
-			}
+		if ( isset( $_POST['recommend_id'] ) ) {
+			// Click event. Get and Update Count.
+			$post_id = intval( str_replace( 'dot-irecommendthis-', '', sanitize_text_field( wp_unslash( $_POST['recommend_id'] ) ) ) );
+			echo esc_html( $this->dot_recommend_this( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'update' ) );
 		} else {
-			// Nonce verification failed
-			die( 'Nonce verification failed. This request is not valid.' );
+			// AJAXing data in. Get Count.
+			$post_id = intval( str_replace( 'dot-irecommendthis-', '', sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) ) );
+			echo esc_html( $this->dot_recommend_this( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'get' ) );
 		}
 
 		exit;
 	}
 
-	/*
-	--------------------------------------------*
-	 * Main Process
-	 *--------------------------------------------*/
-	function dot_recommend_this( $post_id, $text_zero_suffix = false, $text_one_suffix = false, $text_more_suffix = false, $action = 'get' ) {
-		global $wpdb;
+    /**
+     * Handle recommendation logic.
+     *
+     * @param int $post_id Post ID.
+     * @param string $text_zero_suffix Text for zero recommendations.
+     * @param string $text_one_suffix Text for one recommendation.
+     * @param string $text_more_suffix Text for more than one recommendation.
+     * @param string $action The action to perform: 'get' or 'update'.
+     * @return string The recommendation count and suffix.
+     */
+    private function dot_recommend_this( $post_id, $text_zero_suffix = '', $text_one_suffix = '', $text_more_suffix = '', $action = 'get' ) {
+        global $wpdb;
 
-		if ( ! is_numeric( $post_id ) ) {
-			return;
-		}
+        if ( ! is_numeric( $post_id ) ) {
+            return '';
+        }
 
-		$text_zero_suffix = sanitize_text_field( $text_zero_suffix );
-		$text_one_suffix  = sanitize_text_field( $text_one_suffix );
-		$text_more_suffix = sanitize_text_field( $text_more_suffix );
+        $text_zero_suffix = sanitize_text_field( $text_zero_suffix );
+        $text_one_suffix  = sanitize_text_field( $text_one_suffix );
+        $text_more_suffix = sanitize_text_field( $text_more_suffix );
 
 		switch ( $action ) {
 			case 'get':
