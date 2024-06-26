@@ -4,3 +4,6 @@ vendor
 .idea
 .DS_Store
 .php-cs-fixer.cache
+
+# Ignore files containing the word "copy"
+*copy*

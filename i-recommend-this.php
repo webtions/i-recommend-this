@@ -33,6 +33,7 @@ require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';
 require_once __DIR__ . '/public/class-themeist-irecommendthis-public.php';
 require_once __DIR__ . '/public/class-themeist-most-recommended-posts-widget.php';
 require_once __DIR__ . '/includes/class-themeist-irecommendthis-ajax.php';
+require_once __DIR__ . '/includes/class-themeist-irecommendthis-shortcodes.php';
 require_once __DIR__ . '/includes/functions.php';
 
 // Create instance of plugin class.
@@ -51,5 +52,9 @@ $themeist_i_recommend_this_public = new Themeist_IRecommendThis_Public( __FILE__
 $themeist_i_recommend_this_public->add_public_hooks();
 
 // Create instance of AJAX class and add hooks.
+global $themeist_i_recommend_this_ajax;
 $themeist_i_recommend_this_ajax = new Themeist_IRecommendThis_Ajax();
 $themeist_i_recommend_this_ajax->add_ajax_hooks();
+
+// Register shortcodes
+Themeist_IRecommendThis_Shortcodes::register_shortcodes();
