@@ -4,7 +4,7 @@ Donate link: https://themeist.com
 Tags: recommend, like, love, post, rate, rating, post rating, heart, dribbble like, tumblr like
 Requires at least: 6.0
 Tested up to: 6.3.2
-Stable tag: 3.9.0
+Stable tag: 3.9.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -101,6 +101,9 @@ You can also visit the [support center](https://wordpress.org/support/plugin/i-r
 Please report security bugs found in the source code through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/i-recommend-this). The Patchstack team will assist you with verification, CVE assignment and take care of notifying the developers of this plugin.
 
 == Changelog ==
+
+= 3.9.1
+* Security update
 
 = 3.9.0
 * Added support for un-recommending/un-liking a post
