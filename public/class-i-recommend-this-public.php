@@ -84,7 +84,7 @@ class Themeist_IRecommendThis_Public {
 
 	function ajax_callback($post_id) {
 		// Verify the nonce
-		if (isset($_POST['security']) || wp_verify_nonce($_POST['security'], 'dot-irecommendthis-nonce')) {
+		if (isset($_POST['security']) && wp_verify_nonce($_POST['security'], 'dot-irecommendthis-nonce')) {
 			$options = get_option('dot_irecommendthis_settings');
 			if (!isset($options['add_to_posts'])) $options['add_to_posts'] = '1';
 			if (!isset($options['add_to_other'])) $options['add_to_other'] = '1';
