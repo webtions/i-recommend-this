@@ -1,24 +1,47 @@
 .dot-irecommendthis {
-    background: url(../images/heart.png) no-repeat 0 center; /* Center the icon vertically */
-    padding-left: 20px; /* Adjust padding to align with text */
-    border: 0;
-    margin-bottom: 10px;
-    display: inline-flex; /* Use flexbox for better alignment */
-    align-items: center; /* Center items vertically */
-    text-decoration: none;
-    min-height: 14px;
-    -webkit-box-shadow: none;
-    box-shadow: none;
+	padding-left: 30px; /* Increase padding to accommodate the icon */
+	border: 0;
+	margin-bottom: 10px;
+	display: inline-block;
+	text-decoration: none;
+	min-height: 24px;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	color: initial; /* Set the initial color */
+	position: relative;
+	line-height: 1.5; /* Adjust line-height to align icon with text */
+}
+
+.dot-irecommendthis::before {
+	content: '';
+	display: inline-block;
+	width: 24px; /* Adjust width for larger icon */
+	height: 24px; /* Adjust height for larger icon */
+	position: absolute;
+	left: 0;
+	top: 50%; /* Position it at the middle of the text */
+	transform: translateY(-50%); /* Center the icon vertically */
+	background-image: url('data:image/svg+xml;utf8,<svg width="24px" height="24px" viewBox="-2 -4 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin" class="jam jam-heart"><path d="M3.636 7.208 10 13.572l6.364-6.364a3 3 0 1 0-4.243-4.243L10 5.086l-2.121-2.12a3 3 0 0 0-4.243 4.242M9.293 1.55l.707.707.707-.707a5 5 0 1 1 7.071 7.071l-7.07 7.071a1 1 0 0 1-1.415 0l-7.071-7.07a5 5 0 1 1 7.07-7.071z"/></svg>');
+	background-size: contain; /* Make sure the icon covers the area */
+	background-repeat: no-repeat;
+	transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.dot-irecommendthis:hover::before {
+	transform: scale(1.2) translateY(-50%); /* Add pulse effect and keep vertical alignment */
+	filter: brightness(0) saturate(100%) invert(40%) sepia(61%) saturate(592%) hue-rotate(319deg) brightness(98%) contrast(100%); /* Change color */
+}
+
+.dot-irecommendthis.active::before {
+	transform: scale(1) translateY(-50%); /* Reset size and keep vertical alignment for active state */
+	filter: brightness(0) saturate(100%) invert(40%) sepia(61%) saturate(592%) hue-rotate(319deg) brightness(98%) contrast(100%); /* Change color */
 }
 
 .dot-irecommendthis:hover,
 .dot-irecommendthis.active {
-    background-position: 0 -23px;
-    color: #F56559 !important;
-    border: 0;
-    margin: 0 0 10px 0;
-    padding-left: 20px; /* Adjust padding to align with text */
-    text-decoration: none;
-    display: inline-flex; /* Use flexbox for better alignment */
-    align-items: center; /* Center items vertically */
+	color: #F56559 !important;
+	border: 0;
+	margin: 0 0 10px 0;
+	padding-left: 30px; /* Ensure padding matches the initial state */
+	text-decoration: none;
 }
