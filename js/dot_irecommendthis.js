@@ -15,8 +15,11 @@ jQuery(document).ready(function($) {
 			unrecommend: unrecommend,
 			security: nonce,  // Pass the nonce as part of the request
 		}, function(data) {
-			let title = unrecommend ? "Recommend this" : "You already recommended this";
-			link.html(data).toggleClass('active').attr('title', title);
+			// Update all like buttons with the same post ID
+			$('.dot-irecommendthis[id="' + id + '"]').each(function() {
+				let title = unrecommend ? "Recommend this" : "You already recommended this";
+				$(this).html(data).toggleClass('active').attr('title', title);
+			});
 		});
 
 		return false;
