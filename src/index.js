@@ -6,6 +6,7 @@ import './editor.scss';
 import './style.scss';
 
 registerBlockType('themeist/dot-recommends', {
+    apiVersion: 2,
     title: __('Dot Recommends', 'i-recommend-this'),
     icon: 'thumbs-up',
     category: 'widgets',

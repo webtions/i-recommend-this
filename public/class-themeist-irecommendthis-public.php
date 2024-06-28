@@ -1,14 +1,25 @@
 <?php
+/**
+ * Public-facing functionality for the I Recommend This plugin.
+ *
+ * @package Themeist_IRecommendThis
+ */
+
 
 class Themeist_IRecommendThis_Public {
 
 	/**
-	 * @param string $plugin_file
+	 * Constructor to initialize the class.
+	 *
+	 * @param string $plugin_file The main plugin file path.
 	 */
 	public function __construct( $plugin_file ) {
 		$this->plugin_file = $plugin_file;
 	}
 
+	/**
+	 * Add hooks for the public-facing functionality.
+	 */
 	public function add_public_hooks() {
 	    add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	    add_filter( 'the_content', array( $this, 'dot_content' ) );
@@ -16,10 +27,9 @@ class Themeist_IRecommendThis_Public {
 	    // add_shortcode( 'dot_recommended_posts', array( $this, 'dot_recommended_top_posts' ) );
 	}
 
-	/*--------------------------------------------*
-	 * Enqueue Scripts
-	 *--------------------------------------------*/
-
+	/**
+	 * Enqueue scripts and styles for the plugin.
+	 */
 	function enqueue_scripts()
 	{
 		// Get plugin settings
@@ -50,10 +60,12 @@ class Themeist_IRecommendThis_Public {
 		));
 	}
 
-	/*--------------------------------------------*
-	 * Content / Front-end view
-	 *--------------------------------------------*/
-
+	/**
+	 * Filter the content to include the recommendation button.
+	 *
+	 * @param string $content The original content.
+	 * @return string Modified content with the recommendation button.
+	 */
 	public function dot_content( $content ) {
 	    if ( is_page_template() || is_page() || is_front_page() ) {
 	        return $content;
@@ -78,9 +90,16 @@ class Themeist_IRecommendThis_Public {
 	    return $content;
 	}
 
-	/*--------------------------------------------*
-	 * Main Process
-	 *--------------------------------------------*/
+	/**
+	 * Main Process.
+	 *
+	 * @param int $post_id Post ID.
+	 * @param string $text_zero_suffix Text for zero suffix.
+	 * @param string $text_one_suffix Text for one suffix.
+	 * @param string $text_more_suffix Text for more suffix.
+	 * @param string $action Action to perform.
+	 * @return string HTML output for the recommendation button.
+	 */
 	public static function dot_recommend_this($post_id, $text_zero_suffix = false, $text_one_suffix = false, $text_more_suffix = false, $action = 'get')
 	{
 		global $wpdb;

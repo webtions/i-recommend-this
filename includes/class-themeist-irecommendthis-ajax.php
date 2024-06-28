@@ -3,17 +3,9 @@
 class Themeist_IRecommendThis_Ajax {
 
 	/**
-	 * Add hooks for AJAX functionality.
-	 */
-	public function add_ajax_hooks() {
-		add_action( 'wp_ajax_dot-irecommendthis', array( $this, 'ajax_callback' ) );
-		add_action( 'wp_ajax_nopriv_dot-irecommendthis', array( $this, 'ajax_callback' ) );
-	}
-
-	/**
 	 * AJAX Callback for recommendation.
 	 */
-	public function ajax_callback() {
+	public static function ajax_callback() {
 		if ( isset( $_POST['security'] ) && wp_verify_nonce( $_POST['security'], 'dot-irecommendthis-nonce' ) ) {
 			$options = get_option( 'dot_irecommendthis_settings' );
 			$text_zero_suffix = isset( $options['text_zero_suffix'] ) ? $options['text_zero_suffix'] : '';
@@ -32,5 +24,13 @@ class Themeist_IRecommendThis_Ajax {
 		}
 
 		exit;
+	}
+
+	/**
+	 * Add AJAX hooks.
+	 */
+	public function add_ajax_hooks() {
+		add_action( 'wp_ajax_dot-irecommendthis', array( __CLASS__, 'ajax_callback' ) );
+		add_action( 'wp_ajax_nopriv_dot-irecommendthis', array( __CLASS__, 'ajax_callback' ) );
 	}
 }

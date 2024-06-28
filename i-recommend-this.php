@@ -56,13 +56,12 @@ global $themeist_i_recommend_this_ajax;
 $themeist_i_recommend_this_ajax = new Themeist_IRecommendThis_Ajax();
 $themeist_i_recommend_this_ajax->add_ajax_hooks();
 
-// Register shortcodes
+// Register shortcodes.
 Themeist_IRecommendThis_Shortcodes::register_shortcodes();
 
 /**
  * Enqueue block editor assets.
  */
-// Enqueue block editor assets for 'dot-recommends' block.
 function themeist_dot_recommends_block_editor_assets() {
 	wp_enqueue_script(
 		'themeist-dot-recommends-block-editor',
@@ -80,7 +79,9 @@ function themeist_dot_recommends_block_editor_assets() {
 }
 add_action( 'enqueue_block_editor_assets', 'themeist_dot_recommends_block_editor_assets' );
 
-// Enqueue frontend assets for 'dot-recommends' block.
+/**
+ * Enqueue frontend assets for 'dot-recommends' block.
+ */
 function themeist_dot_recommends_block_assets() {
 	wp_enqueue_style(
 		'themeist-dot-recommends-block',
@@ -91,3 +92,19 @@ function themeist_dot_recommends_block_assets() {
 }
 add_action( 'enqueue_block_assets', 'themeist_dot_recommends_block_assets' );
 
+/**
+ * Render callback for 'dot-recommends' block.
+ *
+ * @param array $attributes Block attributes.
+ * @return string HTML output for the block.
+ */
+function render_dot_recommends_block( $attributes ) {
+	$post_id = isset( $attributes['postId'] ) ? intval( $attributes['postId'] ) : get_the_ID();
+	return dot_irecommendthis( $post_id );
+}
+add_action( 'init', function() {
+	register_block_type( 'themeist/dot-recommends', array(
+		'api_version' => 2,
+		'render_callback' => 'render_dot_recommends_block',
+	) );
+});
