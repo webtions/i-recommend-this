@@ -58,3 +58,36 @@ $themeist_i_recommend_this_ajax->add_ajax_hooks();
 
 // Register shortcodes
 Themeist_IRecommendThis_Shortcodes::register_shortcodes();
+
+/**
+ * Enqueue block editor assets.
+ */
+// Enqueue block editor assets for 'dot-recommends' block.
+function themeist_dot_recommends_block_editor_assets() {
+	wp_enqueue_script(
+		'themeist-dot-recommends-block-editor',
+		plugins_url( 'build/index.js', __FILE__ ),
+		array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n' ),
+		filemtime( plugin_dir_path( __FILE__ ) . 'build/index.js' )
+	);
+
+	wp_enqueue_style(
+		'themeist-dot-recommends-block-editor',
+		plugins_url( 'build/index.css', __FILE__ ),
+		array( 'wp-edit-blocks' ),
+		filemtime( plugin_dir_path( __FILE__ ) . 'build/index.css' )
+	);
+}
+add_action( 'enqueue_block_editor_assets', 'themeist_dot_recommends_block_editor_assets' );
+
+// Enqueue frontend assets for 'dot-recommends' block.
+function themeist_dot_recommends_block_assets() {
+	wp_enqueue_style(
+		'themeist-dot-recommends-block',
+		plugins_url( 'build/style-index.css', __FILE__ ),
+		array(),
+		filemtime( plugin_dir_path( __FILE__ ) . 'build/style-index.css' )
+	);
+}
+add_action( 'enqueue_block_assets', 'themeist_dot_recommends_block_assets' );
+
