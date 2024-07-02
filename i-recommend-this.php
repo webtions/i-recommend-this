@@ -63,19 +63,37 @@ Themeist_IRecommendThis_Shortcodes::register_shortcodes();
  * Enqueue block editor assets.
  */
 function themeist_dot_recommends_block_editor_assets() {
-	wp_enqueue_script(
-		'themeist-dot-recommends-block-editor',
-		plugins_url( 'build/index.js', __FILE__ ),
-		array(
-			'wp-blocks',
-			'wp-element',
-			'wp-editor',
-			'wp-components',
-			'wp-i18n',
-		),
-		filemtime( plugin_dir_path( __FILE__ ) . 'build/index.js' ),
-		true // Load in footer.
-	);
+	$current_screen = get_current_screen();
+	if ( $current_screen && ! in_array( $current_screen->base, array( 'widgets', 'customize' ), true ) ) {
+		wp_enqueue_script(
+			'themeist-dot-recommends-block-editor',
+			plugins_url( 'build/index.js', __FILE__ ),
+			array(
+				'wp-blocks',
+				'wp-element',
+				'wp-editor',
+				'wp-components',
+				'wp-i18n',
+			),
+			filemtime( plugin_dir_path( __FILE__ ) . 'build/index.js' ),
+			true
+			// Load in footer.
+		);
+	} else {
+		wp_enqueue_script(
+			'themeist-dot-recommends-block-editor',
+			plugins_url( 'build/index.js', __FILE__ ),
+			array(
+				'wp-blocks',
+				'wp-element',
+				'wp-components',
+				'wp-i18n',
+			),
+			filemtime( plugin_dir_path( __FILE__ ) . 'build/index.js' ),
+			true
+			// Load in footer.
+		);
+	}//end if
 
 	wp_enqueue_style(
 		'themeist-dot-recommends-block-editor',
