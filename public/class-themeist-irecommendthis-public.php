@@ -191,6 +191,6 @@ class Themeist_IRecommendThis_Public {
 
 				$output = '<span class="dot-irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="dot-irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 				return apply_filters( 'dot_irt_before_count', $output );
-		}
+		}//end switch
 	}
 }
