@@ -66,8 +66,15 @@ function themeist_dot_recommends_block_editor_assets() {
 	wp_enqueue_script(
 		'themeist-dot-recommends-block-editor',
 		plugins_url( 'build/index.js', __FILE__ ),
-		array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n' ),
-		filemtime( plugin_dir_path( __FILE__ ) . 'build/index.js' )
+		array(
+			'wp-blocks',
+			'wp-element',
+			'wp-editor',
+			'wp-components',
+			'wp-i18n',
+		),
+		filemtime( plugin_dir_path( __FILE__ ) . 'build/index.js' ),
+		true // Load in footer.
 	);
 
 	wp_enqueue_style(
@@ -102,9 +109,16 @@ function render_dot_recommends_block( $attributes ) {
 	$post_id = isset( $attributes['postId'] ) ? intval( $attributes['postId'] ) : get_the_ID();
 	return dot_irecommendthis( $post_id );
 }
-add_action( 'init', function() {
-	register_block_type( 'themeist/dot-recommends', array(
-		'api_version' => 2,
-		'render_callback' => 'render_dot_recommends_block',
-	) );
-});
+
+add_action(
+	'init',
+	function () {
+		register_block_type(
+			'themeist/dot-recommends',
+			array(
+				'api_version'     => 2,
+				'render_callback' => 'render_dot_recommends_block',
+			)
+		);
+	}
+);
