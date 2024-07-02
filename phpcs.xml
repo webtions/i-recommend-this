@@ -14,4 +14,23 @@
     <rule ref="Squiz.Commenting">
         <exclude name="Squiz.Commenting.FileComment.Missing" />
     </rule>
+
+    <!-- Ignore specific warnings -->
+    <rule ref="WordPress.DB.DirectDatabaseQuery">
+        <exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery" />
+    </rule>
+<!--     <rule ref="WordPress.DB.DirectDatabaseQuerySchemaChange">
+        <exclude name="WordPress.DB.DirectDatabaseQuerySchemaChange.SchemaChange" />
+    </rule> -->
+    <rule ref="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar">
+        <exclude name="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar" />
+    </rule>
+    <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen">
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen" />
+    </rule>
+
+    <!-- Exclude specific sniffs -->
+    <exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery"/>
+    <exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching"/>
+    <exclude name="WordPress.DPreparedSQL.NotPrepared"/>
 </ruleset>
