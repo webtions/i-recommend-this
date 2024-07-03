@@ -57,7 +57,13 @@ $themeist_i_recommend_this_ajax = new Themeist_IRecommendThis_Ajax();
 $themeist_i_recommend_this_ajax->add_ajax_hooks();
 
 // Register shortcodes.
-Themeist_IRecommendThis_Shortcodes::register_shortcodes();
+//Themeist_IRecommendThis_Shortcodes::register_shortcodes();
+
+add_action( 'init', 'themeist_register_shortcodes' );
+
+function themeist_register_shortcodes() {
+	Themeist_IRecommendThis_Shortcodes::register_shortcodes();
+}
 
 /**
  * Enqueue block editor assets.
