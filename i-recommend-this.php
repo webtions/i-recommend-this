@@ -6,7 +6,7 @@
  * Version: 3.9.1
  * Author: Harish Chouhan, Themeist
  * Author URI: https://themeist.com/
- * Author Email: support@themeist.com
+ * Author Email: support@themeist.com/
  * Text Domain: i-recommend-this
  * License: GPL-3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -56,11 +56,11 @@ global $themeist_i_recommend_this_ajax;
 $themeist_i_recommend_this_ajax = new Themeist_IRecommendThis_Ajax();
 $themeist_i_recommend_this_ajax->add_ajax_hooks();
 
-// Register shortcodes.
-//Themeist_IRecommendThis_Shortcodes::register_shortcodes();
-
 add_action( 'init', 'themeist_register_shortcodes' );
 
+/**
+ * Register shortcodes.
+ */
 function themeist_register_shortcodes() {
 	Themeist_IRecommendThis_Shortcodes::register_shortcodes();
 }
