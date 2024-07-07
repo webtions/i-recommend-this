@@ -1,16 +1,45 @@
 .dot-irecommendthis {
-    background: url(../images/default.png) no-repeat 0 0;
-    padding: 0 0 0 20px;
-    border: 0;
-    margin-bottom: 10px;
-    display: inline-block;
-    text-decoration: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
+	padding-left: 30px; /* Increase padding to accommodate the icon */
+	border: 0;
+	margin-bottom: 10px;
+	display: inline-block;
+	text-decoration: none;
+	min-height: 24px;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	color: initial; /* Set the initial color */
+	position: relative;
+}
+
+.dot-irecommendthis::before {
+	content: '';
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	background-image: url('data:image/svg+xml;utf8,<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.08409 10.6629L10.3393 3.23907C10.79 2.21121 11.9999 1.68012 12.9811 2.2056C14.5081 3.0234 14.2018 3.78995 14.2018 8.60158H19.9659C21.2123 8.60158 22.1654 9.72766 21.9759 10.9763L20.568 20.2521C20.4154 21.2577 19.5618 22 18.558 22H7.08409M7.08409 10.6629V22M7.08409 10.6629H4.03364C2.91049 10.6629 2 11.5857 2 12.7242V19.9387C2 21.0771 2.91049 22 4.03364 22L7.08409 22" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+	background-size: contain;
+	background-repeat: no-repeat;
+	transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.dot-irecommendthis:hover::before {
+	transform: scale(1.2); /* Add pulse effect */
+	filter: brightness(0) saturate(100%) invert(40%) sepia(61%) saturate(592%) hue-rotate(319deg) brightness(98%) contrast(100%); /* Change color */
+}
+
+.dot-irecommendthis.active::before {
+	transform: scale(1); /* Reset size for active state */
+	filter: brightness(0) saturate(100%) invert(40%) sepia(61%) saturate(592%) hue-rotate(319deg) brightness(98%) contrast(100%); /* Change color */
 }
 
 .dot-irecommendthis:hover,
 .dot-irecommendthis.active {
-    background-position: 0 -24px;
-    color: #F56559;
+	color: #F56559 !important;
+	border: 0;
+	margin: 0 0 10px 0;
+	padding-left: 30px; /* Ensure padding matches the initial state */
+	text-decoration: none;
 }
