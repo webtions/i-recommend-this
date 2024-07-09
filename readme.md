@@ -34,7 +34,7 @@
 - Watch for changes and rebuild assets automatically:
 
   ```sh
-  npm run watch
+  npm run start
   ```
 
 - Run PHP CodeSniffer:
