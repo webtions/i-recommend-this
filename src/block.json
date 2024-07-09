@@ -1,7 +1,7 @@
 {
     "apiVersion": 2,
-    "name": "themeist/dot-recommends",
-    "title": "Dot Recommends",
+    "name": "irecommendthis/recommend",
+    "title": "I Recommend This",
     "category": "widgets",
     "icon": "thumbs-up",
     "description": "A block for the 'I Recommend This' plugin.",

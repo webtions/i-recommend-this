@@ -5,9 +5,9 @@ import save from './save';
 import './editor.scss';
 import './style.scss';
 
-registerBlockType('themeist/dot-recommends', {
+registerBlockType('irecommendthis/recommend', {
     apiVersion: 2,
-    title: __('Dot Recommends', 'i-recommend-this'),
+    title: __('I Recommend This', 'i-recommend-this'),
     icon: 'thumbs-up',
     category: 'widgets',
     attributes: {
