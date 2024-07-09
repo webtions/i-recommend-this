@@ -20,7 +20,6 @@
 
    ```sh
    npm install
-   composer install
    ```
 
 ## Development Commands
@@ -35,18 +34,6 @@
 
   ```sh
   npm run start
-  ```
-
-- Run PHP CodeSniffer:
-
-  ```sh
-  composer run phpcs
-  ```
-
-- Fix coding standards issues:
-
-  ```sh
-  composer run phpcbf
   ```
 
 ## License
