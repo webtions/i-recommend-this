@@ -23,8 +23,6 @@
    composer install
    ```
 
-4. Link the plugin directory to your local WordPress `wp-content/plugins` directory.
-
 ## Development Commands
 
 - Build assets:
