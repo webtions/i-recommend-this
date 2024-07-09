@@ -10,8 +10,17 @@ class Themeist_IRecommendThis_Shortcodes {
 	 * Register shortcodes.
 	 */
 	public static function register_shortcodes() {
+		// Old shortcode name.
 		add_shortcode( 'dot_recommends', array( __CLASS__, 'shortcode_dot_recommends' ) );
+
+		// New shortcode name.
+		add_shortcode( 'irecommendthis', array( __CLASS__, 'shortcode_dot_recommends' ) );
+
+		// Old shortcode name.
 		add_shortcode( 'dot_recommended_top_posts', array( __CLASS__, 'shortcode_dot_recommended_top_posts' ) );
+
+		// New shortcode name.
+		add_shortcode( 'irecommendthis_top_posts', array( __CLASS__, 'shortcode_dot_recommended_top_posts' ) );
 	}
 
 	/**
@@ -21,6 +30,7 @@ class Themeist_IRecommendThis_Shortcodes {
 	 * @return string HTML output for the recommendation button.
 	 */
 	public static function shortcode_dot_recommends( $atts ) {
+
 		$atts = shortcode_atts( array( 'id' => null ), $atts );
 		return self::dot_recommend( intval( $atts['id'] ) );
 	}
