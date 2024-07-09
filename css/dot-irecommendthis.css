@@ -1,24 +1,29 @@
 .dot-irecommendthis {
-	padding-left: 30px; /* Increase padding to accommodate the icon */
+	padding-left: 2em; /* Decrease padding to accommodate the smaller icon */
 	border: 0;
-	margin-bottom: 10px;
+	margin-bottom: 0.625em;
 	display: inline-block;
-	text-decoration: none;
-	min-height: 24px;
+	text-decoration: underline; /* Add underline */
+	text-underline-offset: 0.2em; /* Space between text and underline */
+	min-height: 1.5em;
 	-webkit-box-shadow: none;
 	box-shadow: none;
-	color: initial; /* Set the initial color */
+	color: initial;
 	position: relative;
+	line-height: 1.5;
+	height: 1.5em; /* Fixed height to avoid content shift and match icon size */
+	font-weight: bold;
 }
 
 .dot-irecommendthis::before {
 	content: '';
 	display: inline-block;
-	width: 24px;
-	height: 24px;
+	width: 1.5em; /* Adjust width for icon size */
+	height: 1.5em; /* Adjust height for icon size */
 	position: absolute;
 	left: 0;
-	top: 0;
+	top: 50%;
+	transform: translateY(-50%); /* Center the icon vertically */
 	background-image: url('data:image/svg+xml;utf8,<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.08409 10.6629L10.3393 3.23907C10.79 2.21121 11.9999 1.68012 12.9811 2.2056C14.5081 3.0234 14.2018 3.78995 14.2018 8.60158H19.9659C21.2123 8.60158 22.1654 9.72766 21.9759 10.9763L20.568 20.2521C20.4154 21.2577 19.5618 22 18.558 22H7.08409M7.08409 10.6629V22M7.08409 10.6629H4.03364C2.91049 10.6629 2 11.5857 2 12.7242V19.9387C2 21.0771 2.91049 22 4.03364 22L7.08409 22" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
 	background-size: contain;
 	background-repeat: no-repeat;
@@ -26,12 +31,12 @@
 }
 
 .dot-irecommendthis:hover::before {
-	transform: scale(1.2); /* Add pulse effect */
+	transform: scale(1.2) translateY(-50%);
 	filter: brightness(0) saturate(100%) invert(40%) sepia(61%) saturate(592%) hue-rotate(319deg) brightness(98%) contrast(100%); /* Change color */
 }
 
 .dot-irecommendthis.active::before {
-	transform: scale(1); /* Reset size for active state */
+	transform: scale(1) translateY(-50%);
 	filter: brightness(0) saturate(100%) invert(40%) sepia(61%) saturate(592%) hue-rotate(319deg) brightness(98%) contrast(100%); /* Change color */
 }
 
@@ -39,7 +44,8 @@
 .dot-irecommendthis.active {
 	color: #F56559 !important;
 	border: 0;
-	margin: 0 0 10px 0;
-	padding-left: 30px; /* Ensure padding matches the initial state */
-	text-decoration: none;
+	padding-left: 2em;
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+	font-weight: bold;
 }
