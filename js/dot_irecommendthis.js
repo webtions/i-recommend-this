@@ -25,10 +25,26 @@ jQuery(document).ready(function($) {
 			unrecommend: unrecommend,
 			security: nonce,
 		}, function(data) {
-			let title = unrecommend ? "Recommend this" : "You already recommended this";
+			// Get the correct titles from the plugin settings
+			var options = JSON.parse(dot_irecommendthis.options);
+			var title_new = options.link_title_new || "Recommend this";
+			var title_active = options.link_title_active || "You already recommended this";
+
+			let title = unrecommend ? title_new : title_active;
 
 			// Update all buttons with the same id
-			$('.dot-irecommendthis[id="' + id + '"]').html(data).toggleClass('active').attr('title', title);
+			$('.dot-irecommendthis[id="' + id + '"]').each(function() {
+				$(this).html(data).toggleClass('active').attr('title', title);
+
+				// Check if the count is zero and hide if necessary
+				var count = $(this).find('.dot-irecommendthis-count').text().trim();
+
+				if (parseInt(count) === 0 && parseInt(options.hide_zero) === 1) {
+					$(this).find('.dot-irecommendthis-count').hide();
+				} else {
+					$(this).find('.dot-irecommendthis-count').show();
+				}
+			});
 
 			// Remove processing class to allow future clicks
 			$('.dot-irecommendthis[id="' + id + '"]').removeClass('processing');

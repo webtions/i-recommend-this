@@ -57,12 +57,12 @@ class Themeist_IRecommendThis_Shortcodes {
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		if ( ! isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) && 0 === $vote_status_by_ip ) {
-			$class = 'dot-irecommendthis';
-			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
-		} else {
+		if ( isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) || $vote_status_by_ip > 0 ) {
 			$class = 'dot-irecommendthis active';
 			$title = empty( $options['link_title_active'] ) ? __( 'You already recommended this', 'i-recommend-this' ) : $options['link_title_active'];
+		} else {
+			$class = 'dot-irecommendthis';
+			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
 		}
 
 		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="dot-irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
@@ -71,6 +71,7 @@ class Themeist_IRecommendThis_Shortcodes {
 
 		return $dot_irt_html;
 	}
+
 
 	/**
 	 * Shortcode handler for displaying the top recommended posts.
