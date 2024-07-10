@@ -36,7 +36,7 @@ class Themeist_IRecommendThis_Public {
 
 		// Enqueue styles if CSS is not disabled.
 		if ( 0 === $disable_css ) {
-			$css_file = ( 0 === $recommend_style ) ? 'dot-irecommendthis.css' : 'dot-irecommendthis-heart.css';
+			$css_file = ( 0 === $recommend_style ) ? 'irecommendthis.css' : 'irecommendthis-heart.css';
 			$css_path = plugin_dir_path( $this->plugin_file ) . 'css/' . $css_file;
 			$css_url  = plugins_url( 'css/' . $css_file, $this->plugin_file );
 
