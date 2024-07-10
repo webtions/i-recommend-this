@@ -146,8 +146,8 @@ class Themeist_IRecommendThis_Public {
 			// Output HTML for the recommendation button.
 			$suffix = $get_suffix( $recommended );
 			$output = ( 0 === $recommended && 1 === $hide_zero )
-				? '<span class="dot-irecommendthis-count" style="display: none;">0</span> <span class="dot-irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
-				: '<span class="dot-irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="dot-irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
+				? '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
+				: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 
 			return apply_filters( 'dot_irt_before_count', $output );
 		}//end if
@@ -195,8 +195,8 @@ class Themeist_IRecommendThis_Public {
 			// Output HTML for the recommendation button.
 			$suffix = $get_suffix( $recommended );
 			$output = ( 0 === $recommended && 1 === $hide_zero )
-				? '<span class="dot-irecommendthis-count" style="display: none;">0</span> <span class="dot-irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
-				: '<span class="dot-irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="dot-irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
+				? '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
+				: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 
 			return apply_filters( 'dot_irt_before_count', $output );
 		}//end if

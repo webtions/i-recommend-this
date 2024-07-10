@@ -1,4 +1,4 @@
-.dot-irecommendthis {
+.irecommendthis {
 	padding-left: 2em; /* Decrease padding to accommodate the smaller icon */
 	border: 0;
 	margin-bottom: 0.625em;
@@ -15,7 +15,7 @@
 	font-weight: bold;
 }
 
-.dot-irecommendthis::before {
+.irecommendthis::before {
 	content: '';
 	display: inline-block;
 	width: 1.5em; /* Adjust width for icon size */
@@ -30,18 +30,18 @@
 	transition: transform 0.3s ease, filter 0.3s ease;
 }
 
-.dot-irecommendthis:hover::before {
+.irecommendthis:hover::before {
 	transform: scale(1.2) translateY(-50%);
 	filter: brightness(0) saturate(100%) invert(40%) sepia(61%) saturate(592%) hue-rotate(319deg) brightness(98%) contrast(100%); /* Change color */
 }
 
-.dot-irecommendthis.active::before {
+.irecommendthis.active::before {
 	transform: scale(1) translateY(-50%);
 	filter: brightness(0) saturate(100%) invert(40%) sepia(61%) saturate(592%) hue-rotate(319deg) brightness(98%) contrast(100%); /* Change color */
 }
 
-.dot-irecommendthis:hover,
-.dot-irecommendthis.active {
+.irecommendthis:hover,
+.irecommendthis.active {
 	color: #F56559 !important;
 	border: 0;
 	padding-left: 2em;

@@ -68,15 +68,15 @@ class Themeist_IRecommendThis_Shortcodes {
 		}
 
 		if ( isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) || $vote_status_by_ip > 0 ) {
-			$class = 'dot-irecommendthis active';
+			$class = 'irecommendthis active';
 			$title = empty( $options['link_title_active'] ) ? __( 'You already recommended this', 'i-recommend-this' ) : $options['link_title_active'];
 		} else {
-			$class = 'dot-irecommendthis';
+			$class = 'irecommendthis';
 			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
 		}
 
-		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="dot-irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
-		$dot_irt_html .= apply_filters( 'dot_irt_before_count', $output );
+		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
+		$dot_irt_html .= apply_filters( 'irecommendthis_before_count', $output );
 		$dot_irt_html .= '</a>';
 
 		return $dot_irt_html;
