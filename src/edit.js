@@ -8,10 +8,15 @@ export default function Edit({ attributes, setAttributes }) {
     const blockProps = useBlockProps();
 
     useEffect(() => {
-        if (!postId) {
+        if (postId === null || postId === undefined) {
             setAttributes({ postId: wp.data.select('core/editor').getCurrentPostId() });
         }
     }, []);
+
+    const handlePostIdChange = (value) => {
+        const newValue = value === '' ? '' : parseInt(value, 10);
+        setAttributes({ postId: newValue });
+    };
 
     return (
         <div {...blockProps}>
@@ -19,12 +24,12 @@ export default function Edit({ attributes, setAttributes }) {
                 <PanelBody title={__('Settings', 'i-recommend-this')}>
                     <TextControl
                         label={__('Post ID', 'i-recommend-this')}
-                        value={postId}
-                        onChange={(value) => setAttributes({ postId: parseInt(value, 10) })}
+                        value={postId === null || postId === undefined ? '' : postId}
+                        onChange={handlePostIdChange}
                     />
                 </PanelBody>
             </InspectorControls>
-            <div>[dot_recommends id="{postId}"]</div>
+            <p>[irecommendthis id="{postId}"]</p>
         </div>
     );
 }
