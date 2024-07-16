@@ -6,8 +6,8 @@ Requires at least: 6.0
 Tested up to: 6.5.5
 Stable tag: 3.9.1
 Requires PHP: 7.4
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GPL-3.0
+License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
 Enable your visitors to easily like or recommend your posts with a single click, enhancing engagement without the need for comments.
 
