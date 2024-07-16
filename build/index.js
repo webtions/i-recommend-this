@@ -58,7 +58,7 @@ module.exports = window["wp"]["element"];
   \************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"irecommendthis/recommend","version":"3.9.1","title":"I Recommend This","category":"widgets","icon":"thumbs-up","description":"Block to add recommend link.","supports":{"html":false},"attributes":{"postId":{"type":"number","default":null},"alignText":{"type":"string","default":"left"}},"textdomain":"i-recommend-this","editorScript":"file:./index.js"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"irecommendthis/recommend","version":"3.10.0","title":"I Recommend This","category":"widgets","icon":"thumbs-up","description":"Block to add recommend link.","supports":{"html":false},"attributes":{"postId":{"type":"number","default":null},"alignText":{"type":"string","default":"left"}},"textdomain":"i-recommend-this","editorScript":"file:./index.js"}');
 
 /***/ })
 
