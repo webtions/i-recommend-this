@@ -35,6 +35,7 @@ require_once __DIR__ . '/public/class-themeist-most-recommended-posts-widget.php
 require_once __DIR__ . '/includes/class-themeist-irecommendthis-ajax.php';
 require_once __DIR__ . '/includes/class-themeist-irecommendthis-shortcodes.php';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/block-registration.php';
 
 // Create instance of plugin class.
 global $themeist_i_recommend_this;
@@ -64,85 +65,3 @@ add_action( 'init', 'themeist_register_shortcodes' );
 function themeist_register_shortcodes() {
 	Themeist_IRecommendThis_Shortcodes::register_shortcodes();
 }
-
-/**
- * Enqueue block editor assets.
- */
-function themeist_dot_recommends_block_editor_assets() {
-	$current_screen = get_current_screen();
-	if ( $current_screen && ! in_array( $current_screen->base, array( 'widgets', 'customize' ), true ) ) {
-		wp_enqueue_script(
-			'themeist-dot-recommends-block-editor',
-			plugins_url( 'build/index.js', __FILE__ ),
-			array(
-				'wp-blocks',
-				'wp-element',
-				'wp-editor',
-				'wp-components',
-				'wp-i18n',
-			),
-			filemtime( plugin_dir_path( __FILE__ ) . 'build/index.js' ),
-			true
-			// Load in footer.
-		);
-	} else {
-		wp_enqueue_script(
-			'themeist-dot-recommends-block-editor',
-			plugins_url( 'build/index.js', __FILE__ ),
-			array(
-				'wp-blocks',
-				'wp-element',
-				'wp-components',
-				'wp-i18n',
-			),
-			filemtime( plugin_dir_path( __FILE__ ) . 'build/index.js' ),
-			true
-			// Load in footer.
-		);
-	}//end if
-
-	wp_enqueue_style(
-		'themeist-dot-recommends-block-editor',
-		plugins_url( 'build/index.css', __FILE__ ),
-		array( 'wp-edit-blocks' ),
-		filemtime( plugin_dir_path( __FILE__ ) . 'build/index.css' )
-	);
-}
-add_action( 'enqueue_block_editor_assets', 'themeist_dot_recommends_block_editor_assets' );
-
-/**
- * Enqueue frontend assets for 'dot-recommends' block.
- */
-function themeist_dot_recommends_block_assets() {
-	wp_enqueue_style(
-		'themeist-dot-recommends-block',
-		plugins_url( 'build/style-index.css', __FILE__ ),
-		array(),
-		filemtime( plugin_dir_path( __FILE__ ) . 'build/style-index.css' )
-	);
-}
-add_action( 'enqueue_block_assets', 'themeist_dot_recommends_block_assets' );
-
-/**
- * Render callback for 'dot-recommends' block.
- *
- * @param array $attributes Block attributes.
- * @return string HTML output for the block.
- */
-function render_dot_recommends_block( $attributes ) {
-	$post_id = isset( $attributes['postId'] ) ? intval( $attributes['postId'] ) : get_the_ID();
-	return dot_irecommendthis( $post_id );
-}
-
-add_action(
-	'init',
-	function () {
-		register_block_type(
-			'themeist/dot-recommends',
-			array(
-				'api_version'     => 2,
-				'render_callback' => 'render_dot_recommends_block',
-			)
-		);
-	}
-);

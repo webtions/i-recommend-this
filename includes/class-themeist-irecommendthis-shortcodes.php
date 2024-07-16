@@ -10,8 +10,17 @@ class Themeist_IRecommendThis_Shortcodes {
 	 * Register shortcodes.
 	 */
 	public static function register_shortcodes() {
+		// Old shortcode name.
 		add_shortcode( 'dot_recommends', array( __CLASS__, 'shortcode_dot_recommends' ) );
+
+		// New shortcode name.
+		add_shortcode( 'irecommendthis', array( __CLASS__, 'shortcode_dot_recommends' ) );
+
+		// Old shortcode name.
 		add_shortcode( 'dot_recommended_top_posts', array( __CLASS__, 'shortcode_dot_recommended_top_posts' ) );
+
+		// New shortcode name.
+		add_shortcode( 'irecommendthis_top_posts', array( __CLASS__, 'shortcode_dot_recommended_top_posts' ) );
 	}
 
 	/**
@@ -21,6 +30,7 @@ class Themeist_IRecommendThis_Shortcodes {
 	 * @return string HTML output for the recommendation button.
 	 */
 	public static function shortcode_dot_recommends( $atts ) {
+
 		$atts = shortcode_atts( array( 'id' => null ), $atts );
 		return self::dot_recommend( intval( $atts['id'] ) );
 	}
@@ -57,20 +67,21 @@ class Themeist_IRecommendThis_Shortcodes {
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		if ( ! isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) && 0 === $vote_status_by_ip ) {
-			$class = 'dot-irecommendthis';
-			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
-		} else {
-			$class = 'dot-irecommendthis active';
+		if ( isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) || $vote_status_by_ip > 0 ) {
+			$class = 'irecommendthis active';
 			$title = empty( $options['link_title_active'] ) ? __( 'You already recommended this', 'i-recommend-this' ) : $options['link_title_active'];
+		} else {
+			$class = 'irecommendthis';
+			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
 		}
 
-		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="dot-irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
-		$dot_irt_html .= apply_filters( 'dot_irt_before_count', $output );
+		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
+		$dot_irt_html .= apply_filters( 'irecommendthis_before_count', $output );
 		$dot_irt_html .= '</a>';
 
 		return $dot_irt_html;
 	}
+
 
 	/**
 	 * Shortcode handler for displaying the top recommended posts.

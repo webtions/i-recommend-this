@@ -1,10 +1,12 @@
 {
-    "apiVersion": 2,
-    "name": "themeist/dot-recommends",
-    "title": "Dot Recommends",
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "irecommendthis/recommend",
+    "version": "3.9.1",
+    "title": "I Recommend This",
     "category": "widgets",
     "icon": "thumbs-up",
-    "description": "A block for the 'I Recommend This' plugin.",
+    "description": "Block to add recommend link.",
     "supports": {
         "html": false
     },
@@ -12,9 +14,12 @@
         "postId": {
             "type": "number",
             "default": null
+        },
+        "alignText": {
+            "type": "string",
+            "default": "left"
         }
     },
-    "editorScript": "file:./index.js",
-    "editorStyle": "file:./editor.css",
-    "style": "file:./style.css"
+    "textdomain": "i-recommend-this",
+    "editorScript": "file:./index.js"
 }

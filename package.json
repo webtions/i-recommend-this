@@ -1,16 +1,16 @@
 {
 	"name": "i-recommend-this",
-	"version": "1.0.0",
+	"version": "3.9.1",
 	"description": "I Recommend This plugin block",
-	"main": "index.js",
+	"author": "hchouhan",
+	"license": "GPL-2.0-or-later",
+	"main": "build/index.js",
 	"scripts": {
 		"build": "wp-scripts build",
+		"packages-update": "wp-scripts packages-update",
 		"start": "wp-scripts start"
 	},
-	"author": "Your Name",
-	"license": "GPL-3.0",
 	"devDependencies": {
-		"@wordpress/scripts": "^19.2.4",
-		"mini-css-extract-plugin": "^2.9.0"
+		"@wordpress/scripts": "^27.9.0"
 	}
 }
