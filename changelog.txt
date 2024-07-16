@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 3.10.0 =
+* Security update
+* Code Refactor
+* Added Block
+
 = 3.9.1 =
 * Security update
 

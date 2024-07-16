@@ -4,7 +4,7 @@ Donate link: https://themeist.com
 Tags: recommend, like, love, post, rate
 Requires at least: 6.0
 Tested up to: 6.5.5
-Stable tag: 3.9.1
+Stable tag: 3.10.0
 Requires PHP: 7.4
 License: GPL-3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -33,8 +33,8 @@ Enable your visitors to easily like or recommend your posts with a single click,
 
 ### Shortcodes:
 
-- `[dot_recommends]` - Add the voting link to any page.
-- `[dot_recommended_posts post_type='post' container='div' number='10' year='2023' monthnum='7']` - Display most recommended posts.
+- `[irecommendthis]` - Add the voting link to any page.
+- `[irecommendthis_top_posts post_type='post' container='div' number='10' year='2023' monthnum='7']` - Display most recommended posts.
 
 
 This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin and has been modified after getting requests for the changes I had made on my website.
@@ -84,13 +84,13 @@ You can [help translate this plugin into your language](https://translate.wordpr
      `<?php if ( function_exists( 'dot_irecommendthis' ) ) dot_irecommendthis(); ?>`
 
 5. **Use Shortcodes**
-   - To display the recommend/like button on any page or post, use the `[dot_recommends]` shortcode.
-   - To display the most recommended posts, use the `[dot_recommended_posts]` shortcode with customizable attributes. Example:
-     `[dot_recommended_posts post_type='post' container='div' number='10' year='2023' monthnum='7']`
+   - To display the recommend/like button on any page or post, use the `[irecommendthis]` shortcode.
+   - To display the most recommended posts, use the `[irecommendthis_top_posts]` shortcode with customizable attributes. Example:
+     `[irecommendthis_top_posts post_type='post' container='div' number='10' year='2023' monthnum='7']`
 
 6. **Display the Most Recommended Posts**
    - To display the most recommended posts in your theme templates, use the following code:
-     ```<?php if ( function_exists( 'dot_irecommendthis' ) ) echo do_shortcode( "[dot_recommended_posts container='div' post_type='post' number='10' year='2023' monthnum='7']" ); ?>`
+     ```<?php if ( function_exists( 'dot_irecommendthis' ) ) echo do_shortcode( "[irecommendthis_top_posts container='div' post_type='post' number='10' year='2023' monthnum='7']" ); ?>`
 
 7. **Add the Most Recommended Posts Widget**
    - The plugin includes a widget to display the most recommended posts.
@@ -138,6 +138,11 @@ You can also visit the [support center](https://wordpress.org/support/plugin/i-r
 Please report security bugs found in the source code through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/i-recommend-this). The Patchstack team will assist you with verification, CVE assignment and take care of notifying the developers of this plugin.
 
 == Upgrade Notice ==
+
+= 3.10.0 =
+* Security update
+* Code Refactor
+* Added Block
 
 = 3.9.1 =
 Fixes multiple security issues
