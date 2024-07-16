@@ -1,55 +1,60 @@
 jQuery(document).ready(function($) {
-	$(document).on('click', '.irecommendthis', function(event) {
-		event.preventDefault();
-		var link = $(this);
+    // Add passive event listener for touchstart
+    $(document).on('touchstart', '.irecommendthis', { passive: true }, function(event) {
+        // Your touchstart handling code (if any) can go here
+    });
 
-		// Check if the link is already processing
-		if (link.hasClass('processing')) {
-			return false;
-		}
+    $(document).on('click', '.irecommendthis', function(event) {
+        event.preventDefault();
+        var link = $(this);
 
-		var unrecommend = link.hasClass('active');
-		var id = $(this).attr('id');
-		var suffix = link.find('.irecommendthis-suffix').text();
+        // Check if the link is already processing
+        if (link.hasClass('processing')) {
+            return false;
+        }
 
-		// Generate a nonce
-		var nonce = dot_irecommendthis.nonce;
+        var unrecommend = link.hasClass('active');
+        var id = $(this).attr('id');
+        var suffix = link.find('.irecommendthis-suffix').text();
 
-		// Add processing class to disable further clicks
-		link.addClass('processing');
+        // Generate a nonce
+        var nonce = dot_irecommendthis.nonce;
 
-		$.post(dot_irecommendthis.ajaxurl, {
-			action: 'dot-irecommendthis',
-			recommend_id: id,
-			suffix: suffix,
-			unrecommend: unrecommend,
-			security: nonce,
-		}, function(data) {
-			// Get the correct titles from the plugin settings
-			var options = JSON.parse(dot_irecommendthis.options);
-			var title_new = options.link_title_new || "Recommend this";
-			var title_active = options.link_title_active || "You already recommended this";
+        // Add processing class to disable further clicks
+        link.addClass('processing');
 
-			let title = unrecommend ? title_new : title_active;
+        $.post(dot_irecommendthis.ajaxurl, {
+            action: 'dot-irecommendthis',
+            recommend_id: id,
+            suffix: suffix,
+            unrecommend: unrecommend,
+            security: nonce,
+        }, function(data) {
+            // Get the correct titles from the plugin settings
+            var options = JSON.parse(dot_irecommendthis.options);
+            var title_new = options.link_title_new || "Recommend this";
+            var title_active = options.link_title_active || "You already recommended this";
 
-			// Update all buttons with the same id
-			$('.irecommendthis[id="' + id + '"]').each(function() {
-				$(this).html(data).toggleClass('active').attr('title', title);
+            let title = unrecommend ? title_new : title_active;
 
-				// Check if the count is zero and hide if necessary
-				var count = $(this).find('.irecommendthis-count').text().trim();
+            // Update all buttons with the same id
+            $('.irecommendthis[id="' + id + '"]').each(function() {
+                $(this).html(data).toggleClass('active').attr('title', title);
 
-				if (parseInt(count) === 0 && parseInt(options.hide_zero) === 1) {
-					$(this).find('.irecommendthis-count').hide();
-				} else {
-					$(this).find('.irecommendthis-count').show();
-				}
-			});
+                // Check if the count is zero and hide if necessary
+                var count = $(this).find('.irecommendthis-count').text().trim();
 
-			// Remove processing class to allow future clicks
-			$('.irecommendthis[id="' + id + '"]').removeClass('processing');
-		});
+                if (parseInt(count) === 0 && parseInt(options.hide_zero) === 1) {
+                    $(this).find('.irecommendthis-count').hide();
+                } else {
+                    $(this).find('.irecommendthis-count').show();
+                }
+            });
 
-		return false;
-	});
+            // Remove processing class to allow future clicks
+            $('.irecommendthis[id="' + id + '"]').removeClass('processing');
+        });
+
+        return false;
+    });
 });
