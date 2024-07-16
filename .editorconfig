@@ -13,14 +13,11 @@ trim_trailing_whitespace = true
 # Set specific rules for PHP files
 [*.php]
 indent_style = tab
-indent_size = 4
 
 # Set specific rules for CSS files
 [*.css]
 indent_style = tab
-indent_size = 4
 
 # Set specific rules for JavaScript files
 [*.js]
 indent_style = tab
-indent_size = 4
