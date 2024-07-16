@@ -48,7 +48,7 @@ class Themeist_IRecommendThis_Public {
 		}
 
 		// Register and enqueue the main JavaScript file.
-		wp_register_script( 'dot-irecommendthis', plugins_url( 'js/dot_irecommendthis.js', $this->plugin_file ), array( 'jquery' ), '2.6.0', true );
+		wp_register_script( 'dot-irecommendthis', plugins_url( 'js/irecommendthis.js', $this->plugin_file ), array( 'jquery' ), '2.6.0', true );
 		wp_enqueue_script( 'dot-irecommendthis' );
 
 		// Enqueue jQuery, if not already enqueued.
