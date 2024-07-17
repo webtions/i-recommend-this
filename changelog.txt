@@ -1,5 +1,8 @@
 == Changelog ==
 
+= 3.10.2 =
+* Fix: Template tag not outputting the recommend link
+
 = 3.10.1 =
 * Fix: Correct post ID parsing in AJAX request to ensure proper recommendation handling
 

@@ -3,8 +3,8 @@ Contributors: themeist, hchouhan
 Donate link: https://themeist.com
 Tags: recommend, like, love, post, rate
 Requires at least: 6.0
-Tested up to: 6.5.5
-Stable tag: 3.10.1
+Tested up to: 6.6
+Stable tag: 3.10.2
 Requires PHP: 7.4
 License: GPL-3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -81,7 +81,7 @@ You can [help translate this plugin into your language](https://translate.wordpr
 4. **Display the Recommend/Like Button**
    - By default, the recommend/like button is added to the bottom of individual posts.
    - To display the recommend/like button in a custom location, add the following code to your theme template files (e.g., `single.php`):
-     `<?php if ( function_exists( 'dot_irecommendthis' ) ) dot_irecommendthis(); ?>`
+     `<?php if ( function_exists( 'irecommendthis' ) ) irecommendthis(); ?>`
 
 5. **Use Shortcodes**
    - To display the recommend/like button on any page or post, use the `[irecommendthis]` shortcode.
@@ -90,7 +90,7 @@ You can [help translate this plugin into your language](https://translate.wordpr
 
 6. **Display the Most Recommended Posts**
    - To display the most recommended posts in your theme templates, use the following code:
-     ```<?php if ( function_exists( 'dot_irecommendthis' ) ) echo do_shortcode( "[irecommendthis_top_posts container='div' post_type='post' number='10' year='2023' monthnum='7']" ); ?>`
+     ```<?php if ( function_exists( 'irecommendthis' ) ) echo do_shortcode( "[irecommendthis_top_posts container='div' post_type='post' number='10' year='2023' monthnum='7']" ); ?>`
 
 7. **Add the Most Recommended Posts Widget**
    - The plugin includes a widget to display the most recommended posts.
@@ -113,20 +113,20 @@ The plugin uses cookies and IP address tracking to prevent multiple recommendati
 Yes, you can choose to hide the counter if the count is zero. This option can be found in the plugin’s settings.
 
 #### How do I display the most recommended posts?
-You can display the most recommended posts using the `[dot_recommended_posts]` shortcode or the included widget. Customize the attributes of the shortcode to fit your needs.
+You can display the most recommended posts using the `[irecommendthis_top_posts]` shortcode or the included widget. Customize the attributes of the shortcode to fit your needs.
 
 #### Is the plugin GDPR compliant?
 Yes, the plugin includes an option to disable IP address saving to comply with GDPR regulations. You can enable this option in the plugin settings.
 
 #### Can I use the recommend button on custom post types?
-Yes, the recommend button can be added to any post type. You can use the `[dot_recommends]` shortcode to place the button on custom post types.
+Yes, the recommend button can be added to any post type. You can use the `[irecommendthis]` shortcode to place the button on custom post types.
 
 #### Does the plugin work with caching plugins?
 Yes, "I Recommend This" is compatible with most caching plugins. However, you may need to exclude the recommendation button from being cached to ensure it updates correctly in real-time.
 
 #### How do I integrate the plugin with my theme?
 Yes, you can integrate the recommend button directly into your theme by adding the following code to your theme template files:
-```<?php if ( function_exists( 'dot_irecommendthis' ) ) dot_irecommendthis(); ?>`
+```<?php if ( function_exists( 'irecommendthis' ) ) irecommendthis(); ?>`
 
 #### Where can I learn more about this plugin?
 Take a look at the [official "I Recommend This" FAQ](https://themeist.com/plugins/wordpress/i-recommend-this/).
@@ -141,6 +141,9 @@ Please report security bugs found in the source code through the [Patchstack Vul
 
 
 == Changelog ==
+
+= 3.10.2 =
+* Fix: Template tag not outputting the recommend link
 
 = 3.10.1 =
 * Fix: Correct post ID parsing in AJAX request to ensure proper recommendation handling
