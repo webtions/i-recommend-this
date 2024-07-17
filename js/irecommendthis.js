@@ -10,7 +10,8 @@ jQuery(function($) {
         }
 
         var unrecommend = link.hasClass('active');
-        var id = link.attr('id'); // Get the id attribute of the clicked element
+        var id = link.attr('id').split('-')[1]; // Get the post ID from the element's ID
+        console.log('Post ID:', id); // Log the post ID for debugging
         var suffix = link.find('.irecommendthis-suffix').text(); // Get the suffix text
 
         var nonce = dot_irecommendthis.nonce; // Get the nonce for security
@@ -37,7 +38,7 @@ jQuery(function($) {
                 let title = unrecommend ? title_new : title_active;
 
                 // Update all elements with the same id
-                $('.irecommendthis[id="' + id + '"]').each(function() {
+                $('.irecommendthis[id="irecommendthis-' + id + '"]').each(function() {
                     $(this).html(data).toggleClass('active').attr('title', title);
 
                     // Check if the count is zero and hide/show accordingly
@@ -51,7 +52,7 @@ jQuery(function($) {
                 });
 
                 // Remove processing class to allow future clicks
-                $('.irecommendthis[id="' + id + '"]').removeClass('processing');
+                $('.irecommendthis[id="irecommendthis-' + id + '"]').removeClass('processing');
             },
             error: function(xhr, status, error) {
                 console.error('AJAX Error: ' + status + ' - ' + error);
