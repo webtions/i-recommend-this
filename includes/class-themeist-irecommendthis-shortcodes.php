@@ -38,7 +38,8 @@ class Themeist_IRecommendThis_Shortcodes {
 	/**
 	 * Display the recommendation button.
 	 *
-	 * @param int $id Post ID.
+	 * @param int    $id Post ID.
+	 * @param string $action Action to perform: 'get' or 'update'.
 	 * @return string HTML output for the recommendation button.
 	 */
 	public static function dot_recommend( $id = null, $action = 'get' ) {
