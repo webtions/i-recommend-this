@@ -41,7 +41,7 @@ class Themeist_IRecommendThis_Shortcodes {
 	 * @param int $id Post ID.
 	 * @return string HTML output for the recommendation button.
 	 */
-	public static function dot_recommend( $id = null ) {
+	public static function dot_recommend( $id = null, $action = 'get' ) {
 		global $post;
 
 		$post_id = $id ? $id : get_the_ID();
@@ -58,7 +58,7 @@ class Themeist_IRecommendThis_Shortcodes {
 		);
 		$options         = wp_parse_args( $options, $default_options );
 
-		$output = Themeist_IRecommendThis_Public::dot_recommend_this( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], 'get' );
+		$output = Themeist_IRecommendThis_Public::dot_recommend_this( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], $action );
 
 		$vote_status_by_ip = 0;
 		if ( '0' !== $options['enable_unique_ip'] ) {

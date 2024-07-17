@@ -13,13 +13,15 @@ function irecommendthis( $id = null, $should_echo = true ) {
 	$should_echo = (bool) $should_echo;
 
 	// Get the output from the shortcode.
-	$output = Themeist_IRecommendThis_Shortcodes::dot_recommend( $id );
+	$output = Themeist_IRecommendThis_Shortcodes::dot_recommend( $id, 'get' );
 
 	// Echo or return the output based on the $should_echo parameter.
 	if ( $should_echo ) {
-		echo wp_kses_post( $output );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $output;
 	} else {
-		return wp_kses_post( $output );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return $output;
 	}
 }
 
