@@ -24,7 +24,7 @@ if ( class_exists( 'Themeist_IRecommendThis' ) ) {
 	return;
 }
 
-define( 'THEMEIST_IRT_VERSION', '3.10.0' );
+define( 'THEMEIST_IRT_VERSION', '3.10.1' );
 define( 'THEMEIST_IRT_DB_VERSION', '2.6.2' );
 
 // Require includes.
