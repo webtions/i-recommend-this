@@ -18,6 +18,10 @@
     "alignText": {
       "type": "string",
       "default": "left"
+    },
+    "useCurrentPost": {
+      "type": "boolean",
+      "default": true
     }
   },
   "textdomain": "i-recommend-this",

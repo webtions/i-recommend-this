@@ -30,8 +30,22 @@ class Themeist_IRecommendThis_Shortcodes {
 	 * @return string HTML output for the recommendation button.
 	 */
 	public static function shortcode_dot_recommends( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'id' => null,
+				'use_current_post' => false
+			),
+			$atts
+		);
 
-		$atts = shortcode_atts( array( 'id' => null ), $atts );
+		// If use_current_post is true or we're in a loop and no ID is specified, use current post ID
+		if (
+			($atts['use_current_post'] === 'true' || $atts['use_current_post'] === true) ||
+			(empty($atts['id']) && in_the_loop())
+		) {
+			return self::dot_recommend(get_the_ID());
+		}
+
 		return self::dot_recommend( intval( $atts['id'] ) );
 	}
 
