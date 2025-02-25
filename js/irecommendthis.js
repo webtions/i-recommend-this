@@ -10,7 +10,7 @@ jQuery(function($) {
 		}
 
 		var unrecommend = link.hasClass('active');
-		var id = link.attr('id').split('-')[1]; // Get the post ID from the element's ID
+		var id = link.data('post-id') || link.attr('id').split('-')[1]; // Get the post ID from data attribute or fall back to element's ID parsing
 		var suffix = link.find('.irecommendthis-suffix').text(); // Get the suffix text
 
 		var nonce = dot_irecommendthis.nonce; // Get the nonce for security

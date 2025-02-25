@@ -76,7 +76,7 @@ class Themeist_IRecommendThis_Shortcodes {
 			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
 		}
 
-		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
+		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" data-post-id="' . $post_id . '" title="' . esc_attr( $title ) . '">';
 		$dot_irt_html .= apply_filters( 'irecommendthis_before_count', $output );
 		$dot_irt_html .= '</a>';
 
