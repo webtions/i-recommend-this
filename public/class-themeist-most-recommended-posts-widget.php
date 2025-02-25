@@ -101,11 +101,16 @@ class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 
 		global $wpdb;
 
-		// Build query string.
+		// Optimized query string with better joins and explicit column selection
 		$sql = $wpdb->prepare(
-			"SELECT * FROM {$wpdb->posts}, {$wpdb->postmeta} WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND post_status='publish' AND post_type='post' AND meta_key='_recommended'
-			ORDER BY {$wpdb->postmeta}.meta_value+0 DESC LIMIT %d",
+			"SELECT p.ID, p.post_title, pm.meta_value AS meta_value
+			FROM {$wpdb->posts} p
+			INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+			WHERE p.post_status = 'publish'
+			AND p.post_type = 'post'
+			AND pm.meta_key = '_recommended'
+			ORDER BY CAST(pm.meta_value AS UNSIGNED) DESC
+			LIMIT %d",
 			$number_of_posts
 		);
 
