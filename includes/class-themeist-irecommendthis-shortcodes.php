@@ -90,7 +90,7 @@ class Themeist_IRecommendThis_Shortcodes {
 			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
 		}
 
-		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" data-post-id="' . $post_id . '" title="' . esc_attr( $title ) . '">';
+		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
 		$dot_irt_html .= apply_filters( 'irecommendthis_before_count', $output );
 		$dot_irt_html .= '</a>';
 
@@ -138,28 +138,33 @@ class Themeist_IRecommendThis_Shortcodes {
 		$monthnum   = intval( $atts['monthnum'] );
 		$show_count = intval( $atts['show_count'] );
 
+		// Improved query with better joins and explicit column selection
 		$params = array();
-		$sql    = "SELECT * FROM {$wpdb->posts}, {$wpdb->postmeta} WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id";
+		$sql = "SELECT p.ID, p.post_title, pm.meta_value
+				FROM {$wpdb->posts} p
+				INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+				WHERE p.post_status = 'publish'
+				AND pm.meta_key = '_recommended'";
 
-		if ( ! empty( $year ) ) {
-			$sql     .= ' AND YEAR(post_date) = %d';
+		if (!empty($year)) {
+			$sql .= " AND YEAR(p.post_date) = %d";
 			$params[] = $year;
 		}
 
-		if ( ! empty( $monthnum ) ) {
-			$sql     .= ' AND MONTH(post_date) = %d';
+		if (!empty($monthnum)) {
+			$sql .= " AND MONTH(p.post_date) = %d";
 			$params[] = $monthnum;
 		}
 
-		$sql     .= " AND post_status = 'publish' AND post_type = %s AND meta_key = '_recommended'";
+		$sql .= " AND p.post_type = %s";
 		$params[] = $post_type;
 
-		$sql     .= " ORDER BY {$wpdb->postmeta}.meta_value+0 DESC LIMIT %d";
+		$sql .= " ORDER BY CAST(pm.meta_value AS UNSIGNED) DESC LIMIT %d";
 		$params[] = $number;
 
-		$query = $wpdb->prepare( $sql, $params ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
+		$query = $wpdb->prepare($sql, $params); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		$posts = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
+		$posts = $wpdb->get_results($query); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 
 		$return = '';
 
