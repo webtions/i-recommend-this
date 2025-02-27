@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Main class for the I Recommend This plugin.
  *
@@ -42,8 +41,8 @@ class Themeist_IRecommendThis {
 	 */
 	public function __construct( $plugin_file ) {
 		$this->plugin_file = $plugin_file;
-		$this->version     = defined( 'THEMEIST_IRT_VERSION' ) ? THEMEIST_IRT_VERSION : '3.8.3';
-		$this->db_version  = defined( 'THEMEIST_IRT_DB_VERSION' ) ? THEMEIST_IRT_DB_VERSION : '2.6.2';
+		$this->version     = defined( 'THEMEIST_IRT_VERSION' ) ? THEMEIST_IRT_VERSION : '3.10.3';
+		$this->db_version  = defined( 'THEMEIST_IRT_DB_VERSION' ) ? THEMEIST_IRT_DB_VERSION : '2.6.3';
 		$this->plugin_slug = 'i-recommend-this';
 	}
 
@@ -51,7 +50,6 @@ class Themeist_IRecommendThis {
 	 * Add hooks for plugin actions and filters.
 	 */
 	public function add_hooks() {
-		// Run this on activation / deactivation.
 		register_activation_hook( $this->plugin_file, array( $this, 'activate' ) );
 
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
@@ -66,7 +64,6 @@ class Themeist_IRecommendThis {
 	 */
 	public function activate( $network_wide ) {
 		if ( is_multisite() && $network_wide ) {
-			// Get all blogs in the network and activate the plugin on each one.
 			$sites = get_sites();
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
@@ -74,7 +71,6 @@ class Themeist_IRecommendThis {
 				restore_current_blog();
 			}
 		} else {
-			// Single site activation.
 			$this->create_db_table();
 		}
 	}
@@ -82,7 +78,7 @@ class Themeist_IRecommendThis {
 	/**
 	 * Create the database table.
 	 *
-	 * @return bool True if successful, false otherwise.
+	 * @return bool Whether the table was successfully created.
 	 */
 	private function create_db_table() {
 		global $wpdb;
@@ -90,15 +86,12 @@ class Themeist_IRecommendThis {
 		$table_name      = $wpdb->prefix . 'irecommendthis_votes';
 		$charset_collate = $wpdb->get_charset_collate();
 
-		// Modified table structure to include indexes and make IP nullable.
-		$sql = "CREATE TABLE $table_name (
+		$sql = "CREATE TABLE IF NOT EXISTS $table_name (
 			id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
-			time TIMESTAMP NOT NULL,
+			time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			post_id BIGINT(20) NOT NULL,
-			ip VARCHAR(45) NULL,
-			UNIQUE KEY id (id),
-			INDEX post_id_index (post_id),
-			INDEX ip_index (ip)
+			ip VARCHAR(45) NOT NULL,
+			PRIMARY KEY (id)
 		) $charset_collate;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -108,13 +101,9 @@ class Themeist_IRecommendThis {
 
 		if ( $success ) {
 			$this->register_plugin_version();
-			if ( $this->db_version ) {
-				update_option( 'dot_irecommendthis_db_version', $this->db_version );
-			}
-			// Remove the error flag if it exists.
+			update_option( 'dot_irecommendthis_db_version', $this->db_version );
 			delete_option( 'dot_irecommendthis_db_error' );
 		} else {
-			// Set an error flag.
 			update_option( 'dot_irecommendthis_db_error', true );
 		}
 
@@ -122,101 +111,77 @@ class Themeist_IRecommendThis {
 	}
 
 	/**
-	 * Optimize the database structure for better performance.
+	 * Update the database table.
 	 *
-	 * This function adds necessary indexes and updates the IP column
-	 * to be nullable, which improves query performance and supports
-	 * the option to disable IP saving.
-	 *
-	 * @return bool True if successful, false otherwise.
+	 * @return bool Whether the update was successful.
 	 */
-	private function optimize_database_structure() {
+	public function update() {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'irecommendthis_votes';
 
-		// Check if the table exists before attempting to modify it.
-		$table_exists = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT COUNT(1) FROM information_schema.tables WHERE table_schema = %s AND table_name = %s',
-				DB_NAME,
-				$table_name
-			)
-		);
+		// Ensure table exists
+		$table_exists = $wpdb->get_var( $wpdb->prepare(
+			'SHOW TABLES LIKE %s',
+			$table_name
+		) );
 
-		if ( empty( $table_exists ) ) {
-			return false;
+		if ( ! $table_exists ) {
+			return $this->create_db_table();
 		}
 
-		// Check for existing indexes to avoid errors.
-		$post_id_index_exists = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema = %s AND table_name = %s AND index_name = %s',
-				DB_NAME,
-				$table_name,
-				'post_id_index'
-			)
-		);
-
-		$ip_index_exists = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema = %s AND table_name = %s AND index_name = %s',
-				DB_NAME,
-				$table_name,
-				'ip_index'
-			)
-		);
-
-		// Start collecting SQL statements.
-		$sql_statements = array();
-
-		// Add post_id index if it doesn't exist.
-		if ( empty( $post_id_index_exists ) ) {
-			$sql_statements[] = "ALTER TABLE {$table_name} ADD INDEX post_id_index (post_id)";
-		}
-
-		// Add ip index if it doesn't exist.
-		if ( empty( $ip_index_exists ) ) {
-			$sql_statements[] = "ALTER TABLE {$table_name} ADD INDEX ip_index (ip)";
-		}
-
-		// Check IP column type and update to be nullable if needed.
-		$ip_column_nullable = $wpdb->get_row(
-			$wpdb->prepare(
-				'SELECT is_nullable FROM information_schema.columns WHERE table_schema = %s AND table_name = %s AND column_name = %s',
-				DB_NAME,
-				$table_name,
-				'ip'
-			)
-		);
-
-		if ( $ip_column_nullable && 'NO' === $ip_column_nullable->is_nullable ) {
-			$sql_statements[] = "ALTER TABLE {$table_name} MODIFY ip VARCHAR(45) NULL";
-		}
-
-		// Execute the SQL statements.
+		// Check and add indexes safely
 		$success = true;
-		foreach ( $sql_statements as $sql ) {
-			$result = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
-			if ( false === $result ) {
-				$success = false;
+		$indexes_to_add = [
+			'idx_post_id' => "SELECT 1 FROM information_schema.statistics
+				WHERE table_schema = DATABASE()
+				AND table_name = %s
+				AND index_name = 'idx_post_id'",
+			'idx_time' => "SELECT 1 FROM information_schema.statistics
+				WHERE table_schema = DATABASE()
+				AND table_name = %s
+				AND index_name = 'idx_time'"
+		];
+
+		foreach ( $indexes_to_add as $index_name => $check_query ) {
+			// Check if index already exists
+			$index_exists = $wpdb->get_var( $wpdb->prepare( $check_query, $table_name ) );
+
+			if ( ! $index_exists ) {
+				// Add the index
+				$add_index_query = $index_name === 'idx_post_id'
+					? "ALTER TABLE $table_name ADD INDEX $index_name (post_id)"
+					: "ALTER TABLE $table_name ADD INDEX $index_name (time)";
+
+				$wpdb->suppress_errors( true );
+				$result = $wpdb->query( $add_index_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->suppress_errors( false );
+
+				if ( $result === false ) {
+					$success = false;
+				}
 			}
 		}
+
+		// Update database version
+		update_option( 'dot_irecommendthis_db_version', $this->db_version );
 
 		return $success;
 	}
 
 	/**
-	 * Check the existence of the database table and display an admin notice if it doesn't exist.
+	 * Check database table and display notices.
 	 */
 	public function check_db_table() {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'irecommendthis_votes';
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		if ( get_option( 'dot_irecommendthis_db_error' ) || $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) !== $table_name ) {
-			echo '<div class="notice notice-error"><p>Error creating database table for I Recommend This plugin. Please check the error log for details.</p></div>';
+		if ( get_option( 'dot_irecommendthis_db_error' ) ||
+			 $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) !== $table_name ) {
+			echo '<div class="notice notice-error"><p>' .
+				esc_html__( 'Error creating database table for I Recommend This plugin. Please check your WordPress error logs.', 'i-recommend-this' ) .
+				'</p></div>';
 		}
 	}
 
@@ -235,33 +200,13 @@ class Themeist_IRecommendThis {
 	public function update_check() {
 		$current_db_version = get_option( 'dot_irecommendthis_db_version' );
 
-		if ( $current_db_version !== $this->db_version ) {
+		if ( $this->db_version !== $current_db_version ) {
 			$this->update();
 		}
 	}
 
 	/**
-	 * Run the update script.
-	 *
-	 * @return bool True if update was successful, false otherwise.
-	 */
-	public function update() {
-		// Recreate or update the database table as needed.
-		$table_result = $this->create_db_table();
-
-		// Apply optimizations to the database structure.
-		$optimize_result = $this->optimize_database_structure();
-
-		// Update the database version.
-		update_option( 'dot_irecommendthis_db_version', $this->db_version );
-
-		return ( false !== $table_result && false !== $optimize_result );
-	}
-
-	/**
 	 * Load the plugin text domain for translation.
-	 *
-	 * @since 1.4.6
 	 */
 	public function load_localisation() {
 		load_plugin_textdomain( 'i-recommend-this', false, dirname( plugin_basename( $this->plugin_file ) ) . '/languages/' );
