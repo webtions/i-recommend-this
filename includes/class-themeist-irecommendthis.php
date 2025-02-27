@@ -69,7 +69,7 @@ class Themeist_IRecommendThis {
 				switch_to_blog( $site->blog_id );
 				$this->create_db_table();
 				restore_current_blog();
-			}
+			}//end foreach
 		} else {
 			$this->create_db_table();
 		}
@@ -120,50 +120,51 @@ class Themeist_IRecommendThis {
 
 		$table_name = $wpdb->prefix . 'irecommendthis_votes';
 
-		// Ensure table exists
-		$table_exists = $wpdb->get_var( $wpdb->prepare(
-			'SHOW TABLES LIKE %s',
-			$table_name
-		) );
+		// Ensure table exists.
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
+		);
 
 		if ( ! $table_exists ) {
 			return $this->create_db_table();
 		}
 
-		// Check and add indexes safely
-		$success = true;
-		$indexes_to_add = [
+		// Check and add indexes safely.
+		$success        = true;
+		$indexes_to_add = array(
 			'idx_post_id' => "SELECT 1 FROM information_schema.statistics
 				WHERE table_schema = DATABASE()
 				AND table_name = %s
 				AND index_name = 'idx_post_id'",
-			'idx_time' => "SELECT 1 FROM information_schema.statistics
+			'idx_time'    => "SELECT 1 FROM information_schema.statistics
 				WHERE table_schema = DATABASE()
 				AND table_name = %s
-				AND index_name = 'idx_time'"
-		];
+				AND index_name = 'idx_time'",
+		);
 
 		foreach ( $indexes_to_add as $index_name => $check_query ) {
-			// Check if index already exists
-			$index_exists = $wpdb->get_var( $wpdb->prepare( $check_query, $table_name ) );
+			// Check if index already exists.
+			$index_exists = $wpdb->get_var(
+				$wpdb->prepare( $check_query, $table_name )
+			);
 
 			if ( ! $index_exists ) {
-				// Add the index
-				$add_index_query = $index_name === 'idx_post_id'
+				// Add the index.
+				$add_index_query = ( 'idx_post_id' === $index_name )
 					? "ALTER TABLE $table_name ADD INDEX $index_name (post_id)"
 					: "ALTER TABLE $table_name ADD INDEX $index_name (time)";
 
 				$wpdb->suppress_errors( true );
-				$result = $wpdb->query( $add_index_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$result = $wpdb->query( $wpdb->prepare( $add_index_query ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->suppress_errors( false );
 
-				if ( $result === false ) {
+				if ( false === $result ) {
 					$success = false;
 				}
 			}
-		}
+		}//end foreach
 
-		// Update database version
+		// Update database version.
 		update_option( 'dot_irecommendthis_db_version', $this->db_version );
 
 		return $success;
@@ -177,8 +178,10 @@ class Themeist_IRecommendThis {
 
 		$table_name = $wpdb->prefix . 'irecommendthis_votes';
 
-		if ( get_option( 'dot_irecommendthis_db_error' ) ||
-			 $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) !== $table_name ) {
+		if (
+			get_option( 'dot_irecommendthis_db_error' )
+			|| $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) !== $table_name // end condition check.
+		) {
 			echo '<div class="notice notice-error"><p>' .
 				esc_html__( 'Error creating database table for I Recommend This plugin. Please check your WordPress error logs.', 'i-recommend-this' ) .
 				'</p></div>';
