@@ -66,7 +66,7 @@ class Themeist_IRecommendThis_Admin {
 	 */
 	public function add_plugin_settings_link( $links, $file ) {
 		if ( plugin_basename( $this->plugin_file ) === $file ) {
-			$settings_link = '<a href="' . esc_url( admin_url( 'options-general.php?page=dot-irecommendthis' ) ) . '">' . __( 'Settings', 'dot-irecommendthis' ) . '</a>';
+			$settings_link = '<a href="' . esc_url( admin_url( 'options-general.php?page=dot-irecommendthis' ) ) . '">' . __( 'Settings', 'i-recommend-this' ) . '</a>';
 			array_unshift( $links, $settings_link );
 		}
 		return $links;

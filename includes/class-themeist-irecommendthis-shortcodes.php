@@ -32,18 +32,18 @@ class Themeist_IRecommendThis_Shortcodes {
 	public static function shortcode_dot_recommends( $atts ) {
 		$atts = shortcode_atts(
 			array(
-				'id' => null,
-				'use_current_post' => false
+				'id'               => null,
+				'use_current_post' => false,
 			),
 			$atts
 		);
 
-		// If use_current_post is true or we're in a loop and no ID is specified, use current post ID
+		// If use_current_post is true or we're in a loop and no ID is specified, use current post ID.
 		if (
-			($atts['use_current_post'] === 'true' || $atts['use_current_post'] === true) ||
-			(empty($atts['id']) && in_the_loop())
+			( 'true' === $atts['use_current_post'] || true === $atts['use_current_post'] ) ||
+			( empty( $atts['id'] ) && in_the_loop() )
 		) {
-			return self::dot_recommend(get_the_ID());
+			return self::dot_recommend( get_the_ID() );
 		}
 
 		return self::dot_recommend( intval( $atts['id'] ) );
@@ -138,33 +138,33 @@ class Themeist_IRecommendThis_Shortcodes {
 		$monthnum   = intval( $atts['monthnum'] );
 		$show_count = intval( $atts['show_count'] );
 
-		// Improved query with better joins and explicit column selection
+		// Improved query with better joins and explicit column selection.
 		$params = array();
-		$sql = "SELECT p.ID, p.post_title, pm.meta_value
+		$sql    = "SELECT p.ID, p.post_title, pm.meta_value
 				FROM {$wpdb->posts} p
 				INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
 				WHERE p.post_status = 'publish'
 				AND pm.meta_key = '_recommended'";
 
-		if (!empty($year)) {
-			$sql .= " AND YEAR(p.post_date) = %d";
+		if ( ! empty( $year ) ) {
+			$sql     .= ' AND YEAR(p.post_date) = %d';
 			$params[] = $year;
 		}
 
-		if (!empty($monthnum)) {
-			$sql .= " AND MONTH(p.post_date) = %d";
+		if ( ! empty( $monthnum ) ) {
+			$sql     .= ' AND MONTH(p.post_date) = %d';
 			$params[] = $monthnum;
 		}
 
-		$sql .= " AND p.post_type = %s";
+		$sql     .= ' AND p.post_type = %s';
 		$params[] = $post_type;
 
-		$sql .= " ORDER BY CAST(pm.meta_value AS UNSIGNED) DESC LIMIT %d";
+		$sql     .= ' ORDER BY CAST(pm.meta_value AS UNSIGNED) DESC LIMIT %d';
 		$params[] = $number;
 
-		$query = $wpdb->prepare($sql, $params); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$query = $wpdb->prepare( $sql, $params ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		$posts = $wpdb->get_results($query); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
+		$posts = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 
 		$return = '';
 

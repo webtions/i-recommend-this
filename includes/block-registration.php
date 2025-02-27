@@ -31,23 +31,23 @@ add_action( 'init', 'register_irecommendthis_block' );
  * @return string Rendered block output.
  */
 function irecommendthis_block_render_callback( $attributes, $content, $block ) {
-	// Default to current post ID if we're in a query loop or useCurrentPost is true
+	// Default to current post ID if we're in a query loop or useCurrentPost is true.
 	if (
-		(isset($attributes['useCurrentPost']) && $attributes['useCurrentPost']) ||
-		(isset($block->context['postId']) && !isset($attributes['postId']))
+		( isset( $attributes['useCurrentPost'] ) && $attributes['useCurrentPost'] ) ||
+		( isset( $block->context['postId'] ) && ! isset( $attributes['postId'] ) )
 	) {
-		// Get post ID from block context if available (for query loops)
-		$post_id = isset($block->context['postId']) ? $block->context['postId'] : get_the_ID();
+		// Get post ID from block context if available (for query loops).
+		$post_id = isset( $block->context['postId'] ) ? $block->context['postId'] : get_the_ID();
 	} else {
-		// Use the explicitly set post ID
-		$post_id = isset($attributes['postId']) ? $attributes['postId'] : get_the_ID();
+		// Use the explicitly set post ID.
+		$post_id = isset( $attributes['postId'] ) ? $attributes['postId'] : get_the_ID();
 	}
 
-	$align_class = isset($attributes['alignText']) ? "has-text-align-{$attributes['alignText']}" : 'has-text-align-left';
+	$align_class = isset( $attributes['alignText'] ) ? "has-text-align-{$attributes['alignText']}" : 'has-text-align-left';
 
-	// Use the existing shortcode to render the content
-	$output = '<div class="wp-block-irecommendthis-recommend ' . esc_attr($align_class) . '">';
-	$output .= do_shortcode('[irecommendthis id="' . esc_attr($post_id) . '"]');
+	// Use the existing shortcode to render the content.
+	$output  = '<div class="wp-block-irecommendthis-recommend ' . esc_attr( $align_class ) . '">';
+	$output .= do_shortcode( '[irecommendthis id="' . esc_attr( $post_id ) . '"]' );
 	$output .= '</div>';
 
 	return $output;

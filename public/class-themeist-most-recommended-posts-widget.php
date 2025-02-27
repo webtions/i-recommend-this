@@ -101,7 +101,12 @@ class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 
 		global $wpdb;
 
-		// Optimized query string with better joins and explicit column selection
+		/**
+		 * Query the database for the most recommended posts.
+		 *
+		 * Uses optimized SQL with explicit column selection and proper JOIN syntax
+		 * to improve query performance and reduce server load.
+		 */
 		$sql = $wpdb->prepare(
 			"SELECT p.ID, p.post_title, pm.meta_value AS meta_value
 			FROM {$wpdb->posts} p
