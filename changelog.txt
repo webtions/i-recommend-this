@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 3.10.3 =
+* Fix: Resolved issue with duplicate post IDs in query blocks
+* Added: Context awareness to properly identify post IDs in query loops
+* Enhanced: Shortcode functionality to respect post context in WordPress loops
+* Added: JavaScript fallback to detect and fix incorrect IDs at runtime
+* Improved: Database optimization for better performance and compatibility
+
 = 3.10.2 =
 * Fix: Template tag not outputting the recommend link
 

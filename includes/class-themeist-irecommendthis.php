@@ -81,6 +81,8 @@ class Themeist_IRecommendThis {
 
 	/**
 	 * Create the database table.
+	 *
+	 * @return bool True if successful, false otherwise.
 	 */
 	private function create_db_table() {
 		global $wpdb;
@@ -88,12 +90,15 @@ class Themeist_IRecommendThis {
 		$table_name      = $wpdb->prefix . 'irecommendthis_votes';
 		$charset_collate = $wpdb->get_charset_collate();
 
+		// Modified table structure to include indexes and make IP nullable.
 		$sql = "CREATE TABLE $table_name (
 			id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
 			time TIMESTAMP NOT NULL,
 			post_id BIGINT(20) NOT NULL,
-			ip VARCHAR(45) NOT NULL,
-			UNIQUE KEY id (id)
+			ip VARCHAR(45) NULL,
+			UNIQUE KEY id (id),
+			INDEX post_id_index (post_id),
+			INDEX ip_index (ip)
 		) $charset_collate;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -112,6 +117,93 @@ class Themeist_IRecommendThis {
 			// Set an error flag.
 			update_option( 'dot_irecommendthis_db_error', true );
 		}
+
+		return $success;
+	}
+
+	/**
+	 * Optimize the database structure for better performance.
+	 *
+	 * This function adds necessary indexes and updates the IP column
+	 * to be nullable, which improves query performance and supports
+	 * the option to disable IP saving.
+	 *
+	 * @return bool True if successful, false otherwise.
+	 */
+	private function optimize_database_structure() {
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'irecommendthis_votes';
+
+		// Check if the table exists before attempting to modify it.
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(1) FROM information_schema.tables WHERE table_schema = %s AND table_name = %s',
+				DB_NAME,
+				$table_name
+			)
+		);
+
+		if ( empty( $table_exists ) ) {
+			return false;
+		}
+
+		// Check for existing indexes to avoid errors.
+		$post_id_index_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema = %s AND table_name = %s AND index_name = %s',
+				DB_NAME,
+				$table_name,
+				'post_id_index'
+			)
+		);
+
+		$ip_index_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema = %s AND table_name = %s AND index_name = %s',
+				DB_NAME,
+				$table_name,
+				'ip_index'
+			)
+		);
+
+		// Start collecting SQL statements.
+		$sql_statements = array();
+
+		// Add post_id index if it doesn't exist.
+		if ( empty( $post_id_index_exists ) ) {
+			$sql_statements[] = "ALTER TABLE {$table_name} ADD INDEX post_id_index (post_id)";
+		}
+
+		// Add ip index if it doesn't exist.
+		if ( empty( $ip_index_exists ) ) {
+			$sql_statements[] = "ALTER TABLE {$table_name} ADD INDEX ip_index (ip)";
+		}
+
+		// Check IP column type and update to be nullable if needed.
+		$ip_column_nullable = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT is_nullable FROM information_schema.columns WHERE table_schema = %s AND table_name = %s AND column_name = %s',
+				DB_NAME,
+				$table_name,
+				'ip'
+			)
+		);
+
+		if ( $ip_column_nullable && 'NO' === $ip_column_nullable->is_nullable ) {
+			$sql_statements[] = "ALTER TABLE {$table_name} MODIFY ip VARCHAR(45) NULL";
+		}
+
+		// Execute the SQL statements.
+		$success = true;
+		foreach ( $sql_statements as $sql ) {
+			$result = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+			if ( false === $result ) {
+				$success = false;
+			}
+		}
+
+		return $success;
 	}
 
 	/**
@@ -143,17 +235,27 @@ class Themeist_IRecommendThis {
 	public function update_check() {
 		$current_db_version = get_option( 'dot_irecommendthis_db_version' );
 
-		if ( $this->db_version !== $current_db_version ) {
+		if ( $current_db_version !== $this->db_version ) {
 			$this->update();
 		}
 	}
 
 	/**
 	 * Run the update script.
+	 *
+	 * @return bool True if update was successful, false otherwise.
 	 */
 	public function update() {
 		// Recreate or update the database table as needed.
-		$this->create_db_table();
+		$table_result = $this->create_db_table();
+
+		// Apply optimizations to the database structure.
+		$optimize_result = $this->optimize_database_structure();
+
+		// Update the database version.
+		update_option( 'dot_irecommendthis_db_version', $this->db_version );
+
+		return ( false !== $table_result && false !== $optimize_result );
 	}
 
 	/**
