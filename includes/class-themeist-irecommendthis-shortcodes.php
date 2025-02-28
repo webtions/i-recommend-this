@@ -8,19 +8,17 @@ class Themeist_IRecommendThis_Shortcodes {
 
 	/**
 	 * Register shortcodes.
+	 *
+	 * Adds support for both new and legacy shortcode names.
 	 */
 	public static function register_shortcodes() {
-		// Old shortcode name.
-		add_shortcode( 'dot_recommends', array( __CLASS__, 'shortcode_dot_recommends' ) );
+		// New and old shortcode names for backward compatibility.
+		add_shortcode( 'dot_recommends', array( __CLASS__, 'shortcode_recommends' ) );
+		add_shortcode( 'irecommendthis', array( __CLASS__, 'shortcode_recommends' ) );
 
-		// New shortcode name.
-		add_shortcode( 'irecommendthis', array( __CLASS__, 'shortcode_dot_recommends' ) );
-
-		// Old shortcode name.
-		add_shortcode( 'dot_recommended_top_posts', array( __CLASS__, 'shortcode_dot_recommended_top_posts' ) );
-
-		// New shortcode name.
-		add_shortcode( 'irecommendthis_top_posts', array( __CLASS__, 'shortcode_dot_recommended_top_posts' ) );
+		// New and old top posts shortcode names for backward compatibility.
+		add_shortcode( 'dot_recommended_top_posts', array( __CLASS__, 'shortcode_recommended_top_posts' ) );
+		add_shortcode( 'irecommendthis_top_posts', array( __CLASS__, 'shortcode_recommended_top_posts' ) );
 	}
 
 	/**
@@ -29,7 +27,7 @@ class Themeist_IRecommendThis_Shortcodes {
 	 * @param array $atts Shortcode attributes.
 	 * @return string HTML output for the recommendation button.
 	 */
-	public static function shortcode_dot_recommends( $atts ) {
+	public static function shortcode_recommends( $atts ) {
 		$atts = shortcode_atts(
 			array(
 				'id'               => null,
@@ -43,20 +41,20 @@ class Themeist_IRecommendThis_Shortcodes {
 			( 'true' === $atts['use_current_post'] || true === $atts['use_current_post'] ) ||
 			( empty( $atts['id'] ) && in_the_loop() )
 		) {
-			return self::dot_recommend( get_the_ID() );
+			return self::recommend( get_the_ID() );
 		}
 
-		return self::dot_recommend( intval( $atts['id'] ) );
+		return self::recommend( intval( $atts['id'] ) );
 	}
 
 	/**
 	 * Display the recommendation button.
 	 *
-	 * @param int    $id Post ID.
-	 * @param string $action Action to perform: 'get' or 'update'.
+	 * @param int|null $id The post ID to recommend. Defaults to current post if null.
+	 * @param string   $action The action to perform: 'get' or 'update'.
 	 * @return string HTML output for the recommendation button.
 	 */
-	public static function dot_recommend( $id = null, $action = 'get' ) {
+	public static function recommend( $id = null, $action = 'get' ) {
 		global $post;
 
 		$post_id = $id ? $id : get_the_ID();
@@ -73,7 +71,7 @@ class Themeist_IRecommendThis_Shortcodes {
 		);
 		$options         = wp_parse_args( $options, $default_options );
 
-		$output = Themeist_IRecommendThis_Public::dot_recommend_this( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], $action );
+		$output = Themeist_IRecommendThis_Public::recommend_this( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], $action );
 
 		$vote_status_by_ip = 0;
 		if ( '0' !== $options['enable_unique_ip'] ) {
@@ -90,21 +88,20 @@ class Themeist_IRecommendThis_Shortcodes {
 			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
 		}
 
-		$dot_irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
-		$dot_irt_html .= apply_filters( 'irecommendthis_before_count', $output );
-		$dot_irt_html .= '</a>';
+		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
+		$irt_html .= apply_filters( 'irecommendthis_before_count', $output );
+		$irt_html .= '</a>';
 
-		return $dot_irt_html;
+		return $irt_html;
 	}
-
 
 	/**
 	 * Shortcode handler for displaying the top recommended posts.
 	 *
-	 * @param array $atts Shortcode attributes.
+	 * @param array $atts Shortcode attributes for top recommended posts.
 	 * @return string HTML output for the top recommended posts.
 	 */
-	public static function shortcode_dot_recommended_top_posts( $atts ) {
+	public static function shortcode_recommended_top_posts( $atts ) {
 		$atts = shortcode_atts(
 			array(
 				'container'  => 'li',
@@ -115,19 +112,19 @@ class Themeist_IRecommendThis_Shortcodes {
 				'show_count' => 1,
 			),
 			$atts,
-			'dot_recommended_top_posts'
+			'recommended_top_posts'
 		);
 
-		return self::dot_recommended_top_posts_output( $atts );
+		return self::recommended_top_posts_output( $atts );
 	}
 
 	/**
 	 * Display the top recommended posts.
 	 *
-	 * @param array $atts Processed shortcode attributes.
+	 * @param array $atts Processed shortcode attributes for top recommended posts.
 	 * @return string HTML output for the top recommended posts.
 	 */
-	public static function dot_recommended_top_posts_output( $atts ) {
+	public static function recommended_top_posts_output( $atts ) {
 		global $wpdb;
 
 		// Sanitize and set defaults.
@@ -174,7 +171,7 @@ class Themeist_IRecommendThis_Shortcodes {
 			$post_count = intval( $item->meta_value );
 
 			$return .= '<' . esc_html( $container ) . '>';
-			$return .= '<a href="' . esc_url( $permalink ) . '" title="' . esc_html( $post_title ) . '" rel="nofollow">' . esc_html( $post_title ) . '</a> ';
+			$return .= '<a href="' . esc_url( $permalink ) . '" title="' . esc_attr( $post_title ) . '" rel="nofollow">' . esc_html( $post_title ) . '</a> ';
 
 			if ( 1 === $show_count ) {
 				$return .= '<span class="votes">' . esc_html( $post_count ) . '</span> ';
@@ -184,5 +181,28 @@ class Themeist_IRecommendThis_Shortcodes {
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Backward compatibility method for old shortcode method names.
+	 *
+	 * @deprecated Use recommend() instead.
+	 * @param int|null $id The post ID to recommend.
+	 * @param string   $action The action to perform.
+	 * @return string Recommendation button HTML.
+	 */
+	public static function dot_recommend( $id = null, $action = 'get' ) {
+		return self::recommend( $id, $action );
+	}
+
+	/**
+	 * Backward compatibility method for old top posts method names.
+	 *
+	 * @deprecated Use recommended_top_posts_output() instead.
+	 * @param array $atts Shortcode attributes.
+	 * @return string Top recommended posts HTML.
+	 */
+	public static function dot_recommended_top_posts_output( $atts ) {
+		return self::recommended_top_posts_output( $atts );
 	}
 }
