@@ -13,16 +13,18 @@ jQuery(function($) {
 		var id = link.data('post-id') || link.attr('id').split('-')[1]; // Get the post ID from data attribute or fall back to element's ID parsing
 		var suffix = link.find('.irecommendthis-suffix').text(); // Get the suffix text
 
-		var nonce = dot_irecommendthis.nonce; // Get the nonce for security
+		// Support both new and legacy variable names for backward compatibility
+		var ajaxSettings = irecommendthis || dot_irecommendthis;
+		var nonce = ajaxSettings.nonce; // Get the nonce for security
 
 		link.addClass('processing'); // Add processing class to the link
 
 		// Make an AJAX request
 		$.ajax({
-			url: dot_irecommendthis.ajaxurl,
+			url: ajaxSettings.ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'dot-irecommendthis', // The action to be performed
+				action: 'irecommendthis', // The updated action name
 				recommend_id: id,
 				suffix: suffix,
 				unrecommend: unrecommend,
@@ -30,7 +32,7 @@ jQuery(function($) {
 			},
 			success: function(data) {
 				// Parse the options from the plugin settings
-				var options = JSON.parse(dot_irecommendthis.options);
+				var options = JSON.parse(ajaxSettings.options);
 				var title_new = options.link_title_new || "Recommend this";
 				var title_active = options.link_title_active || "You already recommended this";
 
