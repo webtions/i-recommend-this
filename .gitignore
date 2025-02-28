@@ -61,4 +61,4 @@ local-config.php
 # Ignore Git directory itself
 .git/
 
-*-old
+*-old.*
