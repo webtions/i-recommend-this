@@ -58,7 +58,9 @@ class Themeist_IRecommendThis_Shortcodes {
 		global $post;
 
 		$post_id = $id ? $id : get_the_ID();
-		$options = get_option( 'dot_irecommendthis_settings' );
+
+		// Check both new and old option names for backward compatibility
+		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
 
 		$ip              = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$default_options = array(
@@ -71,7 +73,36 @@ class Themeist_IRecommendThis_Shortcodes {
 		);
 		$options         = wp_parse_args( $options, $default_options );
 
-		$output = Themeist_IRecommendThis_Public::recommend_this( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], $action );
+		// Get the recommendation count directly rather than using a helper function
+		// This is the core functionality that would be in process_recommendation()
+		$recommended = (int) get_post_meta( $post_id, '_recommended', true );
+		if ( ! $recommended && 'get' === $action ) {
+			$recommended = 0;
+			add_post_meta( $post_id, '_recommended', $recommended, true );
+		}
+
+		// Function for getting the suffix based on the recommendation count
+		$get_suffix = function ( $count ) use ( $options ) {
+			if ( 0 === $count ) {
+				return $options['text_zero_suffix'];
+			} elseif ( 1 === $count ) {
+				return $options['text_one_suffix'];
+			} else {
+				return $options['text_more_suffix'];
+			}
+		};
+
+		// Hide zero count based on settings
+		$hide_zero = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
+
+		// Generate output for display
+		$suffix = $get_suffix( $recommended );
+		$output = ( 0 === $recommended && 1 === $hide_zero )
+			? '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
+			: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
+
+		// Support both old and new filter names
+		$output = apply_filters( 'irecommendthis_before_count', apply_filters( 'dot_irt_before_count', $output ) );
 
 		$vote_status_by_ip = 0;
 		if ( '0' !== $options['enable_unique_ip'] ) {
@@ -80,7 +111,8 @@ class Themeist_IRecommendThis_Shortcodes {
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		if ( isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) || $vote_status_by_ip > 0 ) {
+		// Check both new and old cookie names for backward compatibility
+		if ( isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) || isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) || $vote_status_by_ip > 0 ) {
 			$class = 'irecommendthis active';
 			$title = empty( $options['link_title_active'] ) ? __( 'You already recommended this', 'i-recommend-this' ) : $options['link_title_active'];
 		} else {
@@ -89,7 +121,7 @@ class Themeist_IRecommendThis_Shortcodes {
 		}
 
 		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
-		$irt_html .= apply_filters( 'irecommendthis_before_count', $output );
+		$irt_html .= $output;
 		$irt_html .= '</a>';
 
 		return $irt_html;

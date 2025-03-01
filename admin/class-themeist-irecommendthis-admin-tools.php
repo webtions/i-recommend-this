@@ -143,8 +143,8 @@ class Themeist_IRecommendThis_Admin_Tools {
 			$grouped_indexes[ $index->Key_name ][] = $index->Column_name;
 		}
 
-		// Database version.
-		$db_version = get_option( 'dot_irecommendthis_db_version', 'Unknown' );
+		// Database version - check new option name first, then fall back to old one
+		$db_version = get_option( 'irecommendthis_db_version', get_option( 'dot_irecommendthis_db_version', 'Unknown' ) );
 
 		echo '<p><strong>' . esc_html__( 'Current Database Version:', 'i-recommend-this' ) . '</strong> ' . esc_html( $db_version ) . '</p>';
 
