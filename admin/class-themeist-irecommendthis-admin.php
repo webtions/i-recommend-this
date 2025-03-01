@@ -16,12 +16,20 @@ class Themeist_IRecommendThis_Admin {
 	private $plugin_file;
 
 	/**
+	 * Current tab being viewed.
+	 *
+	 * @var string
+	 */
+	private $current_tab;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $plugin_file Path to the main plugin file.
 	 */
 	public function __construct( $plugin_file ) {
 		$this->plugin_file = $plugin_file;
+		$this->current_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 	}
 
 	/**
@@ -37,12 +45,42 @@ class Themeist_IRecommendThis_Admin {
 
 		add_action( 'admin_menu', array( $this, 'add_settings_menu' ) );
 		add_action( 'admin_init', array( $this, 'initialize_settings' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 		add_action( 'publish_post', array( $this, 'setup_recommends' ) );
 
 		add_filter( 'request', array( $this, 'column_orderby' ) );
 		add_filter( 'manage_edit-post_sortable_columns', array( $this, 'column_register_sortable' ) );
 		add_filter( 'manage_posts_columns', array( $this, 'columns_head' ) );
 		add_action( 'manage_posts_custom_column', array( $this, 'column_content' ), 10, 2 );
+
+		// Handle database update action
+		add_action( 'admin_init', array( $this, 'handle_database_update' ) );
+	}
+
+	/**
+	 * Enqueue admin scripts and styles.
+	 *
+	 * @param string $hook The current admin page.
+	 */
+	public function enqueue_admin_scripts( $hook ) {
+		if ( 'settings_page_irecommendthis-settings' !== $hook ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'irecommendthis-admin-settings',
+			plugins_url( 'css/admin-settings.css', dirname( __FILE__ ) ),
+			array(),
+			THEMEIST_IRT_VERSION
+		);
+
+		wp_enqueue_script(
+			'irecommendthis-admin-tabs',
+			plugins_url( 'js/admin-tabs.js', dirname( __FILE__ ) ),
+			array( 'jquery' ),
+			THEMEIST_IRT_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -124,18 +162,39 @@ class Themeist_IRecommendThis_Admin {
 	}
 
 	/**
-	 * Display the settings page.
+	 * Display the settings page with tabs.
 	 */
 	public function render_settings_page() {
+		$tabs = array(
+			'general' => __( 'General', 'i-recommend-this' ),
+			'dbtools' => __( 'DB Tools', 'i-recommend-this' ),
+		);
 		?>
 		<div id="irecommendthis-settings" class="wrap irecommendthis-settings">
 			<h1><?php esc_html_e( 'I Recommend This: Settings', 'i-recommend-this' ); ?></h1>
-			<form action="options.php" method="post">
-				<?php settings_fields( 'irecommendthis-settings' ); ?>
-				<?php do_settings_sections( 'irecommendthis-settings' ); ?>
-				<p class="submit"><input type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes', 'i-recommend-this' ); ?>"/></p>
-			</form>
-			<?php $this->plugin_review_notice(); ?>
+
+			<h2 class="nav-tab-wrapper">
+				<?php foreach ( $tabs as $tab => $name ) : ?>
+					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=irecommendthis-settings&tab=' . $tab ) ); ?>"
+					   class="nav-tab <?php echo $this->current_tab === $tab ? 'nav-tab-active' : ''; ?>">
+						<?php echo esc_html( $name ); ?>
+					</a>
+				<?php endforeach; ?>
+			</h2>
+
+			<div class="tab-content">
+				<?php
+				if ( $this->current_tab === 'general' ) {
+					include_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/settings-page-general.php';
+				} elseif ( $this->current_tab === 'dbtools' ) {
+					include_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/settings-page-dbtools.php';
+				}
+				?>
+			</div>
+
+			<?php if ( $this->current_tab === 'general' ) : ?>
+				<?php $this->plugin_review_notice(); ?>
+			<?php endif; ?>
 		</div>
 		<?php
 	}
@@ -385,7 +444,7 @@ class Themeist_IRecommendThis_Admin {
 				$vars,
 				array(
 					'meta_key' => '_recommended', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					'orderby'  => 'meta_value',
+					'orderby'  => 'meta_value_num',
 				)
 			);
 		}
@@ -394,78 +453,128 @@ class Themeist_IRecommendThis_Admin {
 	}
 
 	/**
-	 * Backward compatibility methods.
+	 * Handle the database update request from form submission.
 	 */
+	public function handle_database_update() {
+		global $themeist_i_recommend_this;
 
-	/**
-	 * Legacy menu method.
-	 *
-	 * @deprecated Use add_settings_menu() instead.
-	 */
-	public function dot_irecommendthis_menu() {
-		return $this->add_settings_menu();
+		// Check if this is our action.
+		if ( ! isset( $_POST['irecommendthis_action'] ) || 'update_db' !== $_POST['irecommendthis_action'] ) {
+			return;
+		}
+
+		// Verify user has permission.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'i-recommend-this' ) );
+		}
+
+		// Verify nonce.
+		if ( ! isset( $_POST['irecommendthis_db_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['irecommendthis_db_nonce'] ) ), 'irecommendthis_update_db' ) ) {
+			wp_die( esc_html__( 'Security check failed. Please try again.', 'i-recommend-this' ) );
+		}
+
+		// Run the update.
+		$result = $themeist_i_recommend_this->update();
+
+		// Create a nonce for the redirect.
+		$updated_nonce = wp_create_nonce( 'irecommendthis_update_success' );
+
+		// Redirect with success message and nonce.
+		$redirect_url = add_query_arg(
+			array(
+				'page'          => 'irecommendthis-settings',
+				'tab'           => 'dbtools',
+				'updated'       => '1',
+				'updated_nonce' => $updated_nonce,
+			),
+			admin_url( 'options-general.php' )
+		);
+		wp_safe_redirect( $redirect_url );
+		exit;
 	}
 
 	/**
-	 * Legacy settings initialization method.
-	 *
-	 * @deprecated Use initialize_settings() instead.
+	 * Display database table information.
 	 */
-	public function dot_irecommendthis_settings() {
-		return $this->initialize_settings();
-	}
+	public function display_database_info() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'irecommendthis_votes';
 
-	/**
-	 * Legacy settings page rendering method.
-	 *
-	 * @deprecated Use render_settings_page() instead.
-	 */
-	public function dot_settings_page() {
-		return $this->render_settings_page();
-	}
+		// Check if table exists.
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(1) FROM information_schema.tables WHERE table_schema = %s AND table_name = %s',
+				DB_NAME,
+				$table_name
+			)
+		);
 
-	/**
-	 * Legacy post setup method.
-	 *
-	 * @deprecated Use setup_recommends() instead.
-	 */
-	public function dot_setup_recommends( $post_id ) {
-		return $this->setup_recommends( $post_id );
-	}
+		if ( empty( $table_exists ) ) {
+			echo '<div class="notice notice-error inline"><p>' . esc_html__( 'The database table does not exist.', 'i-recommend-this' ) . '</p></div>';
+			return;
+		}
 
-	/**
-	 * Legacy columns head method.
-	 *
-	 * @deprecated Use columns_head() instead.
-	 */
-	public function dot_columns_head( $defaults ) {
-		return $this->columns_head( $defaults );
-	}
+		// Get table structure - can't use prepare directly on table name.
+		$table_name_escaped = esc_sql( $table_name );
+		$structure_sql      = "DESCRIBE $table_name_escaped";
+		$structure          = $wpdb->get_results( $structure_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-	/**
-	 * Legacy column content method.
-	 *
-	 * @deprecated Use column_content() instead.
-	 */
-	public function dot_column_content( $column_name, $post_ID ) {
-		return $this->column_content( $column_name, $post_ID );
-	}
+		// Get indexes - can't use prepare directly on table name.
+		$indexes_sql = "SHOW INDEX FROM $table_name_escaped";
+		$indexes     = $wpdb->get_results( $indexes_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-	/**
-	 * Legacy column register sortable method.
-	 *
-	 * @deprecated Use column_register_sortable() instead.
-	 */
-	public function dot_column_register_sortable( $columns ) {
-		return $this->column_register_sortable( $columns );
-	}
+		// Group indexes by name.
+		$grouped_indexes = array();
+		foreach ( $indexes as $index ) {
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			if ( ! isset( $grouped_indexes[ $index->Key_name ] ) ) {
+				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				$grouped_indexes[ $index->Key_name ] = array();
+			}
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			$grouped_indexes[ $index->Key_name ][] = $index->Column_name;
+		}
 
-	/**
-	 * Legacy column orderby method.
-	 *
-	 * @deprecated Use column_orderby() instead.
-	 */
-	public function dot_column_orderby( $vars ) {
-		return $this->column_orderby( $vars );
+		// Database version - check new option name first, then fall back to old one
+		$db_version = get_option( 'irecommendthis_db_version', get_option( 'dot_irecommendthis_db_version', 'Unknown' ) );
+
+		echo '<p><strong>' . esc_html__( 'Current Database Version:', 'i-recommend-this' ) . '</strong> ' . esc_html( $db_version ) . '</p>';
+
+		// Table structure.
+		echo '<h3>' . esc_html__( 'Table Structure', 'i-recommend-this' ) . '</h3>';
+		echo '<table class="widefat striped">';
+		echo '<thead><tr><th>' . esc_html__( 'Column', 'i-recommend-this' ) . '</th><th>' . esc_html__( 'Type', 'i-recommend-this' ) . '</th><th>' . esc_html__( 'Null', 'i-recommend-this' ) . '</th><th>' . esc_html__( 'Key', 'i-recommend-this' ) . '</th></tr></thead>';
+		echo '<tbody>';
+		foreach ( $structure as $column ) {
+			echo '<tr>';
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			echo '<td>' . esc_html( $column->Field ) . '</td>';
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			echo '<td>' . esc_html( $column->Type ) . '</td>';
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			echo '<td>' . esc_html( $column->Null ) . '</td>';
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			echo '<td>' . esc_html( $column->Key ) . '</td>';
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
+
+		// Indexes.
+		echo '<h3>' . esc_html__( 'Table Indexes', 'i-recommend-this' ) . '</h3>';
+		echo '<table class="widefat striped">';
+		echo '<thead><tr><th>' . esc_html__( 'Index Name', 'i-recommend-this' ) . '</th><th>' . esc_html__( 'Columns', 'i-recommend-this' ) . '</th></tr></thead>';
+		echo '<tbody>';
+		foreach ( $grouped_indexes as $index_name => $columns ) {
+			echo '<tr>';
+			echo '<td>' . esc_html( $index_name ) . '</td>';
+			echo '<td>' . esc_html( implode( ', ', $columns ) ) . '</td>';
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
+
+		// Count records - can't use prepare directly on table name.
+		$count_sql = "SELECT COUNT(*) FROM $table_name_escaped";
+		$count     = $wpdb->get_var( $count_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		echo '<p><strong>' . esc_html__( 'Total Records:', 'i-recommend-this' ) . '</strong> ' . esc_html( number_format_i18n( $count ) ) . '</p>';
 	}
 }

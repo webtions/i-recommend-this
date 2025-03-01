@@ -30,7 +30,6 @@ define( 'THEMEIST_IRT_DB_VERSION', '2.7.0' );
 // Require includes.
 require_once __DIR__ . '/includes/class-themeist-irecommendthis.php';
 require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';
-require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin-tools.php';
 require_once __DIR__ . '/public/class-themeist-irecommendthis-public.php';
 require_once __DIR__ . '/public/class-themeist-most-recommended-posts-widget.php';
 require_once __DIR__ . '/includes/class-themeist-irecommendthis-ajax.php';
@@ -47,11 +46,6 @@ $themeist_i_recommend_this->add_hooks();
 global $themeist_i_recommend_this_admin;
 $themeist_i_recommend_this_admin = new Themeist_IRecommendThis_Admin( __FILE__ );
 $themeist_i_recommend_this_admin->add_admin_hooks();
-
-// Create instance of admin tools class.
-global $themeist_i_recommend_this_admin_tools;
-$themeist_i_recommend_this_admin_tools = new Themeist_IRecommendThis_Admin_Tools( $themeist_i_recommend_this );
-$themeist_i_recommend_this_admin_tools->add_hooks();
 
 // Create instance of public class.
 global $themeist_i_recommend_this_public;
