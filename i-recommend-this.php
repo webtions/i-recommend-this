@@ -27,7 +27,7 @@ if ( class_exists( 'Themeist_IRecommendThis' ) ) {
 define( 'THEMEIST_IRT_VERSION', '4.0.0' );
 define( 'THEMEIST_IRT_DB_VERSION', '2.7.0' );
 
-// Require includes.
+// Require core classes.
 require_once __DIR__ . '/includes/class-themeist-irecommendthis.php';
 require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';
 require_once __DIR__ . '/public/class-themeist-irecommendthis-public.php';
@@ -37,7 +37,7 @@ require_once __DIR__ . '/includes/class-themeist-irecommendthis-shortcodes.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/block-registration.php';
 
-// Create instance of plugin class.
+// Create instance of main plugin class.
 global $themeist_i_recommend_this;
 $themeist_i_recommend_this = new Themeist_IRecommendThis( __FILE__ );
 $themeist_i_recommend_this->add_hooks();
