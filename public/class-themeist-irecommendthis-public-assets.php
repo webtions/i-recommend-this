@@ -80,6 +80,7 @@ class Themeist_IRecommendThis_Public_Assets {
 		);
 
 		// Maintain backward compatibility with old variable name
+		// This helps existing sites that might have customizations referencing the old name
 		wp_localize_script(
 			'irecommendthis',
 			'dot_irecommendthis',

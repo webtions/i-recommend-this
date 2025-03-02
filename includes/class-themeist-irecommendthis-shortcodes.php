@@ -16,16 +16,18 @@ class Themeist_IRecommendThis_Shortcodes {
 
 	/**
 	 * Register shortcodes.
-	 *
-	 * Adds support for both new and legacy shortcode names.
 	 */
 	public static function register_shortcodes() {
-		// New and old shortcode names for backward compatibility.
+		// Old shortcode name.
 		add_shortcode( 'dot_recommends', array( __CLASS__, 'shortcode_recommends' ) );
+
+		// New shortcode name.
 		add_shortcode( 'irecommendthis', array( __CLASS__, 'shortcode_recommends' ) );
 
-		// New and old top posts shortcode names for backward compatibility.
+		// Old shortcode name.
 		add_shortcode( 'dot_recommended_top_posts', array( __CLASS__, 'shortcode_recommended_top_posts' ) );
+
+		// New shortcode name.
 		add_shortcode( 'irecommendthis_top_posts', array( __CLASS__, 'shortcode_recommended_top_posts' ) );
 	}
 
@@ -58,16 +60,14 @@ class Themeist_IRecommendThis_Shortcodes {
 	/**
 	 * Display the recommendation button.
 	 *
-	 * @param int|null $id The post ID to recommend. Defaults to current post if null.
-	 * @param string   $action The action to perform: 'get' or 'update'.
+	 * @param int    $id Post ID.
+	 * @param string $action Action to perform: 'get' or 'update'.
 	 * @return string HTML output for the recommendation button.
 	 */
 	public static function recommend( $id = null, $action = 'get' ) {
 		global $post;
 
 		$post_id = $id ? $id : get_the_ID();
-
-		// Check both new and old option names for backward compatibility
 		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
 
 		$ip              = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
@@ -81,36 +81,7 @@ class Themeist_IRecommendThis_Shortcodes {
 		);
 		$options         = wp_parse_args( $options, $default_options );
 
-		// Get the recommendation count directly rather than using a helper function
-		// This is the core functionality that would be in process_recommendation()
-		$recommended = (int) get_post_meta( $post_id, '_recommended', true );
-		if ( ! $recommended && 'get' === $action ) {
-			$recommended = 0;
-			add_post_meta( $post_id, '_recommended', $recommended, true );
-		}
-
-		// Function for getting the suffix based on the recommendation count
-		$get_suffix = function ( $count ) use ( $options ) {
-			if ( 0 === $count ) {
-				return $options['text_zero_suffix'];
-			} elseif ( 1 === $count ) {
-				return $options['text_one_suffix'];
-			} else {
-				return $options['text_more_suffix'];
-			}
-		};
-
-		// Hide zero count based on settings
-		$hide_zero = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
-
-		// Generate output for display
-		$suffix = $get_suffix( $recommended );
-		$output = ( 0 === $recommended && 1 === $hide_zero )
-			? '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
-			: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
-
-		// Support both old and new filter names
-		$output = apply_filters( 'irecommendthis_before_count', apply_filters( 'dot_irt_before_count', $output ) );
+		$output = Themeist_IRecommendThis_Public_Processor::process_recommendation( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], $action );
 
 		$vote_status_by_ip = 0;
 		if ( '0' !== $options['enable_unique_ip'] ) {
@@ -119,22 +90,16 @@ class Themeist_IRecommendThis_Shortcodes {
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		// Check both new and old cookie names for backward compatibility
 		if ( isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) || isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) || $vote_status_by_ip > 0 ) {
-			$class = 'irecommendthis active';
+			$class = 'irecommendthis active irecommendthis-post-' . $post_id;
 			$title = empty( $options['link_title_active'] ) ? __( 'You already recommended this', 'i-recommend-this' ) : $options['link_title_active'];
 		} else {
-			$class = 'irecommendthis';
+			$class = 'irecommendthis irecommendthis-post-' . $post_id;
 			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
 		}
 
-		// Generate a unique instance ID by combining post ID with a random suffix
-		// This ensures unique IDs when multiple buttons for the same post appear on a page
-		$unique_instance_id = 'irecommendthis-' . $post_id . '-' . wp_rand(1000, 9999);
-
-		// Add both an ID (for backward compatibility) and a data-post-id attribute (for better targeting)
-		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="' . esc_attr($unique_instance_id) . '" data-post-id="' . esc_attr($post_id) . '" title="' . esc_attr( $title ) . '">';
-		$irt_html .= $output;
+		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" data-post-id="' . esc_attr( $post_id ) . '" title="' . esc_attr( $title ) . '">';
+		$irt_html .= apply_filters( 'irecommendthis_before_count', apply_filters( 'dot_irt_before_count', $output ) );
 		$irt_html .= '</a>';
 
 		return $irt_html;
@@ -143,7 +108,7 @@ class Themeist_IRecommendThis_Shortcodes {
 	/**
 	 * Shortcode handler for displaying the top recommended posts.
 	 *
-	 * @param array $atts Shortcode attributes for top recommended posts.
+	 * @param array $atts Shortcode attributes.
 	 * @return string HTML output for the top recommended posts.
 	 */
 	public static function shortcode_recommended_top_posts( $atts ) {
@@ -166,7 +131,7 @@ class Themeist_IRecommendThis_Shortcodes {
 	/**
 	 * Display the top recommended posts.
 	 *
-	 * @param array $atts Processed shortcode attributes for top recommended posts.
+	 * @param array $atts Processed shortcode attributes.
 	 * @return string HTML output for the top recommended posts.
 	 */
 	public static function recommended_top_posts_output( $atts ) {

@@ -26,7 +26,7 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @param string $action            Action to perform: 'get' or 'update'.
 	 * @return string HTML output for the recommendation count.
 	 */
-	public function process_recommendation( $post_id, $text_zero_suffix = false, $text_one_suffix = false, $text_more_suffix = false, $action = 'get' ) {
+	public static function process_recommendation( $post_id, $text_zero_suffix = false, $text_one_suffix = false, $text_more_suffix = false, $action = 'get' ) {
 		// Validate post ID.
 		if ( ! is_numeric( $post_id ) ) {
 			return;
@@ -73,7 +73,7 @@ class Themeist_IRecommendThis_Public_Processor {
 
 		// Handling the 'update' action.
 		if ( 'update' === $action ) {
-			return $this->update_recommendation( $post_id, $recommended, $hide_zero, $enable_unique_ip, $get_suffix );
+			return self::update_recommendation( $post_id, $recommended, $hide_zero, $enable_unique_ip, $get_suffix );
 		}
 	}
 
@@ -87,7 +87,7 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @param callable $get_suffix       Function to get suffix text.
 	 * @return string HTML output for the recommendation count.
 	 */
-	private function update_recommendation( $post_id, $recommended, $hide_zero, $enable_unique_ip, $get_suffix ) {
+	private static function update_recommendation( $post_id, $recommended, $hide_zero, $enable_unique_ip, $get_suffix ) {
 		global $wpdb;
 
 		// Process unique IP address checking if enabled.
@@ -109,7 +109,7 @@ class Themeist_IRecommendThis_Public_Processor {
 		}
 
 		// Use the improved cookie handling function
-		$this->set_recommendation_cookie($post_id, isset($_POST['unrecommend']) && 'true' === sanitize_text_field(wp_unslash($_POST['unrecommend'])));
+		self::set_recommendation_cookie($post_id, isset($_POST['unrecommend']) && 'true' === sanitize_text_field(wp_unslash($_POST['unrecommend'])));
 
 		// Check both old and new cookie names for backward compatibility
 		$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) || isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] );
@@ -150,7 +150,7 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @param bool $remove  Whether to remove the cookie.
 	 * @return bool Whether the operation was successful.
 	 */
-	private function set_recommendation_cookie( $post_id, $remove = false ) {
+	private static function set_recommendation_cookie( $post_id, $remove = false ) {
 		// Use proper cookie security settings
 		$secure = is_ssl();
 		$http_only = true;
@@ -162,18 +162,14 @@ class Themeist_IRecommendThis_Public_Processor {
 		}
 
 		if ( $remove ) {
+			// Set only the new cookie name format
 			setcookie( 'irecommendthis_' . $post_id, '', time() - HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure, $http_only );
-			// For backward compatibility
-			setcookie( 'dot_irecommendthis_' . $post_id, '', time() - HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure, $http_only );
 			return true;
 		}
 
 		// Use WordPress constant for expiration (1 year)
 		$expiration = time() + YEAR_IN_SECONDS;
 		setcookie( 'irecommendthis_' . $post_id, $expiration, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, $http_only );
-
-		// For backward compatibility
-		setcookie( 'dot_irecommendthis_' . $post_id, $expiration, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, $http_only );
 		return true;
 	}
 }
