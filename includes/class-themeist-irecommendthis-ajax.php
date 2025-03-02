@@ -60,22 +60,33 @@ class Themeist_IRecommendThis_Ajax {
 			$text_one_suffix  = isset( $options['text_one_suffix'] ) ? sanitize_text_field( $options['text_one_suffix'] ) : '';
 			$text_more_suffix = isset( $options['text_more_suffix'] ) ? sanitize_text_field( $options['text_more_suffix'] ) : '';
 
-			// Check for recommend_id and update recommendation.
+			// Get the post ID - CRITICAL FIX: properly handle data consistently
 			if ( isset( $_POST['recommend_id'] ) ) {
-				$post_id = intval( str_replace( 'irecommendthis-', '', sanitize_text_field( wp_unslash( $_POST['recommend_id'] ) ) ) );
-				// Support older ID prefix format for backward compatibility
-				if ( $post_id === 0 ) {
-					$post_id = intval( str_replace( 'dot-irecommendthis-', '', sanitize_text_field( wp_unslash( $_POST['recommend_id'] ) ) ) );
-				}
-				echo wp_kses_post( $this->processor_component->process_recommendation( $post_id, $text_zero_suffix, $text_one_suffix, $text_more_suffix, 'update' ) );
+				// Make sure we're getting the actual post ID, not the full element ID
+				$post_id = intval( sanitize_text_field( wp_unslash( $_POST['recommend_id'] ) ) );
+
+				// Process the recommendation
+				echo wp_kses_post( $this->processor_component->process_recommendation(
+					$post_id,
+					$text_zero_suffix,
+					$text_one_suffix,
+					$text_more_suffix,
+					'update'
+				) );
 			} elseif ( isset( $_POST['post_id'] ) ) {
-				// If no recommend_id, check for post_id and get recommendation.
-				$post_id = intval( str_replace( 'irecommendthis-', '', sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) ) );
-				// Support older ID prefix format for backward compatibility
-				if ( $post_id === 0 ) {
-					$post_id = intval( str_replace( 'dot-irecommendthis-', '', sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) ) );
-				}
-				echo wp_kses_post( $this->processor_component->process_recommendation( $post_id, $text_zero_suffix, $text_one_suffix, $text_more_suffix, 'get' ) );
+				// For backward compatibility
+				$post_id = intval( sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) );
+
+				echo wp_kses_post( $this->processor_component->process_recommendation(
+					$post_id,
+					$text_zero_suffix,
+					$text_one_suffix,
+					$text_more_suffix,
+					'get'
+				) );
+			} else {
+				// No valid post ID was provided
+				die( esc_html__( 'Error: No valid post ID provided.', 'i-recommend-this' ) );
 			}
 		} else {
 			// Nonce verification failed.

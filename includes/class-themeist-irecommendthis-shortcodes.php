@@ -4,6 +4,14 @@
  *
  * @package IRecommendThis
  */
+
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
+/**
+ * Class to handle shortcodes for the plugin.
+ */
 class Themeist_IRecommendThis_Shortcodes {
 
 	/**
@@ -120,7 +128,12 @@ class Themeist_IRecommendThis_Shortcodes {
 			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
 		}
 
-		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="irecommendthis-' . $post_id . '" title="' . esc_attr( $title ) . '">';
+		// Generate a unique instance ID by combining post ID with a random suffix
+		// This ensures unique IDs when multiple buttons for the same post appear on a page
+		$unique_instance_id = 'irecommendthis-' . $post_id . '-' . wp_rand(1000, 9999);
+
+		// Add both an ID (for backward compatibility) and a data-post-id attribute (for better targeting)
+		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" id="' . esc_attr($unique_instance_id) . '" data-post-id="' . esc_attr($post_id) . '" title="' . esc_attr( $title ) . '">';
 		$irt_html .= $output;
 		$irt_html .= '</a>';
 

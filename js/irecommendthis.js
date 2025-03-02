@@ -10,7 +10,20 @@ jQuery(function($) {
 		}
 
 		var unrecommend = link.hasClass('active');
-		var id = link.data('post-id') || link.attr('id').split('-')[1]; // Get the post ID from data attribute or fall back to element's ID parsing
+
+		// IMPORTANT: Always use data-post-id as the primary identifier
+		// This ensures consistency across multiple instances of the same post button
+		var id = link.data('post-id');
+
+		// If data-post-id is somehow missing, fall back to ID parsing (backward compatibility)
+		if (!id) {
+			// Extract just the post ID, ignoring any instance-specific suffix
+			var idParts = link.attr('id').split('-');
+			if (idParts.length >= 2) {
+				id = idParts[1];  // Get the post ID portion
+			}
+		}
+
 		var suffix = link.find('.irecommendthis-suffix').text(); // Get the suffix text
 
 		// Support both new and legacy variable names for backward compatibility
@@ -35,11 +48,11 @@ jQuery(function($) {
 				var options = JSON.parse(ajaxSettings.options);
 				var title_new = options.link_title_new || "Recommend this";
 				var title_active = options.link_title_active || "You already recommended this";
-
 				let title = unrecommend ? title_new : title_active;
 
-				// Update all elements with the same id
-				$('.irecommendthis[id="irecommendthis-' + id + '"]').each(function() {
+				// Target all buttons with the same post-id data attribute
+				// This ensures all instances for the same post are updated
+				$('.irecommendthis[data-post-id="' + id + '"]').each(function() {
 					$(this).html(data).toggleClass('active').attr('title', title);
 
 					// Check if the count is zero and hide/show accordingly
@@ -53,7 +66,7 @@ jQuery(function($) {
 				});
 
 				// Remove processing class to allow future clicks
-				$('.irecommendthis[id="irecommendthis-' + id + '"]').removeClass('processing');
+				$('.irecommendthis[data-post-id="' + id + '"]').removeClass('processing');
 			},
 			error: function(xhr, status, error) {
 				console.error('AJAX Error: ' + status + ' - ' + error);

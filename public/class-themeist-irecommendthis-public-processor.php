@@ -108,6 +108,9 @@ class Themeist_IRecommendThis_Public_Processor {
 			}
 		}
 
+		// Use the improved cookie handling function
+		$this->set_recommendation_cookie($post_id, isset($_POST['unrecommend']) && 'true' === sanitize_text_field(wp_unslash($_POST['unrecommend'])));
+
 		// Check both old and new cookie names for backward compatibility
 		$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) || isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] );
 
@@ -116,13 +119,7 @@ class Themeist_IRecommendThis_Public_Processor {
 			( wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'irecommendthis-nonce' ) ||
 			  wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'dot-irecommendthis-nonce' ) ) &&
 			isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-			// Remove the cookie
-			if ( isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) ) {
-				setcookie( 'irecommendthis_' . $post_id, '', time() - 3600, '/' );
-			}
-			if ( isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) ) {
-				setcookie( 'dot_irecommendthis_' . $post_id, '', time() - 3600, '/' );
-			}
+			// Count already decremented by cookie function
 			$recommended = max( 0, $recommended - 1 );
 		}
 		// Handle the case where the user is recommending.
@@ -130,9 +127,7 @@ class Themeist_IRecommendThis_Public_Processor {
 				( wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'irecommendthis-nonce' ) ||
 				  wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'dot-irecommendthis-nonce' ) ) &&
 				isset( $_POST['unrecommend'] ) && 'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-			// Set both new and old cookies for backward compatibility
-			setcookie( 'irecommendthis_' . $post_id, time(), time() + 3600 * 24 * 365, '/' );
-			setcookie( 'dot_irecommendthis_' . $post_id, time(), time() + 3600 * 24 * 365, '/' );
+			// Increment the count
 			++$recommended;
 		}
 
@@ -146,5 +141,39 @@ class Themeist_IRecommendThis_Public_Processor {
 			: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 
 		return apply_filters( 'irecommendthis_before_count', apply_filters( 'dot_irt_before_count', $output ) );
+	}
+
+	/**
+	 * Set a recommendation cookie with proper security and compatibility.
+	 *
+	 * @param int  $post_id The post ID.
+	 * @param bool $remove  Whether to remove the cookie.
+	 * @return bool Whether the operation was successful.
+	 */
+	private function set_recommendation_cookie( $post_id, $remove = false ) {
+		// Use proper cookie security settings
+		$secure = is_ssl();
+		$http_only = true;
+		$post_id = absint( $post_id );
+
+		// Check if headers are already sent
+		if ( headers_sent() ) {
+			return false;
+		}
+
+		if ( $remove ) {
+			setcookie( 'irecommendthis_' . $post_id, '', time() - HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure, $http_only );
+			// For backward compatibility
+			setcookie( 'dot_irecommendthis_' . $post_id, '', time() - HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure, $http_only );
+			return true;
+		}
+
+		// Use WordPress constant for expiration (1 year)
+		$expiration = time() + YEAR_IN_SECONDS;
+		setcookie( 'irecommendthis_' . $post_id, $expiration, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, $http_only );
+
+		// For backward compatibility
+		setcookie( 'dot_irecommendthis_' . $post_id, $expiration, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, $http_only );
+		return true;
 	}
 }
