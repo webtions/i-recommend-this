@@ -4,18 +4,53 @@
  *
  * @package IRecommendThis
  */
+
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
+/**
+ * Class to handle AJAX functionality.
+ */
 class Themeist_IRecommendThis_Ajax {
+
+	/**
+	 * Processor component instance.
+	 *
+	 * @var Themeist_IRecommendThis_Public_Processor
+	 */
+	private $processor_component;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		$this->processor_component = new Themeist_IRecommendThis_Public_Processor();
+	}
+
+	/**
+	 * Add AJAX hooks.
+	 */
+	public function add_ajax_hooks() {
+		// Register the new action name
+		add_action( 'wp_ajax_irecommendthis', array( $this, 'ajax_callback' ) );
+		add_action( 'wp_ajax_nopriv_irecommendthis', array( $this, 'ajax_callback' ) );
+
+		// Keep the old action name for backward compatibility
+		add_action( 'wp_ajax_dot-irecommendthis', array( $this, 'ajax_callback' ) );
+		add_action( 'wp_ajax_nopriv_dot-irecommendthis', array( $this, 'ajax_callback' ) );
+	}
 
 	/**
 	 * AJAX Callback for recommendation.
 	 */
-	public static function ajax_callback() {
+	public function ajax_callback() {
 		// Check nonce for security.
 		$nonce_verified = false;
 		if ( isset( $_POST['security'] ) ) {
 			// Check both old and new nonce names for backward compatibility
 			$nonce_verified = wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'irecommendthis-nonce' ) ||
-							  wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'dot-irecommendthis-nonce' );
+			                  wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'dot-irecommendthis-nonce' );
 		}
 
 		if ( $nonce_verified ) {
@@ -32,7 +67,7 @@ class Themeist_IRecommendThis_Ajax {
 				if ( $post_id === 0 ) {
 					$post_id = intval( str_replace( 'dot-irecommendthis-', '', sanitize_text_field( wp_unslash( $_POST['recommend_id'] ) ) ) );
 				}
-				echo wp_kses_post( Themeist_IRecommendThis_Public::process_recommendation( $post_id, $text_zero_suffix, $text_one_suffix, $text_more_suffix, 'update' ) );
+				echo wp_kses_post( $this->processor_component->process_recommendation( $post_id, $text_zero_suffix, $text_one_suffix, $text_more_suffix, 'update' ) );
 			} elseif ( isset( $_POST['post_id'] ) ) {
 				// If no recommend_id, check for post_id and get recommendation.
 				$post_id = intval( str_replace( 'irecommendthis-', '', sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) ) );
@@ -40,25 +75,12 @@ class Themeist_IRecommendThis_Ajax {
 				if ( $post_id === 0 ) {
 					$post_id = intval( str_replace( 'dot-irecommendthis-', '', sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) ) );
 				}
-				echo wp_kses_post( Themeist_IRecommendThis_Public::process_recommendation( $post_id, $text_zero_suffix, $text_one_suffix, $text_more_suffix, 'get' ) );
+				echo wp_kses_post( $this->processor_component->process_recommendation( $post_id, $text_zero_suffix, $text_one_suffix, $text_more_suffix, 'get' ) );
 			}
 		} else {
 			// Nonce verification failed.
 			die( esc_html__( 'Nonce verification failed. This request is not valid.', 'i-recommend-this' ) );
 		}
 		exit;
-	}
-
-	/**
-	 * Add AJAX hooks.
-	 */
-	public function add_ajax_hooks() {
-		// Register the new action name
-		add_action( 'wp_ajax_irecommendthis', array( __CLASS__, 'ajax_callback' ) );
-		add_action( 'wp_ajax_nopriv_irecommendthis', array( __CLASS__, 'ajax_callback' ) );
-
-		// Keep the old action name for backward compatibility
-		add_action( 'wp_ajax_dot-irecommendthis', array( __CLASS__, 'ajax_callback' ) );
-		add_action( 'wp_ajax_nopriv_dot-irecommendthis', array( __CLASS__, 'ajax_callback' ) );
 	}
 }
