@@ -15,7 +15,6 @@ if ( ! defined( 'WPINC' ) ) {
  * Class to handle public-facing assets.
  */
 class Themeist_IRecommendThis_Public_Assets {
-
 	/**
 	 * Path to the main plugin file.
 	 *
@@ -64,28 +63,36 @@ class Themeist_IRecommendThis_Public_Assets {
 		}
 
 		// Register and enqueue the main JavaScript file
-		wp_register_script( 'irecommendthis', plugins_url( 'js/irecommendthis.js', $this->plugin_file ), array( 'jquery' ), THEMEIST_IRT_VERSION, true );
+		$js_url = plugins_url( 'js/irecommendthis.js', $this->plugin_file );
+		$js_path = plugin_dir_path( $this->plugin_file ) . 'js/irecommendthis.js';
+
+		wp_register_script( 'irecommendthis', $js_url, array( 'jquery' ),
+			file_exists( $js_path ) ? filemtime( $js_path ) : THEMEIST_IRT_VERSION,
+			true
+		);
+
 		wp_enqueue_script( 'irecommendthis' );
 
-		// Create a nonce for secure AJAX requests and localize it
-		$nonce = wp_create_nonce( 'irecommendthis-nonce' );
+		// Generate security token
+		$token = Themeist_IRecommendThis_Security::generate_token();
+
+		// Localize script with security token and settings
 		wp_localize_script(
 			'irecommendthis',
 			'irecommendthis',
 			array(
-				'nonce'   => $nonce,
+				'security' => $token, // Use "security" consistently
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'options' => wp_json_encode( $options ),
 			)
 		);
 
 		// Maintain backward compatibility with old variable name
-		// This helps existing sites that might have customizations referencing the old name
 		wp_localize_script(
 			'irecommendthis',
 			'dot_irecommendthis',
 			array(
-				'nonce'   => $nonce,
+				'security' => $token, // Use "security" consistently
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'options' => wp_json_encode( $options ),
 			)

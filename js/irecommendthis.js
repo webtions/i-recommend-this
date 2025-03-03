@@ -35,7 +35,14 @@ jQuery(function($) {
 
 		// Support both new and legacy variable names for backward compatibility
 		var ajaxSettings = irecommendthis || dot_irecommendthis;
-		var nonce = ajaxSettings.nonce; // Get the nonce for security
+
+		if (!ajaxSettings) {
+			console.error('AJAX settings not found - plugin may not be properly initialized');
+			return false;
+		}
+
+		// Get the security token - make sure we use the property name 'security'
+		var security = ajaxSettings.security;
 
 		link.addClass('processing'); // Add processing class to the link
 
@@ -44,13 +51,20 @@ jQuery(function($) {
 			url: ajaxSettings.ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'irecommendthis', // The updated action name
+				action: 'irecommendthis', // Use the standard action name
 				recommend_id: id,
 				suffix: suffix,
 				unrecommend: unrecommend,
-				security: nonce,
+				security: security, // Use the security token
 			},
 			success: function(data) {
+				// Check if we received an error response
+				if (data.indexOf('Security verification failed') !== -1) {
+					console.warn('Security verification failed. The action was not processed.');
+					link.removeClass('processing');
+					return;
+				}
+
 				// Parse the options from the plugin settings
 				var options = JSON.parse(ajaxSettings.options);
 				var title_new = options.link_title_new || "Recommend this";
@@ -93,7 +107,10 @@ jQuery(function($) {
 				$('.irecommendthis[data-post-id="' + id + '"], .irecommendthis-post-' + id).removeClass('processing');
 			},
 			error: function(xhr, status, error) {
-				console.error('AJAX Error: ' + status + ' - ' + error);
+				console.error('AJAX Error:', status, error);
+				if (xhr.responseJSON && xhr.responseJSON.data) {
+					console.error('Error details:', xhr.responseJSON.data);
+				}
 				link.removeClass('processing'); // Remove processing class on error
 			}
 		});

@@ -27,6 +27,9 @@ if ( class_exists( 'Themeist_IRecommendThis' ) ) {
 define( 'THEMEIST_IRT_VERSION', '4.0.0' );
 define( 'THEMEIST_IRT_DB_VERSION', '3.0.0' );
 
+// IMPORTANT: Load the security class first since other classes depend on it
+require_once __DIR__ . '/includes/class-themeist-irecommendthis-security.php';
+
 // Require core classes.
 require_once __DIR__ . '/includes/class-themeist-irecommendthis.php';
 require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';

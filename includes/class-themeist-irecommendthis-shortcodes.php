@@ -18,13 +18,13 @@ class Themeist_IRecommendThis_Shortcodes {
 	 * Register shortcodes.
 	 */
 	public static function register_shortcodes() {
-		// Old shortcode name.
+		// Old shortcode name for backward compatibility.
 		add_shortcode( 'dot_recommends', array( __CLASS__, 'shortcode_recommends' ) );
 
 		// New shortcode name.
 		add_shortcode( 'irecommendthis', array( __CLASS__, 'shortcode_recommends' ) );
 
-		// Old shortcode name.
+		// Old shortcode name for backward compatibility.
 		add_shortcode( 'dot_recommended_top_posts', array( __CLASS__, 'shortcode_recommended_top_posts' ) );
 
 		// New shortcode name.
@@ -81,16 +81,24 @@ class Themeist_IRecommendThis_Shortcodes {
 		);
 		$options         = wp_parse_args( $options, $default_options );
 
-		$output = Themeist_IRecommendThis_Public_Processor::process_recommendation( $post_id, $options['text_zero_suffix'], $options['text_one_suffix'], $options['text_more_suffix'], $action );
+		$output = Themeist_IRecommendThis_Public_Processor::process_recommendation(
+			$post_id,
+			$options['text_zero_suffix'],
+			$options['text_one_suffix'],
+			$options['text_more_suffix'],
+			$action
+		);
 
 		$vote_status_by_ip = 0;
 		if ( '0' !== $options['enable_unique_ip'] ) {
 			global $wpdb;
-			$sql               = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip );
+			$anonymized_ip = Themeist_IRecommendThis_Public_Processor::anonymize_ip($ip);
+			$sql = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		if ( isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) || isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] ) || $vote_status_by_ip > 0 ) {
+		// Check only the current cookie format
+		if ( isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) || $vote_status_by_ip > 0 ) {
 			$class = 'irecommendthis active irecommendthis-post-' . $post_id;
 			$title = empty( $options['link_title_active'] ) ? __( 'You already recommended this', 'i-recommend-this' ) : $options['link_title_active'];
 		} else {
@@ -99,7 +107,7 @@ class Themeist_IRecommendThis_Shortcodes {
 		}
 
 		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" data-post-id="' . esc_attr( $post_id ) . '" title="' . esc_attr( $title ) . '">';
-		$irt_html .= apply_filters( 'irecommendthis_before_count', apply_filters( 'dot_irt_before_count', $output ) );
+		$irt_html .= $output;
 		$irt_html .= '</a>';
 
 		return $irt_html;
@@ -191,28 +199,5 @@ class Themeist_IRecommendThis_Shortcodes {
 		}
 
 		return $return;
-	}
-
-	/**
-	 * Backward compatibility method for old shortcode method names.
-	 *
-	 * @deprecated Use recommend() instead.
-	 * @param int|null $id The post ID to recommend.
-	 * @param string   $action The action to perform.
-	 * @return string Recommendation button HTML.
-	 */
-	public static function dot_recommend( $id = null, $action = 'get' ) {
-		return self::recommend( $id, $action );
-	}
-
-	/**
-	 * Backward compatibility method for old top posts method names.
-	 *
-	 * @deprecated Use recommended_top_posts_output() instead.
-	 * @param array $atts Shortcode attributes.
-	 * @return string Top recommended posts HTML.
-	 */
-	public static function dot_recommended_top_posts_output( $atts ) {
-		return self::recommended_top_posts_output( $atts );
 	}
 }
