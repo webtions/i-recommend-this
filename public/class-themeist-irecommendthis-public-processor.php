@@ -93,18 +93,24 @@ class Themeist_IRecommendThis_Public_Processor {
 		// Process unique IP address checking if enabled.
 		if ( 0 !== $enable_unique_ip ) {
 			$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+			// Use anonymized IP instead of raw IP
+			$anonymized_ip = self::anonymize_ip( $ip );
 
 			if ( isset( $_POST['unrecommend'] ) && isset( $_POST['security'] ) &&
 				( wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'irecommendthis-nonce' ) ||
 				  wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'dot-irecommendthis-nonce' ) ) &&
 				'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-				$sql = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip );
+				$sql = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
 				$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			} else {
-				$sql = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $ip );
+				$sql = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
 				$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$sql = $wpdb->prepare( "INSERT INTO {$wpdb->prefix}irecommendthis_votes VALUES ('', NOW(), %d, %s )", $post_id, $ip );
-				$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+
+				// Only insert if no vote exists for this IP and post
+				if ( empty( $vote_status_by_ip ) || $vote_status_by_ip == 0 ) {
+					$sql = $wpdb->prepare( "INSERT INTO {$wpdb->prefix}irecommendthis_votes VALUES ('', NOW(), %d, %s )", $post_id, $anonymized_ip );
+					$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				}
 			}
 		}
 
@@ -141,6 +147,37 @@ class Themeist_IRecommendThis_Public_Processor {
 			: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 
 		return apply_filters( 'irecommendthis_before_count', apply_filters( 'dot_irt_before_count', $output ) );
+	}
+
+	/**
+	 * Anonymize an IP address for secure storage using global hashing.
+	 *
+	 * Creates a secure hash of the IP address using WordPress
+	 * native cryptographic functions, making it impossible to
+	 * recover the original IP while still allowing tracking
+	 * of user activity across different posts.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @param string $ip The IP address to anonymize.
+	 * @return string The anonymized (hashed) IP.
+	 */
+	public static function anonymize_ip( $ip ) {
+		// Empty IPs should return a consistent hash
+		if ( empty( $ip ) ) {
+			$ip = 'unknown';
+		}
+
+		// Use WordPress salt for authentication
+		$auth_salt = wp_salt( 'auth' );
+
+		// Use site-specific hash for additional entropy
+		$site_hash = defined( 'COOKIEHASH' ) ? COOKIEHASH : md5( site_url() );
+
+		// Create the hash using WordPress hash function with site context
+		$hashed_ip = wp_hash( $ip . $site_hash, 'auth' );
+
+		return $hashed_ip;
 	}
 
 	/**

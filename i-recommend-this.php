@@ -25,7 +25,7 @@ if ( class_exists( 'Themeist_IRecommendThis' ) ) {
 }
 
 define( 'THEMEIST_IRT_VERSION', '4.0.0' );
-define( 'THEMEIST_IRT_DB_VERSION', '2.7.0' );
+define( 'THEMEIST_IRT_DB_VERSION', '3.0.0' );
 
 // Require core classes.
 require_once __DIR__ . '/includes/class-themeist-irecommendthis.php';

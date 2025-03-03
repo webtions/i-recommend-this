@@ -45,7 +45,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 		add_settings_field( 'link_title_active', __( 'Title for already voted posts', 'i-recommend-this' ), array( $this, 'render_link_title_active_field' ), 'irecommendthis-settings', 'irecommendthis' );
 
 		// Privacy options.
-		add_settings_field( 'enable_unique_ip', __( 'Enable IP saving', 'i-recommend-this' ), array( $this, 'render_enable_unique_ip_field' ), 'irecommendthis-settings', 'irecommendthis' );
+		add_settings_field( 'enable_unique_ip', __( 'Enable IP tracking', 'i-recommend-this' ), array( $this, 'render_enable_unique_ip_field' ), 'irecommendthis-settings', 'irecommendthis' );
 	}
 
 	/**
@@ -125,7 +125,8 @@ class Themeist_IRecommendThis_Admin_Settings {
 
 		echo '<input type="hidden" name="irecommendthis_settings[enable_unique_ip]" value="0" />
 		<label><input type="checkbox" name="irecommendthis_settings[enable_unique_ip]" value="1"' . checked( $options['enable_unique_ip'], '1', false ) . ' />' .
-			esc_html__( 'Enable saving of IP Address (will affect GDPR). Cookies are saved by default but enabling this option will save IP & cookies to track user votes and a user be blocked from saving same post multiple times.', 'i-recommend-this' ) . '</label>';
+			esc_html__( 'Enable tracking unique recommendations by IP. IPs are securely anonymized using WordPress cryptographic functions to enhance GDPR compliance.', 'i-recommend-this' ) . '</label>
+			<p class="description">' . esc_html__( 'Cookies are always saved by default. Enabling this option provides stronger protection against duplicate votes using secure global IP hashing.', 'i-recommend-this' ) . '</p>';
 	}
 
 	/**
