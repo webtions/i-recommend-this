@@ -78,7 +78,6 @@ class Themeist_IRecommendThis_Public_Processor {
 			// Process unique IP address checking if enabled.
 			if ( 0 !== $enable_unique_ip ) {
 				$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-				// Use anonymized IP instead of raw IP
 				$anonymized_ip = self::anonymize_ip( $ip );
 
 				if ( isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
@@ -98,33 +97,21 @@ class Themeist_IRecommendThis_Public_Processor {
 				}
 			}
 
-			// Check for both new and legacy cookie names for backward compatibility
-			$new_cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
-			$legacy_cookie_exists = isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] );
-			$cookie_exists = $new_cookie_exists || $legacy_cookie_exists;
+			// Check for cookie
+			$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
 
 			// Handle the case where the user is un-recommending.
 			if ( $cookie_exists && isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-				// Remove cookies for unrecommend action
-				if ($new_cookie_exists) {
-					setcookie( 'irecommendthis_' . $post_id, '', time() - 3600, '/' );
-				}
-				if ($legacy_cookie_exists) {
-					setcookie( 'dot_irecommendthis_' . $post_id, '', time() - 3600, '/' );
-				}
+				// Remove cookie for unrecommend action
+				setcookie( 'irecommendthis_' . $post_id, '', time() - 3600, '/' );
 
 				// Decrement the count
 				$recommended = max( 0, $recommended - 1 );
 			}
 			// Handle the case where the user is recommending.
 			else if ( isset( $_POST['unrecommend'] ) && 'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-				// Set new cookie for recommend action - set for 1 year
+				// Set cookie for recommend action - set for 1 year
 				setcookie( 'irecommendthis_' . $post_id, time(), time() + 31536000, '/' );
-
-				// Remove legacy cookie if it exists
-				if ($legacy_cookie_exists) {
-					setcookie( 'dot_irecommendthis_' . $post_id, '', time() - 3600, '/' );
-				}
 
 				// Increment the count
 				++$recommended;

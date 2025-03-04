@@ -99,8 +99,8 @@ class Themeist_IRecommendThis_Shortcodes {
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		// Check cookie status - prefer new cookie format but check old format for compatibility
-		$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) || isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] );
+		// Check cookie status
+		$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
 
 		if ( $cookie_exists || $vote_status_by_ip > 0 ) {
 			$class = 'irecommendthis active irecommendthis-post-' . $post_id;
