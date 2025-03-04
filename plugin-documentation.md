@@ -17,9 +17,8 @@
    - [AJAX Interactions](#ajax-interactions)
 6. [Database Schema](#database-schema)
 7. [Extension Points](#extension-points)
-8. [Migration Strategy](#migration-strategy)
-9. [Security Considerations](#security-considerations)
-10. [Developer Usage Guide](#developer-usage-guide)
+8. [Security Considerations](#security-considerations)
+9. [Developer Usage Guide](#developer-usage-guide)
 
 ## Plugin Overview
 
@@ -49,12 +48,7 @@ The plugin is organized into a logical directory structure:
 i-recommend-this/
 ├── admin/                  # Admin-facing functionality
 │   ├── class-themeist-irecommendthis-admin.php              # Main admin class
-│   ├── class-themeist-irecommendthis-admin-db-tools.php     # Database tools
-│   ├── class-themeist-irecommendthis-admin-plugin-links.php # Plugin links
-│   ├── class-themeist-irecommendthis-admin-post-columns.php # Post columns
-│   ├── class-themeist-irecommendthis-admin-settings.php     # Settings page
 │   ├── class-themeist-irecommendthis-admin-tools.php        # Admin tools
-│   ├── class-themeist-irecommendthis-admin-ui.php           # UI components
 │   ├── css/                # Admin-specific styles
 │   └── js/                 # Admin-specific scripts
 ├── build/                  # Compiled block editor assets
@@ -73,39 +67,21 @@ i-recommend-this/
 ├── js/                     # Public-facing scripts
 │   └── irecommendthis.js                           # Main frontend script
 ├── languages/              # Translation files
-│   ├── i-recommend-this-en.po                      # English strings
-│   ├── i-recommend-this-fr_FR.po                   # French translation
-│   ├── i-recommend-this-es_ES.po                   # Spanish translation
-│   ├── i-recommend-this-pt_BR.po                   # Portuguese translation
-│   ├── i-recommend-this-fa_IR.po                   # Persian translation
-│   ├── i-recommend-this-nl_NL.po                   # Dutch translation
-│   └── ...
 ├── public/                 # Public-facing functionality
 │   ├── class-themeist-irecommendthis-public.php             # Main public class
-│   ├── class-themeist-irecommendthis-public-assets.php      # Assets handler
-│   ├── class-themeist-irecommendthis-public-display.php     # Display handler
-│   ├── class-themeist-irecommendthis-public-processor.php   # Processor class
 │   └── class-themeist-most-recommended-posts-widget.php     # Widget class
 ├── src/                    # Block editor source files
 │   ├── index.js            # Block editor source
 │   └── block.json          # Block configuration
 ├── i-recommend-this.php    # Main plugin file
-├── readme.txt              # WordPress.org readme
-├── readme.md               # GitHub readme
-├── changelog.txt           # Detailed changelog
-├── SECURITY.md             # Security policy
-├── .editorconfig           # Editor configuration
-├── .gitignore              # Git ignore rules
-├── package.json            # NPM package info
-├── phpcs.xml               # PHP CodeSniffer rules
-└── .nvmrc                  # Node version
+└── Various configuration files (.editorconfig, .gitignore, etc.)
 ```
 
 ## Architecture
 
 ### Component-Based Design
 
-The plugin employs a modern component-based architecture that separates responsibilities into distinct classes:
+The plugin employs a component-based architecture that separates responsibilities into distinct classes:
 
 1. **Main Plugin Container**: The `Themeist_IRecommendThis` class serves as the main container and bootstraps other components.
 
@@ -150,102 +126,61 @@ Key methods:
 - `create_db_table()`: Creates the database table for storing votes.
 - `update()`: Updates the database schema when needed.
 - `update_check()`: Checks if database updates are needed.
-- `migrate_plugin_settings()`: Handles migration from old to new settings format.
 
 ### Admin Components
 
 #### Admin Main Class (`class-themeist-irecommendthis-admin.php`)
 
-Coordinates all admin functionality through its components:
+Coordinates all admin functionality:
 
-- Initializes admin components
 - Sets up admin hooks
 - Manages settings menu registration
+- Adds columns to post list table
+- Manages settings fields
 
-#### Admin Settings (`class-themeist-irecommendthis-admin-settings.php`)
+Methods:
+- `add_admin_hooks()`: Registers all admin hooks
+- `dot_irecommendthis_menu()`: Adds the settings page
+- `dot_settings_page()`: Renders the settings page
+- `dot_irecommendthis_settings()`: Registers settings fields
+- `settings_validate()`: Validates form submissions
+- `setup_recommends()`: Sets up recommendation data for new posts
+- `dot_columns_head()`: Adds custom column to posts table
+- `dot_column_content()`: Displays recommendation count in posts table
+- `dot_column_register_sortable()`: Makes column sortable
+- `dot_column_orderby()`: Handles column sorting
 
-Handles plugin settings:
+#### Admin Tools (`class-themeist-irecommendthis-admin-tools.php`)
 
-- Registers settings fields
-- Validates user input
-- Renders settings fields
-- Provides default values
+Provides database tools for administrators:
 
-Settings include:
-- Display options (automatic display on posts/pages)
-- Style selection (thumb/heart)
-- Text customization
-- IP tracking settings
-- CSS options
+- Database optimization
+- Table information display
+- Direct update options
 
-#### Admin DB Tools (`class-themeist-irecommendthis-admin-db-tools.php`)
-
-Handles database operations:
-
-- Displays database information
-- Processes database optimization requests
-- Checks database table structure
-- Displays record counts
-
-#### Admin UI (`class-themeist-irecommendthis-admin-ui.php`)
-
-Handles admin interface components:
-
-- Renders settings pages
-- Creates tabbed interface
-- Displays admin notices
-- Enqueues admin scripts
-
-#### Admin Post Columns (`class-themeist-irecommendthis-admin-post-columns.php`)
-
-Customizes post list table:
-
-- Adds 'Likes' column
-- Makes column sortable
-- Displays like counts
-- Handles sorting options
-
-#### Admin Plugin Links (`class-themeist-irecommendthis-admin-plugin-links.php`)
-
-Manages plugin links on the plugins page:
-
-- Adds settings link
-- Adds documentation and support links
+Methods:
+- `add_hooks()`: Registers hooks for the tools
+- `add_tools_submenu()`: Adds submenu to tools menu
+- `render_tools_page()`: Displays database tools interface
+- `display_database_info()`: Shows database structure information
+- `handle_database_update()`: Processes database update requests
+- `process_direct_update()`: Handles URL-based update requests
 
 ### Public Components
 
 #### Public Main Class (`class-themeist-irecommendthis-public.php`)
 
-Coordinates all public-facing functionality:
+Manages public-facing functionality:
 
-- Initializes public components
-- Sets up public hooks
-- Provides static access to processor
+- Enqueues scripts and styles
+- Adds the recommendation button to content
+- Processes recommendation requests
 
-#### Public Assets (`class-themeist-irecommendthis-public-assets.php`)
-
-Handles scripts and styles:
-
-- Enqueues CSS based on selected style
-- Enqueues JavaScript
-- Localizes scripts with settings
-- Handles backward compatibility
-
-#### Public Display (`class-themeist-irecommendthis-public-display.php`)
-
-Handles content modification:
-
-- Filters post content to add recommendation button
-- Respects settings for where buttons should appear
-
-#### Public Processor (`class-themeist-irecommendthis-public-processor.php`)
-
-Core functionality for processing recommendations:
-
-- Handles the recommendation logic
-- Updates recommendation counts
-- Manages IP anonymization
-- Handles cookie management
+Key methods:
+- `add_public_hooks()`: Registers public hooks
+- `enqueue_scripts()`: Adds necessary scripts and styles
+- `dot_content()`: Filters content to add recommendation button
+- `dot_recommend_this()`: Processes recommendation updates
 
 #### Widget Class (`class-themeist-most-recommended-posts-widget.php`)
 
@@ -255,6 +190,13 @@ Implements a widget to display most recommended posts:
 - Processes widget settings
 - Queries for top posts
 - Displays results
+
+Methods:
+- `__construct()`: Sets up widget properties
+- `form()`: Displays widget settings form
+- `update()`: Processes widget settings updates
+- `widget()`: Renders the widget on the frontend
+- `register_widget()`: Static method to register the widget
 
 ### Shared Components
 
@@ -267,12 +209,23 @@ Processes AJAX requests:
 - Processes recommendation updates
 - Returns updated counts
 
+Methods:
+- `add_ajax_hooks()`: Registers AJAX hooks
+- `ajax_callback()`: Processes AJAX recommendation requests
+
 #### Shortcodes (`class-themeist-irecommendthis-shortcodes.php`)
 
-Implements shortcodes:
+Implements shortcodes for the plugin:
 
 - `[irecommendthis]` - Display recommendation button
 - `[irecommendthis_top_posts]` - Display top recommended posts
+
+Methods:
+- `register_shortcodes()`: Registers all shortcodes
+- `shortcode_recommends()`: Handles recommendation button shortcode
+- `recommend()`: Generates recommendation button HTML
+- `shortcode_recommended_top_posts()`: Handles top posts shortcode
+- `recommended_top_posts_output()`: Generates top posts HTML
 
 #### Block Registration (`block-registration.php`)
 
@@ -283,12 +236,15 @@ Registers the Gutenberg block:
 - Manages block attributes
 - Processes shortcode output
 
+Functions:
+- `register_irecommendthis_block()`: Registers the block
+- `irecommendthis_block_render_callback()`: Renders the block content
+
 #### Public Functions (`functions.php`)
 
 Provides theme API functions:
 
-- `irecommendthis()` - Template tag to display recommendation button
-- `dot_irecommendthis()` - Legacy template tag (backward compatibility)
+- `irecommendthis()`: Template tag to display recommendation button
 
 ## Data Flow
 
@@ -309,10 +265,10 @@ The process for recommending a post follows this flow:
    - Calls the processor to update recommendation
 
 4. **Recommendation Processing**:
-   - `class-themeist-irecommendthis-public-processor.php` handles the logic
+   - The public class handles the recommendation logic
    - Checks for duplicate recommendations via cookies/IP
    - Updates post meta with new count
-   - If IP tracking is enabled, saves anonymized IP to database
+   - If IP tracking is enabled, saves IP to database
    - Generates updated HTML for the button
 
 5. **UI Update**:
@@ -325,7 +281,7 @@ The process for recommending a post follows this flow:
 The plugin uses WordPress AJAX to handle recommendations without page reloads:
 
 1. **Initialization**:
-   - `public-assets.php` localizes script with AJAX URL and nonce
+   - Scripts are localized with AJAX URL and nonce
    - Settings are passed to JavaScript
 
 2. **Request**:
@@ -352,7 +308,7 @@ The plugin uses a custom table for tracking votes:
 | id      | MEDIUMINT(9)   | Auto-increment primary key               |
 | time    | TIMESTAMP      | When the vote was cast                   |
 | post_id | BIGINT(20)     | The ID of the recommended post           |
-| ip      | VARCHAR(255)   | Anonymized IP address of the voter       |
+| ip      | VARCHAR(45)    | IP address of the voter (if enabled)     |
 
 **Indexes**:
 - Primary key on `id`
@@ -361,14 +317,13 @@ The plugin uses a custom table for tracking votes:
 
 Additionally, the plugin stores data in WordPress standard tables:
 
-1. **Post Meta**: 
+1. **Post Meta**:
    - `_recommended` - Stores the count of recommendations for each post
 
 2. **Options**:
-   - `irecommendthis_settings` - Plugin settings
-   - `irecommendthis_db_version` - Database version for schema updates
-   - `irecommendthis_ip_migration_complete` - Flag for IP anonymization completion
-   - `irecommendthis-version` - Plugin version
+   - Plugin settings
+   - Database version for schema updates
+   - Plugin version
 
 ## Extension Points
 
@@ -415,27 +370,6 @@ The plugin includes a Gutenberg block that can be added to posts and pages throu
 - Text alignment
 - Using current post in query loops
 
-## Migration Strategy
-
-The plugin implements a careful migration strategy for upgrading from older versions:
-
-1. **Settings Migration**:
-   - Transitions from old `dot_irecommendthis_settings` to new `irecommendthis_settings`
-   - Maintains backward compatibility for smooth upgrades
-
-2. **Database Updates**:
-   - Handles database schema updates incrementally
-   - Adds indexes for better performance
-   - Updates column types when needed
-
-3. **IP Anonymization**:
-   - Migration process for converting old IPs to anonymized format
-   - Runs in batches to prevent timeout issues
-
-4. **JavaScript Compatibility**:
-   - Maintains support for old selectors and attributes
-   - Gradually transitions to new naming convention
-
 ## Security Considerations
 
 The plugin implements several security measures:
@@ -449,10 +383,9 @@ The plugin implements several security measures:
    - AJAX requests verified with nonces
    - Form submissions protected with nonces
 
-3. **IP Anonymization**:
-   - IPs hashed for GDPR compliance
-   - Uses WordPress core hashing functions
-   - Provides site-specific hashing for security
+3. **IP Handling**:
+   - Option to disable IP address saving for GDPR compliance
+   - IP address storage can be configured in settings
 
 4. **Capability Checks**:
    - Admin functions restricted to appropriate capabilities
