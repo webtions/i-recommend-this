@@ -38,8 +38,8 @@ jQuery(function($) {
 
 		var suffix = link.find('.irecommendthis-suffix').text(); // Get the suffix text
 
-		// Support both new and legacy variable names for backward compatibility
-		var ajaxSettings = irecommendthis || dot_irecommendthis;
+		// Get the AJAX settings from the localized variable
+		var ajaxSettings = irecommendthis;
 
 		if (!ajaxSettings) {
 			console.error('AJAX settings not found - plugin may not be properly initialized');

@@ -38,7 +38,7 @@ class Themeist_IRecommendThis_Public_Processor {
 		$text_more_suffix = sanitize_text_field( $text_more_suffix );
 
 		// Fetch options and recommendation count.
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings' );
 		$recommended = (int) get_post_meta( $post_id, '_recommended', true );
 		$hide_zero = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
 		$enable_unique_ip = isset( $options['enable_unique_ip'] ) ? (int) $options['enable_unique_ip'] : 0;
@@ -98,21 +98,33 @@ class Themeist_IRecommendThis_Public_Processor {
 				}
 			}
 
-			// Check if the user has a cookie for this post
-			$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
+			// Check for both new and legacy cookie names for backward compatibility
+			$new_cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
+			$legacy_cookie_exists = isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] );
+			$cookie_exists = $new_cookie_exists || $legacy_cookie_exists;
 
 			// Handle the case where the user is un-recommending.
 			if ( $cookie_exists && isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-				// Remove cookie for unrecommend action
-				setcookie( 'irecommendthis_' . $post_id, '', time() - 3600, '/' );
+				// Remove cookies for unrecommend action
+				if ($new_cookie_exists) {
+					setcookie( 'irecommendthis_' . $post_id, '', time() - 3600, '/' );
+				}
+				if ($legacy_cookie_exists) {
+					setcookie( 'dot_irecommendthis_' . $post_id, '', time() - 3600, '/' );
+				}
 
 				// Decrement the count
 				$recommended = max( 0, $recommended - 1 );
 			}
 			// Handle the case where the user is recommending.
 			else if ( isset( $_POST['unrecommend'] ) && 'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-				// Set cookie for recommend action - set for 1 year
+				// Set new cookie for recommend action - set for 1 year
 				setcookie( 'irecommendthis_' . $post_id, time(), time() + 31536000, '/' );
+
+				// Remove legacy cookie if it exists
+				if ($legacy_cookie_exists) {
+					setcookie( 'dot_irecommendthis_' . $post_id, '', time() - 3600, '/' );
+				}
 
 				// Increment the count
 				++$recommended;

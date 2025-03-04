@@ -19,12 +19,14 @@ class Themeist_IRecommendThis_Shortcodes {
 	 */
 	public static function register_shortcodes() {
 		// Old shortcode name for backward compatibility.
+		// @deprecated 4.0.0 Use 'irecommendthis' instead
 		add_shortcode( 'dot_recommends', array( __CLASS__, 'shortcode_recommends' ) );
 
 		// New shortcode name.
 		add_shortcode( 'irecommendthis', array( __CLASS__, 'shortcode_recommends' ) );
 
 		// Old shortcode name for backward compatibility.
+		// @deprecated 4.0.0 Use 'irecommendthis_top_posts' instead
 		add_shortcode( 'dot_recommended_top_posts', array( __CLASS__, 'shortcode_recommended_top_posts' ) );
 
 		// New shortcode name.
@@ -68,7 +70,7 @@ class Themeist_IRecommendThis_Shortcodes {
 		global $post;
 
 		$post_id = $id ? $id : get_the_ID();
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings' );
 
 		$ip              = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$default_options = array(
@@ -97,8 +99,10 @@ class Themeist_IRecommendThis_Shortcodes {
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		// Check only the current cookie format
-		if ( isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) || $vote_status_by_ip > 0 ) {
+		// Check cookie status - prefer new cookie format but check old format for compatibility
+		$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] ) || isset( $_COOKIE[ 'dot_irecommendthis_' . $post_id ] );
+
+		if ( $cookie_exists || $vote_status_by_ip > 0 ) {
 			$class = 'irecommendthis active irecommendthis-post-' . $post_id;
 			$title = empty( $options['link_title_active'] ) ? __( 'You already recommended this', 'i-recommend-this' ) : $options['link_title_active'];
 		} else {

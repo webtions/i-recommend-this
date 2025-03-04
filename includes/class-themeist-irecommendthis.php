@@ -80,23 +80,30 @@ class Themeist_IRecommendThis {
 
 	/**
 	 * Migrate plugin settings from old to new option keys.
+	 *
+	 * This method handles the transition from old option names to new ones
+	 * to ensure a smooth upgrade path for existing users.
 	 */
 	public function migrate_plugin_settings() {
 		// Migrate settings from old to new option keys
 		$old_settings = get_option( 'dot_irecommendthis_settings' );
 		$current_settings = get_option( 'irecommendthis_settings' );
 
-		// Only migrate if old settings exist and current settings are empty
+		// Only migrate if old settings exist and current settings are empty/don't exist
 		if ( $old_settings && empty( $current_settings ) ) {
 			update_option( 'irecommendthis_settings', $old_settings );
-			delete_option( 'dot_irecommendthis_settings' );
+
+			// Keep the old setting for one more version, but we'll remove this in a future version
+			// Don't delete the old settings yet to allow for rollback if needed
 		}
 
 		// Migrate database version
 		$old_db_version = get_option( 'dot_irecommendthis_db_version' );
 		if ( $old_db_version ) {
 			update_option( 'irecommendthis_db_version', $old_db_version );
-			delete_option( 'dot_irecommendthis_db_version' );
+
+			// Keep the old version for one more version cycle
+			// Don't delete the old version yet to allow for rollback if needed
 		}
 	}
 
@@ -238,7 +245,7 @@ class Themeist_IRecommendThis {
 		}
 
 		// Get the plugin settings
-		$options = get_option('irecommendthis_settings', []);
+		$options = get_option('irecommendthis_settings');
 		$enable_unique_ip = isset($options['enable_unique_ip']) ? (int) $options['enable_unique_ip'] : 0;
 
 		// Only proceed if IP tracking is enabled
@@ -319,7 +326,11 @@ class Themeist_IRecommendThis {
 	 * Check for updates and run the update script if necessary.
 	 */
 	public function update_check() {
+		// Check both old and new version options during transition period
 		$current_db_version = get_option( 'irecommendthis_db_version' );
+		if (!$current_db_version) {
+			$current_db_version = get_option( 'dot_irecommendthis_db_version' );
+		}
 
 		if ( $this->db_version !== $current_db_version ) {
 			$this->update();

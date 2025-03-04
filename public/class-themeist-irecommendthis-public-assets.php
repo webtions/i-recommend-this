@@ -42,8 +42,8 @@ class Themeist_IRecommendThis_Public_Assets {
 	 * Enqueue scripts and styles for the plugin.
 	 */
 	public function enqueue_scripts() {
-		// Get plugin settings with fallback for backward compatibility
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		// Get plugin settings
+		$options = get_option( 'irecommendthis_settings' );
 
 		// Validate and set default values for CSS options
 		$disable_css     = isset( $options['disable_css'] ) ? intval( $options['disable_css'] ) : 0;
@@ -73,10 +73,10 @@ class Themeist_IRecommendThis_Public_Assets {
 
 		wp_enqueue_script( 'irecommendthis' );
 
-		// Generate a standard WordPress nonce
-		$nonce = wp_create_nonce( 'dot-irecommendthis-nonce' );
+		// Generate a standard WordPress nonce with the new name
+		$nonce = wp_create_nonce( 'irecommendthis-nonce' );
 
-		// Localize script with nonce and settings (new variable name)
+		// Localize script with nonce and settings
 		wp_localize_script(
 			'irecommendthis',
 			'irecommendthis',
@@ -87,15 +87,20 @@ class Themeist_IRecommendThis_Public_Assets {
 			)
 		);
 
-		// Maintain backward compatibility with old variable name
-		wp_localize_script(
-			'irecommendthis',
-			'dot_irecommendthis',
-			array(
-				'nonce'   => $nonce,
-				'ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'options' => wp_json_encode( $options ),
-			)
-		);
+		// For backward compatibility - maintain old JS variable name for one more version
+		// @deprecated 4.0.0 Use 'irecommendthis' variable instead
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			// Only add in debug mode for developer awareness
+			wp_localize_script(
+				'irecommendthis',
+				'dot_irecommendthis',
+				array(
+					'nonce'   => $nonce,
+					'ajaxurl' => admin_url( 'admin-ajax.php' ),
+					'options' => wp_json_encode( $options ),
+					'deprecated' => true,
+				)
+			);
+		}
 	}
 }
