@@ -142,6 +142,29 @@ Please report security bugs found in the source code through the [Patchstack Vul
 
 == Changelog ==
 
+= 4.0.0 =
+* Major architecture overhaul with component-based design
+* New naming convention: irecommendthis instead of dot_irecommendthis
+* Updated shortcodes to [irecommendthis] and [irecommendthis_top_posts] (old function still supported)
+* Added new template tag irecommendthis() (old function still supported)
+* Enhanced GDPR compliance with IP anonymization
+* Improved database structure with better indexing
+* Enhanced JavaScript for better reliability
+* Improved security with better nonce handling
+* Added database optimization tools
+
+= 3.10.3 =
+* Fix: Resolved issue with duplicate post IDs in query blocks
+* Added: Context awareness to properly identify post IDs in query loops
+* Enhanced: Shortcode functionality to respect post context in WordPress loops
+* Added: JavaScript fallback to detect and fix incorrect IDs at runtime
+* Improved: Database optimization for better performance and compatibility
+* Refactored: Database management error handling
+* Removed: Development-specific logging methods
+* Security: Improved error handling following WordPress best practices
+* Fixed: Potential security risks in database management logging
+* Enhanced: Plugin stability and error notification mechanisms
+
 = 3.10.2 =
 * Fix: Template tag not outputting the recommend link
 
@@ -151,7 +174,7 @@ Please report security bugs found in the source code through the [Patchstack Vul
 = 3.10.0 =
 * Security update
 * Code Refactor
-* Added Block
+* Added Gutenberg block support
 
 = 3.9.1 =
 Fixes multiple security issues
