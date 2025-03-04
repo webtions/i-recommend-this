@@ -73,15 +73,15 @@ class Themeist_IRecommendThis_Public_Assets {
 
 		wp_enqueue_script( 'irecommendthis' );
 
-		// Generate security token
-		$token = Themeist_IRecommendThis_Security::generate_token();
+		// Generate a standard WordPress nonce
+		$nonce = wp_create_nonce( 'dot-irecommendthis-nonce' );
 
-		// Localize script with security token and settings
+		// Localize script with nonce and settings (new variable name)
 		wp_localize_script(
 			'irecommendthis',
 			'irecommendthis',
 			array(
-				'security' => $token, // Use "security" consistently
+				'nonce'   => $nonce,
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'options' => wp_json_encode( $options ),
 			)
@@ -92,7 +92,7 @@ class Themeist_IRecommendThis_Public_Assets {
 			'irecommendthis',
 			'dot_irecommendthis',
 			array(
-				'security' => $token, // Use "security" consistently
+				'nonce'   => $nonce,
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'options' => wp_json_encode( $options ),
 			)

@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: https://themeist.com/plugins/wordpress/i-recommend-this/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page
  * Description: This plugin allows your visitors to recommend or like your posts.
- * Version: 4.0.0
+ * Version: 3.10.3
  * Author: Harish Chouhan, Themeist
  * Author URI: https://themeist.com/
  * Author Email: support@themeist.com/
@@ -24,13 +24,10 @@ if ( class_exists( 'Themeist_IRecommendThis' ) ) {
 	return;
 }
 
-define( 'THEMEIST_IRT_VERSION', '4.0.0' );
-define( 'THEMEIST_IRT_DB_VERSION', '3.0.0' );
+define( 'THEMEIST_IRT_VERSION', '3.10.3' );
+define( 'THEMEIST_IRT_DB_VERSION', '2.6.3' );
 
-// IMPORTANT: Load the security class first since other classes depend on it
-require_once __DIR__ . '/includes/class-themeist-irecommendthis-security.php';
-
-// Require core classes.
+// Require includes.
 require_once __DIR__ . '/includes/class-themeist-irecommendthis.php';
 require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';
 require_once __DIR__ . '/public/class-themeist-irecommendthis-public.php';
@@ -40,7 +37,7 @@ require_once __DIR__ . '/includes/class-themeist-irecommendthis-shortcodes.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/block-registration.php';
 
-// Create instance of main plugin class.
+// Create instance of plugin class.
 global $themeist_i_recommend_this;
 $themeist_i_recommend_this = new Themeist_IRecommendThis( __FILE__ );
 $themeist_i_recommend_this->add_hooks();

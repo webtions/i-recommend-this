@@ -14,7 +14,12 @@ jQuery(function($) {
 		// First try to use the data attribute (preferred method)
 		var id = link.data('post-id');
 
-		// Fallback: try to extract post ID from class name if data attribute isn't present
+		// Fallback: extract post ID from the element ID if data attribute not present
+		if (!id && link.attr('id')) {
+			id = link.attr('id').replace('irecommendthis-', '');
+		}
+
+		// Fallback: try to extract post ID from class name if no other method works
 		if (!id) {
 			var postClass = link.attr('class').split(' ').find(function(c) {
 				return c.startsWith('irecommendthis-post-');
@@ -41,8 +46,8 @@ jQuery(function($) {
 			return false;
 		}
 
-		// Get the security token - make sure we use the property name 'security'
-		var security = ajaxSettings.security;
+		// Get the nonce from the localized data
+		var nonce = ajaxSettings.nonce;
 
 		link.addClass('processing'); // Add processing class to the link
 
@@ -55,12 +60,12 @@ jQuery(function($) {
 				recommend_id: id,
 				suffix: suffix,
 				unrecommend: unrecommend,
-				security: security, // Use the security token
+				nonce: nonce,
 			},
 			success: function(data) {
-				// Check if we received an error response
-				if (data.indexOf('Security verification failed') !== -1) {
-					console.warn('Security verification failed. The action was not processed.');
+				// Handle errors gracefully
+				if (typeof data === 'object' && data.success === false) {
+					console.error('Error:', data.data ? data.data.message : 'Unknown error');
 					link.removeClass('processing');
 					return;
 				}
@@ -71,8 +76,8 @@ jQuery(function($) {
 				var title_active = options.link_title_active || "You already recommended this";
 				var title = unrecommend ? title_new : title_active;
 
-				// Update all buttons with the same post ID (using data attribute)
-				$('.irecommendthis[data-post-id="' + id + '"]').each(function() {
+				// Update all buttons with the same post ID
+				$('.irecommendthis[data-post-id="' + id + '"], #irecommendthis-' + id).each(function() {
 					$(this).html(data)
 						.toggleClass('active')
 						.attr('title', title);
@@ -89,7 +94,7 @@ jQuery(function($) {
 
 				// Also update using class selector for any elements that might not have the data attribute
 				$('.irecommendthis-post-' + id).each(function() {
-					if (!$(this).data('post-id')) {
+					if (!$(this).data('post-id') && !$(this).attr('id')) {
 						$(this).html(data)
 							.toggleClass('active')
 							.attr('title', title);
@@ -104,7 +109,8 @@ jQuery(function($) {
 				});
 
 				// Remove processing class from all affected elements
-				$('.irecommendthis[data-post-id="' + id + '"], .irecommendthis-post-' + id).removeClass('processing');
+				$('.irecommendthis[data-post-id="' + id + '"], #irecommendthis-' + id + ', .irecommendthis-post-' + id)
+					.removeClass('processing');
 			},
 			error: function(xhr, status, error) {
 				console.error('AJAX Error:', status, error);
