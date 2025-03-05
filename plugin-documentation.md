@@ -2,304 +2,223 @@
 
 ## Table of Contents
 
-1. [Plugin Overview](#plugin-overview)
+1. [Overview](#overview)
 2. [File Structure](#file-structure)
-3. [Architecture](#architecture)
-   - [Component-Based Design](#component-based-design)
-   - [Design Patterns](#design-patterns)
-4. [Core Components](#core-components)
-   - [Main Plugin Class](#main-plugin-class)
+3. [Core Architecture](#core-architecture)
+4. [Main Components](#main-components)
+   - [Core Plugin Class](#core-plugin-class)
    - [Admin Components](#admin-components)
-   - [Public Components](#public-components)
-   - [Shared Components](#shared-components)
-5. [Data Flow](#data-flow)
-   - [Recommendation Process](#recommendation-process)
-   - [AJAX Interactions](#ajax-interactions)
-6. [Database Schema](#database-schema)
-7. [Extension Points](#extension-points)
-8. [Security Considerations](#security-considerations)
-9. [Developer Usage Guide](#developer-usage-guide)
+   - [Frontend Components](#frontend-components)
+   - [Block Editor Support](#block-editor-support)
+5. [Database Structure](#database-structure)
+6. [Recommendation Process Flow](#recommendation-process-flow)
+7. [Hooks and Customization](#hooks-and-customization)
+8. [Theme Developer Guide](#theme-developer-guide)
 
-## Plugin Overview
+## Overview
 
-"I Recommend This" is a WordPress plugin that allows users to like or recommend posts with a simple click. It's designed to enhance user engagement by providing an alternative to commenting.
+"I Recommend This" is a WordPress plugin that adds a recommendation/like system to posts. It allows visitors to like content without commenting, tracks recommendation counts, and provides tools to display popular posts.
 
 Key features:
-- Recommendation/like buttons for posts
-- Counter for likes
-- Shortcodes to display most recommended posts
-- Widget for most recommended posts
-- Gutenberg block support
+- Like/recommend buttons for posts
+- Recommendation counter
+- Most recommended posts widget
+- Shortcodes for displaying recommendation buttons and top posts
+- Gutenberg block integration
 - GDPR compliance options
-- Database optimization tools
-
-The plugin follows modern WordPress development practices with an emphasis on:
-- Object-oriented architecture
-- Component-based design
-- WordPress coding standards
-- Security best practices
-- Performant database interactions
 
 ## File Structure
 
-The plugin is organized into a logical directory structure:
-
 ```
 i-recommend-this/
-├── admin/                  # Admin-facing functionality
-│   ├── class-themeist-irecommendthis-admin.php              # Main admin class
-│   ├── class-themeist-irecommendthis-admin-tools.php        # Admin tools
-│   ├── css/                # Admin-specific styles
-│   └── js/                 # Admin-specific scripts
-├── build/                  # Compiled block editor assets
-│   ├── index.asset.php     # Block dependencies
-│   ├── index.js            # Compiled block JS
-│   └── block.json          # Block registration
-├── css/                    # Public-facing styles
-│   ├── irecommendthis.css              # Default thumb style
-│   └── irecommendthis-heart.css        # Heart style option
-├── includes/               # Core plugin functionality
-│   ├── block-registration.php                      # Block registration
-│   ├── class-themeist-irecommendthis.php           # Main plugin class
-│   ├── class-themeist-irecommendthis-ajax.php      # AJAX handler
+├── admin/                                # Admin functionality
+│   ├── class-themeist-irecommendthis-admin.php           # Admin class
+│   ├── class-themeist-irecommendthis-admin-tools.php     # Admin tools
+├── build/                                # Block editor compiled files
+│   ├── block.json                        # Block registration
+│   ├── index.asset.php                   # Block dependencies
+│   ├── index.js                          # Compiled JS
+├── css/                                  # Frontend styles
+│   ├── irecommendthis.css                # Default style (thumb)
+│   ├── irecommendthis-heart.css          # Heart style
+├── includes/                             # Core functionality
+│   ├── block-registration.php            # Block registration code
+│   ├── class-themeist-irecommendthis.php # Main plugin class
+│   ├── class-themeist-irecommendthis-ajax.php # AJAX processing
 │   ├── class-themeist-irecommendthis-shortcodes.php # Shortcodes
-│   └── functions.php                               # Public functions
-├── js/                     # Public-facing scripts
-│   └── irecommendthis.js                           # Main frontend script
-├── languages/              # Translation files
-├── public/                 # Public-facing functionality
-│   ├── class-themeist-irecommendthis-public.php             # Main public class
-│   └── class-themeist-most-recommended-posts-widget.php     # Widget class
-├── src/                    # Block editor source files
-│   ├── index.js            # Block editor source
-│   └── block.json          # Block configuration
-├── i-recommend-this.php    # Main plugin file
-└── Various configuration files (.editorconfig, .gitignore, etc.)
+│   ├── functions.php                     # Public functions (template tags)
+├── js/                                   # Frontend scripts
+│   ├── irecommendthis.js                 # Main JS functionality
+├── languages/                            # Translation files
+├── public/                               # Public-facing functionality
+│   ├── class-themeist-irecommendthis-public.php # Public class
+│   ├── class-themeist-irecommendthis-public-assets.php # Assets handling
+│   ├── class-themeist-irecommendthis-public-display.php # Display handling
+│   ├── class-themeist-irecommendthis-public-processor.php # Core processing
+│   ├── class-themeist-most-recommended-posts-widget.php # Widget
+├── src/                                  # Block editor source
+│   ├── block.json                        # Block configuration
+│   ├── index.js                          # Block editor JS source
+├── i-recommend-this.php                  # Main plugin file
 ```
 
-## Architecture
+## Core Architecture
 
-### Component-Based Design
+The plugin uses a component-based architecture that separates responsibilities into distinct classes. The main plugin file (`i-recommend-this.php`) acts as the entry point that initializes the core class and all required components.
 
-The plugin employs a component-based architecture that separates responsibilities into distinct classes:
+Each component focuses on a specific functionality:
+- The core plugin class (`Themeist_IRecommendThis`) handles activation, database setup, and updates
+- Admin components handle settings, admin UI, and tools
+- Public components handle frontend display, processing, and AJAX interactions
+- Standalone components handle specific functionality like widgets and shortcodes
 
-1. **Main Plugin Container**: The `Themeist_IRecommendThis` class serves as the main container and bootstraps other components.
+## Main Components
 
-2. **Public Components**: Handle the frontend functionality displayed to visitors.
+### Core Plugin Class
 
-3. **Admin Components**: Handle the admin functionality for WordPress administrators.
+**Themeist_IRecommendThis** - `includes/class-themeist-irecommendthis.php`
 
-4. **Shared Components**: Handle functionality used by both public and admin areas.
-
-Each component follows single responsibility principles, focusing on specific aspects of the plugin's functionality.
-
-### Design Patterns
-
-The plugin utilizes several design patterns:
-
-1. **Factory Pattern**: The main plugin class creates instances of other component classes.
-
-2. **Strategy Pattern**: Different implementations for recommendation styles and output formats.
-
-3. **Dependency Injection**: Components receive dependencies via constructor parameters.
-
-4. **Singleton Pattern**: Global instances are managed through WordPress globals.
-
-5. **Observer Pattern**: WordPress hooks (actions/filters) are used to respond to events.
-
-## Core Components
-
-### Main Plugin Class
-
-`class-themeist-irecommendthis.php` is the core plugin class that:
-
+The main plugin class that:
 - Initializes the plugin
-- Sets up plugin hooks
-- Handles activation and database table creation
-- Manages version and database updates
+- Manages activation and database table creation
+- Handles database updates
 - Loads translations
 
 Key methods:
-- `__construct()`: Initializes the plugin with its core properties.
-- `add_hooks()`: Adds WordPress action and filter hooks.
-- `activate()`: Runs on plugin activation to set up database tables.
-- `create_db_table()`: Creates the database table for storing votes.
-- `update()`: Updates the database schema when needed.
-- `update_check()`: Checks if database updates are needed.
+- `__construct()`: Sets up plugin properties
+- `add_hooks()`: Registers core hooks
+- `activate()`: Activation handler
+- `create_db_table()`: Creates database table
+- `update()`: Updates database schema
+- `load_localisation()`: Loads translations
 
 ### Admin Components
 
-#### Admin Main Class (`class-themeist-irecommendthis-admin.php`)
+**Themeist_IRecommendThis_Admin** - `admin/class-themeist-irecommendthis-admin.php`
 
-Coordinates all admin functionality:
+Handles admin functionality:
+- Registers settings page
+- Adds admin menu items
+- Manages plugin settings
+- Adds post list columns
 
-- Sets up admin hooks
-- Manages settings menu registration
-- Adds columns to post list table
-- Manages settings fields
+Key methods:
+- `add_admin_hooks()`: Registers admin hooks
+- `add_settings_menu()`: Adds settings page
+- `render_settings_page()`: Displays settings
+- `register_settings()`: Registers plugin settings
+- `validate_settings()`: Validates user input
+- `setup_recommends()`: Initializes recommendation count for new posts
 
-Methods:
-- `add_admin_hooks()`: Registers all admin hooks
-- `dot_irecommendthis_menu()`: Adds the settings page
-- `dot_settings_page()`: Renders the settings page
-- `dot_irecommendthis_settings()`: Registers settings fields
-- `settings_validate()`: Validates form submissions
-- `setup_recommends()`: Sets up recommendation data for new posts
-- `dot_columns_head()`: Adds custom column to posts table
-- `dot_column_content()`: Displays recommendation count in posts table
-- `dot_column_register_sortable()`: Makes column sortable
-- `dot_column_orderby()`: Handles column sorting
+**Themeist_IRecommendThis_Admin_Tools** - `admin/class-themeist-irecommendthis-admin-tools.php`
 
-#### Admin Tools (`class-themeist-irecommendthis-admin-tools.php`)
-
-Provides database tools for administrators:
-
+Provides database maintenance tools:
 - Database optimization
-- Table information display
-- Direct update options
+- Database info display
+- Schema updates
 
-Methods:
-- `add_hooks()`: Registers hooks for the tools
-- `add_tools_submenu()`: Adds submenu to tools menu
-- `render_tools_page()`: Displays database tools interface
-- `display_database_info()`: Shows database structure information
-- `handle_database_update()`: Processes database update requests
-- `process_direct_update()`: Handles URL-based update requests
+Key methods:
+- `add_tools_submenu()`: Adds tools submenu
+- `render_tools_page()`: Displays tools interface
+- `handle_database_update()`: Processes updates
+- `display_database_info()`: Shows table details
 
-### Public Components
+### Frontend Components
 
-#### Public Main Class (`class-themeist-irecommendthis-public.php`)
+**Themeist_IRecommendThis_Public** - `public/class-themeist-irecommendthis-public.php`
 
 Manages public-facing functionality:
-
-- Enqueues scripts and styles
-- Adds the recommendation button to content
-- Processes recommendation requests
+- Coordinates frontend components
+- Provides access to processor
 
 Key methods:
 - `add_public_hooks()`: Registers public hooks
-- `enqueue_scripts()`: Adds necessary scripts and styles
-- `dot_content()`: Filters content to add recommendation button
-- `dot_recommend_this()`: Processes recommendation updates
+- `process_recommendation()`: Static method for processing recommendations
 
-#### Widget Class (`class-themeist-most-recommended-posts-widget.php`)
+**Themeist_IRecommendThis_Public_Assets** - `public/class-themeist-irecommendthis-public-assets.php`
 
-Implements a widget to display most recommended posts:
+Handles frontend assets:
+- Enqueues scripts and styles
+- Localizes JavaScript
 
-- Renders the widget
-- Processes widget settings
-- Queries for top posts
-- Displays results
+Key methods:
+- `enqueue_scripts()`: Registers and enqueues assets
 
-Methods:
-- `__construct()`: Sets up widget properties
+**Themeist_IRecommendThis_Public_Display** - `public/class-themeist-irecommendthis-public-display.php`
+
+Handles frontend display:
+- Modifies content to add recommendation buttons
+
+Key methods:
+- `modify_content()`: Filters content to add buttons
+
+**Themeist_IRecommendThis_Public_Processor** - `public/class-themeist-irecommendthis-public-processor.php`
+
+Core recommendation processing:
+- Processes recommendation requests
+- Updates counts
+- Manages cookies and IP tracking
+
+Key methods:
+- `process_recommendation()`: Handles getting/updating recommendations
+- `anonymize_ip()`: Anonymizes IP addresses for GDPR compliance
+
+**Themeist_Most_Recommended_Posts_Widget** - `public/class-themeist-most-recommended-posts-widget.php`
+
+Widget for displaying top posts:
+- Displays most recommended posts
+- Settings for count, display options
+
+Key methods:
+- `widget()`: Renders the widget
 - `form()`: Displays widget settings form
-- `update()`: Processes widget settings updates
-- `widget()`: Renders the widget on the frontend
-- `register_widget()`: Static method to register the widget
+- `update()`: Saves widget settings
 
-### Shared Components
-
-#### AJAX Handler (`class-themeist-irecommendthis-ajax.php`)
+**Themeist_IRecommendThis_Ajax** - `includes/class-themeist-irecommendthis-ajax.php`
 
 Processes AJAX requests:
-
-- Handles recommendation submissions
+- Receives recommendation submissions
 - Validates requests
-- Processes recommendation updates
 - Returns updated counts
 
-Methods:
-- `add_ajax_hooks()`: Registers AJAX hooks
-- `ajax_callback()`: Processes AJAX recommendation requests
+Key methods:
+- `add_ajax_hooks()`: Registers AJAX endpoints
+- `ajax_callback()`: Processes AJAX requests
 
-#### Shortcodes (`class-themeist-irecommendthis-shortcodes.php`)
+**Themeist_IRecommendThis_Shortcodes** - `includes/class-themeist-irecommendthis-shortcodes.php`
 
-Implements shortcodes for the plugin:
+Provides shortcodes:
+- `[irecommendthis]`: Display recommendation button
+- `[irecommendthis_top_posts]`: Display top posts
 
-- `[irecommendthis]` - Display recommendation button
-- `[irecommendthis_top_posts]` - Display top recommended posts
-
-Methods:
+Key methods:
 - `register_shortcodes()`: Registers all shortcodes
-- `shortcode_recommends()`: Handles recommendation button shortcode
-- `recommend()`: Generates recommendation button HTML
+- `shortcode_recommends()`: Handles button shortcode
+- `recommend()`: Generates button HTML
 - `shortcode_recommended_top_posts()`: Handles top posts shortcode
-- `recommended_top_posts_output()`: Generates top posts HTML
 
-#### Block Registration (`block-registration.php`)
+### Block Editor Support
 
-Registers the Gutenberg block:
+**Block Registration** - `includes/block-registration.php`
 
-- Sets up block registration
-- Handles block rendering
-- Manages block attributes
-- Processes shortcode output
+Registers Gutenberg block:
+- Registers block type
+- Provides render callback
 
-Functions:
-- `register_irecommendthis_block()`: Registers the block
-- `irecommendthis_block_render_callback()`: Renders the block content
+Key functions:
+- `register_irecommendthis_block()`: Registers block
+- `irecommendthis_block_render_callback()`: Renders block
 
-#### Public Functions (`functions.php`)
+**Block Source** - `src/index.js`
 
-Provides theme API functions:
+Block editor implementation:
+- Edit component
+- Save component
+- Block controls
 
-- `irecommendthis()`: Template tag to display recommendation button
+## Database Structure
 
-## Data Flow
-
-### Recommendation Process
-
-The process for recommending a post follows this flow:
-
-1. **User Interaction**: User clicks the recommend button.
-
-2. **JavaScript Handler**: The `irecommendthis.js` script:
-   - Prevents default click action
-   - Checks if the user has already recommended (active class)
-   - Sends AJAX request with post ID and nonce
-
-3. **AJAX Processing**:
-   - `class-themeist-irecommendthis-ajax.php` receives the request
-   - Validates the nonce
-   - Calls the processor to update recommendation
-
-4. **Recommendation Processing**:
-   - The public class handles the recommendation logic
-   - Checks for duplicate recommendations via cookies/IP
-   - Updates post meta with new count
-   - If IP tracking is enabled, saves IP to database
-   - Generates updated HTML for the button
-
-5. **UI Update**:
-   - JavaScript updates the button state
-   - Updates the count display
-   - Toggles active class
-
-### AJAX Interactions
-
-The plugin uses WordPress AJAX to handle recommendations without page reloads:
-
-1. **Initialization**:
-   - Scripts are localized with AJAX URL and nonce
-   - Settings are passed to JavaScript
-
-2. **Request**:
-   - JavaScript constructs AJAX request
-   - Sends post ID, nonce, and unrecommend flag
-
-3. **Processing**:
-   - `ajax.php` receives request via wp_ajax hook
-   - Validates inputs and permissions
-   - Processes the recommendation action
-
-4. **Response**:
-   - Returns HTML for updated button
-   - JavaScript updates the DOM
-
-## Database Schema
-
-The plugin uses a custom table for tracking votes:
+### Custom Table
 
 **Table**: `{prefix}irecommendthis_votes`
 
@@ -308,98 +227,84 @@ The plugin uses a custom table for tracking votes:
 | id      | MEDIUMINT(9)   | Auto-increment primary key               |
 | time    | TIMESTAMP      | When the vote was cast                   |
 | post_id | BIGINT(20)     | The ID of the recommended post           |
-| ip      | VARCHAR(45)    | IP address of the voter (if enabled)     |
+| ip      | VARCHAR(255)   | Anonymized IP address of the voter       |
 
 **Indexes**:
 - Primary key on `id`
-- Index on `post_id` (idx_post_id)
-- Index on `time` (idx_time)
+- Index on `post_id`
+- Index on `time`
 
-Additionally, the plugin stores data in WordPress standard tables:
+### WordPress Data
 
-1. **Post Meta**:
-   - `_recommended` - Stores the count of recommendations for each post
+**Post Meta**:
+- `_recommended` - Recommendation count for each post
 
-2. **Options**:
-   - Plugin settings
-   - Database version for schema updates
-   - Plugin version
+**Options**:
+- `irecommendthis_settings` - Plugin settings
+- `irecommendthis_db_version` - Database version for schema updates
+- `irecommendthis-version` - Plugin version
+- `irecommendthis_ip_migration_complete` - Flag for IP anonymization completion
 
-## Extension Points
+## Recommendation Process Flow
 
-The plugin provides several ways for developers to extend functionality:
+The recommendation process follows this workflow:
+
+1. **User Interaction**:
+   - User clicks recommendation button
+   - JavaScript intercepts click
+
+2. **AJAX Request**:
+   - JS sends AJAX request with post ID and nonce
+   - Includes unrecommend flag if already recommended
+
+3. **Server Processing**:
+   - AJAX handler validates request
+   - Checks for existing recommendation (cookie/IP)
+   - Updates recommendation count
+   - Stores IP (if enabled) and sets cookie
+   - Generates updated HTML
+
+4. **UI Update**:
+   - JS updates button state and count
+   - Changes active state and appearance
+
+## Hooks and Customization
 
 ### Filters
 
-- `irecommendthis_before_count` - Modify the HTML output before count
-- `plugin_action_links` - Modify plugin action links
-- `plugin_row_meta` - Modify plugin row meta
-- `the_content` - Content filter used to add recommendation button
-- `widget_title` - Filter widget title
+- `irecommendthis_before_count` - Modify HTML output before count display
+- `the_content` - Used to add recommendation button to content
 
-### Functions
-
-Developers can use these functions in themes:
+### Template Tags
 
 ```php
 // Display recommendation button
-if ( function_exists( 'irecommendthis' ) ) {
-    irecommendthis();
-}
-
-// Get recommendation button HTML
-$button_html = irecommendthis( $post_id, false );
-
-// Display top posts
-echo do_shortcode( '[irecommendthis_top_posts number="5"]' );
+irecommendthis( $post_id = null, $should_echo = true );
 ```
 
 ### Shortcodes
 
 ```
+// Display recommendation button
 [irecommendthis]
 [irecommendthis id="123"]
+
+// Display top posts
 [irecommendthis_top_posts number="5" post_type="post" container="li" show_count="1"]
 ```
 
 ### Gutenberg Block
 
-The plugin includes a Gutenberg block that can be added to posts and pages through the block editor. The block includes settings for:
-
+The "I Recommend This" block provides:
 - Post ID selection
-- Text alignment
-- Using current post in query loops
+- Text alignment options
+- Option to use current post in query loops
 
-## Security Considerations
+## Theme Developer Guide
 
-The plugin implements several security measures:
+### Adding Recommendation Button to Theme
 
-1. **Data Sanitization**:
-   - All user inputs are sanitized before use
-   - Database queries use prepared statements
-   - Output is escaped properly
-
-2. **Nonce Verification**:
-   - AJAX requests verified with nonces
-   - Form submissions protected with nonces
-
-3. **IP Handling**:
-   - Option to disable IP address saving for GDPR compliance
-   - IP address storage can be configured in settings
-
-4. **Capability Checks**:
-   - Admin functions restricted to appropriate capabilities
-   - Settings only accessible to administrators
-
-5. **XSS Protection**:
-   - Output escaping for all dynamic content
-   - Properly sanitized attributes
-
-## Developer Usage Guide
-
-### Basic Usage in Themes
-
-Display recommendation button in a theme template:
+Basic usage:
 
 ```php
 <?php if ( function_exists( 'irecommendthis' ) ) : ?>
@@ -407,7 +312,7 @@ Display recommendation button in a theme template:
 <?php endif; ?>
 ```
 
-With custom post ID:
+With specific post ID:
 
 ```php
 <?php if ( function_exists( 'irecommendthis' ) ) : ?>
@@ -415,76 +320,26 @@ With custom post ID:
 <?php endif; ?>
 ```
 
-Return button HTML instead of displaying it:
+Getting the HTML instead of displaying:
 
 ```php
-$button = irecommendthis( $post_id, false );
-echo $button;
+<?php if ( function_exists( 'irecommendthis' ) ) : ?>
+    <?php $button = irecommendthis( $post_id, false ); ?>
+    <div class="my-custom-wrapper">
+        <?php echo $button; ?>
+    </div>
+<?php endif; ?>
 ```
 
-### Displaying Top Posts
+### Displaying Most Recommended Posts
 
-Use shortcode in a template:
+Using shortcode in template:
 
 ```php
-<?php echo do_shortcode( '[irecommendthis_top_posts number="5" post_type="post"]' ); ?>
+<?php echo do_shortcode( '[irecommendthis_top_posts number="5"]' ); ?>
 ```
 
-Full shortcode options:
-
-```
-[irecommendthis_top_posts 
-    number="10" 
-    post_type="post" 
-    container="li" 
-    year="2023" 
-    monthnum="7" 
-    show_count="1"
-]
-```
-
-### Styling
-
-Disable plugin CSS and add custom styles:
-
-```css
-.irecommendthis {
-    padding-left: 2em;
-    position: relative;
-    text-decoration: none;
-}
-
-.irecommendthis::before {
-    content: '';
-    display: inline-block;
-    width: 1.5em;
-    height: 1.5em;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background-image: url('your-icon.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
-.irecommendthis.active {
-    color: #FF5757;
-}
-```
-
-### Adding Custom Output Before Count
-
-Use the filter to add custom content:
-
-```php
-add_filter( 'irecommendthis_before_count', function( $output ) {
-    // Add an icon before the count
-    return '<i class="fas fa-heart"></i> ' . $output;
-});
-```
-
-### Querying Top Posts Programmatically
+Custom query example:
 
 ```php
 global $wpdb;
@@ -504,9 +359,58 @@ $top_posts = $wpdb->get_results(
 );
 
 foreach ( $top_posts as $post ) {
-    echo '<a href="' . get_permalink( $post->ID ) . '">' . 
+    echo '<a href="' . get_permalink( $post->ID ) . '">' .
          get_the_title( $post->ID ) . ' (' . $post->recommended_count . ')</a><br>';
 }
+```
+
+### Custom Styling
+
+Disable plugin CSS in settings and add custom styles:
+
+```css
+.irecommendthis {
+    /* Button base styles */
+    padding-left: 2em;
+    position: relative;
+    text-decoration: none;
+}
+
+.irecommendthis::before {
+    /* Icon styles */
+    content: '';
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-image: url('your-icon.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.irecommendthis.active {
+    /* Active state */
+    color: #FF5757;
+}
+
+.irecommendthis-count {
+    /* Count styling */
+    font-weight: bold;
+}
+```
+
+### Adding Custom Content Before Count
+
+Use the filter to add custom content:
+
+```php
+add_filter( 'irecommendthis_before_count', function( $output ) {
+    // Add an icon before the count
+    return '<i class="fas fa-heart"></i> ' . $output;
+});
 ```
 
 ### Checking If User Has Recommended
