@@ -14,6 +14,7 @@
 6. [Recommendation Process Flow](#recommendation-process-flow)
 7. [Hooks and Customization](#hooks-and-customization)
 8. [Theme Developer Guide](#theme-developer-guide)
+9. [Advanced Recommendation Examples](#advanced-recommendation-examples)
 
 ## Overview
 
@@ -426,3 +427,68 @@ if ( has_user_recommended( get_the_ID() ) ) {
     echo 'Please recommend this post if you like it!';
 }
 ```
+
+## Advanced Recommendation Examples
+
+### Checking User Recommendation Status
+
+Sometimes you may want to check if a user has already recommended a post to customize their experience. Here's a helper function:
+
+```php
+/**
+ * Check if the current user has already recommended a post
+ *
+ * @param int $post_id The post ID to check
+ * @return bool True if user has recommended the post
+ */
+function has_user_recommended( $post_id ) {
+    return isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
+}
+```
+
+### Customizing Content Based on Recommendation Status
+
+You can show different content to users who have recommended your post:
+
+```php
+if ( has_user_recommended( get_the_ID() ) ) {
+    echo '<div class="thank-you-message">Thanks for recommending this post!</div>';
+} else {
+    echo '<div class="please-recommend">If you enjoyed this content, please recommend it!</div>';
+}
+```
+
+### Creating a User's Recommendation List
+
+Display a list of posts the user has recommended:
+
+```php
+function get_user_recommended_posts() {
+    $recommended_posts = array();
+
+    // Check cookies for recommendations
+    foreach ($_COOKIE as $name => $value) {
+        if (strpos($name, 'irecommendthis_') === 0) {
+            $post_id = str_replace('irecommendthis_', '', $name);
+            $recommended_posts[] = intval($post_id);
+        }
+    }
+
+    return $recommended_posts;
+}
+
+// Usage example
+$recommended_posts = get_user_recommended_posts();
+if (!empty($recommended_posts)) {
+    echo '<div class="your-recommendations">';
+    echo '<h3>Posts You\'ve Recommended</h3>';
+    echo '<ul>';
+    foreach ($recommended_posts as $post_id) {
+        echo '<li><a href="' . get_permalink($post_id) . '">' . get_the_title($post_id) . '</a></li>';
+    }
+    echo '</ul>';
+    echo '</div>';
+}
+```
+
+For more detailed examples and implementation ideas, see our blog post: [Advanced Customization with I Recommend This](https://themeist.com/docs/advanced-recommendation-examples/).
