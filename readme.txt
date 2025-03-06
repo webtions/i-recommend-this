@@ -143,6 +143,7 @@ Please report security bugs found in the source code through the [Patchstack Vul
 == Changelog ==
 
 = 4.0.0 =
+* Refactored AJAX JS: added getPostId helper, improved caching, and introduced configurable 250ms removal delay.
 * Major architecture overhaul with component-based design
 * New naming convention: irecommendthis instead of dot_irecommendthis
 * Updated shortcodes to [irecommendthis] and [irecommendthis_top_posts] (old function still supported)
