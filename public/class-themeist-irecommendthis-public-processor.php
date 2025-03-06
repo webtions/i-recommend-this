@@ -120,6 +120,20 @@ class Themeist_IRecommendThis_Public_Processor {
 			// Update the recommendation count.
 			update_post_meta( $post_id, '_recommended', $recommended );
 
+			/**
+			 * Fires after a post's recommendation count is updated.
+			 *
+			 * This action provides a hook point for cache clearing and other post-update actions.
+			 * Useful for integration with caching plugins to refresh content when recommendations change.
+			 *
+			 * @since 4.0.0
+			 *
+			 * @param int    $post_id      The ID of the post that was recommended.
+			 * @param int    $recommended  The updated recommendation count.
+			 * @param string $action       The action performed: 'get' or 'update'.
+			 */
+			do_action( 'irecommendthis_after_process_recommendation', $post_id, $recommended, $action );
+
 			// Output HTML for the recommendation button.
 			$suffix = $get_suffix( $recommended );
 			$output = ( 0 === $recommended && 1 === $hide_zero )
