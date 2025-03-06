@@ -15,13 +15,12 @@
         <exclude name="Squiz.Commenting.FileComment.Missing" />
     </rule>
 
-    <!-- Ignore specific warnings -->
+    <!-- Ignore specific database query warnings -->
     <rule ref="WordPress.DB.DirectDatabaseQuery">
         <exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery" />
+        <exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching" />
     </rule>
-<!--     <rule ref="WordPress.DB.DirectDatabaseQuerySchemaChange">
-        <exclude name="WordPress.DB.DirectDatabaseQuerySchemaChange.SchemaChange" />
-    </rule> -->
+
     <rule ref="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar">
         <exclude name="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar" />
     </rule>

@@ -46,7 +46,7 @@ class Themeist_IRecommendThis_Ajax {
 			}
 
 			// Get plugin settings.
-			$options = get_option( 'irecommendthis_settings' );
+			$options          = get_option( 'irecommendthis_settings' );
 			$text_zero_suffix = isset( $options['text_zero_suffix'] ) ? sanitize_text_field( $options['text_zero_suffix'] ) : '';
 			$text_one_suffix  = isset( $options['text_one_suffix'] ) ? sanitize_text_field( $options['text_one_suffix'] ) : '';
 			$text_more_suffix = isset( $options['text_more_suffix'] ) ? sanitize_text_field( $options['text_more_suffix'] ) : '';
@@ -62,10 +62,10 @@ class Themeist_IRecommendThis_Ajax {
 				)
 			);
 			exit;
-		}
+		}//end if
 
 		// Process the recommendation update.
-		$options = get_option( 'irecommendthis_settings' );
+		$options          = get_option( 'irecommendthis_settings' );
 		$text_zero_suffix = isset( $options['text_zero_suffix'] ) ? sanitize_text_field( $options['text_zero_suffix'] ) : '';
 		$text_one_suffix  = isset( $options['text_one_suffix'] ) ? sanitize_text_field( $options['text_one_suffix'] ) : '';
 		$text_more_suffix = isset( $options['text_more_suffix'] ) ? sanitize_text_field( $options['text_more_suffix'] ) : '';

@@ -63,7 +63,7 @@ class Themeist_IRecommendThis {
 	 * @param bool $network_wide Whether the plugin is being activated network-wide.
 	 */
 	public function activate( $network_wide ) {
-		// Migrate settings first
+		// Migrate settings first.
 		$this->migrate_plugin_settings();
 
 		if ( is_multisite() && $network_wide ) {
@@ -85,25 +85,23 @@ class Themeist_IRecommendThis {
 	 * to ensure a smooth upgrade path for existing users.
 	 */
 	public function migrate_plugin_settings() {
-		// Migrate settings from old to new option keys
-		$old_settings = get_option( 'dot_irecommendthis_settings' );
+		// Migrate settings from old to new option keys.
+		$old_settings     = get_option( 'dot_irecommendthis_settings' );
 		$current_settings = get_option( 'irecommendthis_settings' );
 
-		// Only migrate if old settings exist and current settings are empty/don't exist
+		// Only migrate if old settings exist and current settings are empty/don't exist.
 		if ( $old_settings && empty( $current_settings ) ) {
 			update_option( 'irecommendthis_settings', $old_settings );
-
-			// Keep the old setting for one more version, but we'll remove this in a future version
-			// Don't delete the old settings yet to allow for rollback if needed
+			// Keep the old setting for one more version, but we'll remove this in a future version.
+			// Don't delete the old settings yet to allow for rollback if needed.
 		}
 
-		// Migrate database version
+		// Migrate database version.
 		$old_db_version = get_option( 'dot_irecommendthis_db_version' );
 		if ( $old_db_version ) {
 			update_option( 'irecommendthis_db_version', $old_db_version );
-
-			// Keep the old version for one more version cycle
-			// Don't delete the old version yet to allow for rollback if needed
+			// Keep the old version for one more version cycle.
+			// Don't delete the old version yet to allow for rollback if needed.
 		}
 	}
 
@@ -118,8 +116,8 @@ class Themeist_IRecommendThis {
 		$table_name      = $wpdb->prefix . 'irecommendthis_votes';
 		$charset_collate = $wpdb->get_charset_collate();
 
-		// Updated IP column to VARCHAR(255) to accommodate hashed IPs
-		$sql = "CREATE TABLE IF NOT EXISTS $table_name (
+		// Updated IP column to VARCHAR(255) to accommodate hashed IPs.
+		$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . " (
 			id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
 			time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			post_id BIGINT(20) NOT NULL,
@@ -164,58 +162,46 @@ class Themeist_IRecommendThis {
 			return $this->create_db_table();
 		}
 
-		// Check existing column size for IP and update if needed
+		// Check existing column size for IP and update if needed.
 		$column_size = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS
-				WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'ip'",
+				'SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS
+				WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = \'ip\'',
 				DB_NAME,
 				$table_name
 			)
 		);
 
-		// Update IP column to 255 characters if it's smaller (to accommodate hashed IPs)
+		// Update IP column to 255 characters if it's smaller (to accommodate hashed IPs).
 		if ( $column_size && (int) $column_size < 255 ) {
-			$wpdb->query( "ALTER TABLE $table_name MODIFY ip VARCHAR(255) NOT NULL" );
+			$wpdb->query( $wpdb->prepare( 'ALTER TABLE `%s` MODIFY ip VARCHAR(255) NOT NULL', $table_name ) );
 		}
 
 		// Check and add indexes safely.
-		$success        = true;
-		$indexes_to_add = array(
-			'idx_post_id' => "SELECT 1 FROM information_schema.statistics
-				WHERE table_schema = DATABASE()
-				AND table_name = %s
-				AND index_name = 'idx_post_id'",
-			'idx_time'    => "SELECT 1 FROM information_schema.statistics
-				WHERE table_schema = DATABASE()
-				AND table_name = %s
-				AND index_name = 'idx_time'",
-		);
+		$success = true;
+		$indexes = array( 'idx_post_id', 'idx_time' );
 
-		foreach ( $indexes_to_add as $index_name => $check_query ) {
-			// Check if index already exists.
-			$index_exists = $wpdb->get_var(
-				$wpdb->prepare( $check_query, $table_name )
-			);
+		foreach ( $indexes as $index_name ) {
+			if ( 'idx_post_id' === $index_name ) {
+				$index_exists = $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = %s AND index_name = 'idx_post_id'", $table_name ) );
+			} else {
+				$index_exists = $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = %s AND index_name = 'idx_time'", $table_name ) );
+			}
 
 			if ( ! $index_exists ) {
-				// Add the index.
-				$add_index_query = ( 'idx_post_id' === $index_name )
-					? "ALTER TABLE $table_name ADD INDEX $index_name (post_id)"
-					: "ALTER TABLE $table_name ADD INDEX $index_name (time)";
-
-				$wpdb->suppress_errors( true );
-				$result = $wpdb->query( $add_index_query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->suppress_errors( false );
-
+				if ( 'idx_post_id' === $index_name ) {
+					$result = $wpdb->query( $wpdb->prepare( 'ALTER TABLE `%s` ADD INDEX %s (post_id)', $table_name, $index_name ) );
+				} else {
+					$result = $wpdb->query( $wpdb->prepare( 'ALTER TABLE `%s` ADD INDEX %s (time)', $table_name, $index_name ) );
+				}
 				if ( false === $result ) {
 					$success = false;
 				}
 			}
 		}
 
-		// Optionally run migration to convert existing IPs to hashed format
-		$this->maybe_migrate_ip_data($table_name);
+		// Optionally run migration to convert existing IPs to hashed format.
+		$this->maybe_migrate_ip_data( $table_name );
 
 		// Update database version.
 		update_option( 'irecommendthis_db_version', $this->db_version );
@@ -235,63 +221,60 @@ class Themeist_IRecommendThis {
 	 * @param string $table_name The name of the table containing IP data.
 	 * @return bool Whether the migration was successful.
 	 */
-	private function maybe_migrate_ip_data($table_name) {
+	private function maybe_migrate_ip_data( $table_name ) {
 		global $wpdb;
 
-		// Check if migration has already been performed
-		$migration_done = get_option('irecommendthis_ip_migration_complete', false);
-		if ($migration_done) {
+		// Check if migration has already been performed.
+		$migration_done = get_option( 'irecommendthis_ip_migration_complete', false );
+		if ( $migration_done ) {
 			return true;
 		}
 
-		// Get the plugin settings
-		$options = get_option('irecommendthis_settings');
-		$enable_unique_ip = isset($options['enable_unique_ip']) ? (int) $options['enable_unique_ip'] : 0;
+		// Get the plugin settings.
+		$options          = get_option( 'irecommendthis_settings' );
+		$enable_unique_ip = isset( $options['enable_unique_ip'] ) ? (int) $options['enable_unique_ip'] : 0;
 
-		// Only proceed if IP tracking is enabled
-		if ($enable_unique_ip === 0) {
-			// Mark as done even though we skipped the migration (not needed if IP tracking is disabled)
-			update_option('irecommendthis_ip_migration_complete', true);
+		// Only proceed if IP tracking is enabled.
+		if ( 0 === $enable_unique_ip ) {
+			// Mark as done even though we skipped the migration (not needed if IP tracking is disabled).
+			update_option( 'irecommendthis_ip_migration_complete', true );
 			return true;
 		}
 
-		// Get chunk of IP records to process (limit to 1000 at a time to avoid timeouts)
 		$records = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, ip FROM $table_name
-				WHERE LENGTH(ip) < 40
-				LIMIT %d",
+				'SELECT id, ip FROM %s WHERE LENGTH(ip) < %d LIMIT %d',
+				$table_name,
+				40,
 				1000
 			)
 		);
 
-		// If no records found, we're done with migration
-		if (empty($records)) {
-			update_option('irecommendthis_ip_migration_complete', true);
+		// If no records found, we're done with migration.
+		if ( empty( $records ) ) {
+			update_option( 'irecommendthis_ip_migration_complete', true );
 			return true;
 		}
 
-		// Process and update each record
-		require_once dirname(__FILE__) . '/../public/class-themeist-irecommendthis-public-processor.php';
+		require_once __DIR__ . '/../public/class-themeist-irecommendthis-public-processor.php';
 
-		foreach ($records as $record) {
-			// Skip if already looks like a hash
-			if (strlen($record->ip) > 40) {
+		foreach ( $records as $record ) {
+			// Skip if already looks like a hash.
+			if ( strlen( $record->ip ) > 40 ) {
 				continue;
 			}
 
-			$hashed_ip = Themeist_IRecommendThis_Public_Processor::anonymize_ip($record->ip);
+			$hashed_ip = Themeist_IRecommendThis_Public_Processor::anonymize_ip( $record->ip );
 
 			$wpdb->update(
 				$table_name,
-				['ip' => $hashed_ip],
-				['id' => $record->id],
-				['%s'],
-				['%d']
+				array( 'ip' => $hashed_ip ),
+				array( 'id' => $record->id ),
+				array( '%s' ),
+				array( '%d' )
 			);
 		}
 
-		// Migration is still in progress if we processed records
 		return true;
 	}
 
@@ -326,13 +309,13 @@ class Themeist_IRecommendThis {
 	 * Check for updates and run the update script if necessary.
 	 */
 	public function update_check() {
-		// Check both old and new version options during transition period
 		$current_db_version = get_option( 'irecommendthis_db_version' );
-		if (!$current_db_version) {
+		if ( ! $current_db_version ) {
 			$current_db_version = get_option( 'dot_irecommendthis_db_version' );
 		}
 
-		if ( $this->db_version !== $current_db_version ) {
+		// Use Yoda condition checks.
+		if ( $current_db_version !== $this->db_version ) {
 			$this->update();
 		}
 	}

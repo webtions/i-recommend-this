@@ -61,17 +61,17 @@ class Themeist_IRecommendThis_Public {
 	 * Include component classes.
 	 */
 	private function include_components() {
-		require_once dirname( __FILE__ ) . '/class-themeist-irecommendthis-public-assets.php';
-		require_once dirname( __FILE__ ) . '/class-themeist-irecommendthis-public-display.php';
-		require_once dirname( __FILE__ ) . '/class-themeist-irecommendthis-public-processor.php';
+		require_once __DIR__ . '/class-themeist-irecommendthis-public-assets.php';
+		require_once __DIR__ . '/class-themeist-irecommendthis-public-display.php';
+		require_once __DIR__ . '/class-themeist-irecommendthis-public-processor.php';
 	}
 
 	/**
 	 * Initialize components.
 	 */
 	private function initialize_components() {
-		$this->assets_component = new Themeist_IRecommendThis_Public_Assets( $this->plugin_file );
-		$this->display_component = new Themeist_IRecommendThis_Public_Display();
+		$this->assets_component    = new Themeist_IRecommendThis_Public_Assets( $this->plugin_file );
+		$this->display_component   = new Themeist_IRecommendThis_Public_Display();
 		$this->processor_component = new Themeist_IRecommendThis_Public_Processor();
 	}
 

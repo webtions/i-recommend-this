@@ -30,7 +30,7 @@ class Themeist_IRecommendThis_Public_Display {
 	 * @return string Modified post content with recommendation button.
 	 */
 	public function modify_content( $content ) {
-		// Skip adding button on specific page types
+		// Skip adding button on specific page types.
 		if ( is_page_template() || is_page() || is_front_page() ) {
 			return $content;
 		}
@@ -40,19 +40,19 @@ class Themeist_IRecommendThis_Public_Display {
 			return $content;
 		}
 
-		// Get plugin settings
+		// Get plugin settings.
 		$options = get_option( 'irecommendthis_settings' );
 
-		// Support both new and old setting keys
+		// Support both new and old setting keys.
 		$add_to_posts = isset( $options['add_to_posts'] ) ? $options['add_to_posts'] : '0';
 		$add_to_other = isset( $options['add_to_other'] ) ? $options['add_to_other'] : '0';
 
-		// Append recommendation button to singular posts
+		// Append recommendation button to singular posts.
 		if ( is_singular( 'post' ) && $add_to_posts ) {
 			$content .= '<p class="irecommendthis-wrapper">' . Themeist_IRecommendThis_Shortcodes::recommend() . '</p>';
 		}
 
-		// Append recommendation button to other post archive pages
+		// Append recommendation button to other post archive pages.
 		if ( ( is_home() || is_category() || is_tag() || is_author() || is_date() || is_search() ) && $add_to_other ) {
 			$content .= '<p class="irecommendthis-wrapper">' . Themeist_IRecommendThis_Shortcodes::recommend() . '</p>';
 		}

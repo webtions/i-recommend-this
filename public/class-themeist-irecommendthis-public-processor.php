@@ -26,7 +26,13 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @param string $action            Action to perform: 'get' or 'update'.
 	 * @return string HTML output for the recommendation count.
 	 */
-	public static function process_recommendation( $post_id, $text_zero_suffix = false, $text_one_suffix = false, $text_more_suffix = false, $action = 'get' ) {
+	public static function process_recommendation(
+		$post_id,
+		$text_zero_suffix = false,
+		$text_one_suffix = false,
+		$text_more_suffix = false,
+		$action = 'get'
+	) {
 		// Validate post ID.
 		if ( ! is_numeric( $post_id ) ) {
 			return;
@@ -38,12 +44,14 @@ class Themeist_IRecommendThis_Public_Processor {
 		$text_more_suffix = sanitize_text_field( $text_more_suffix );
 
 		// Fetch options and recommendation count.
-		$options = get_option( 'irecommendthis_settings' );
-		$recommended = (int) get_post_meta( $post_id, '_recommended', true );
-		$hide_zero = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
+		$options          = get_option( 'irecommendthis_settings' );
+		$recommended      = (int) get_post_meta( $post_id, '_recommended', true );
+		$hide_zero        = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
 		$enable_unique_ip = isset( $options['enable_unique_ip'] ) ? (int) $options['enable_unique_ip'] : 0;
 
-		// Function for getting the suffix based on the recommendation count.
+		/**
+		 * Function for getting the suffix based on the recommendation count.
+		 */
 		$get_suffix = function ( $count ) use ( $text_zero_suffix, $text_one_suffix, $text_more_suffix ) {
 			if ( 0 === $count ) {
 				return $text_zero_suffix;
@@ -73,49 +81,84 @@ class Themeist_IRecommendThis_Public_Processor {
 
 		// Handling the 'update' action.
 		if ( 'update' === $action ) {
+			// Verify nonce to protect form data.
+			if (
+				! isset( $_POST['nonce'] ) ||
+				! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'irecommendthis-nonce' )
+			) {
+				return;
+			}
+
 			global $wpdb;
 
 			// Process unique IP address checking if enabled.
 			if ( 0 !== $enable_unique_ip ) {
-				$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+				$ip            = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 				$anonymized_ip = self::anonymize_ip( $ip );
 
-				if ( isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-					// Delete the vote record for this IP and post
-					$sql = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
-					$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				if (
+					isset( $_POST['unrecommend'] ) &&
+					'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
+				) {
+					// Delete the vote record for this IP and post.
+					$wpdb->query(
+						$wpdb->prepare(
+							"DELETE FROM {$wpdb->prefix}irecommendthis_votes
+							WHERE post_id = %d AND ip = %s",
+							$post_id,
+							$anonymized_ip
+						)
+					);
 				} else {
-					// Check if user has already voted
-					$sql = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
-					$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					// Check if user has already voted.
+					$vote_status_by_ip = $wpdb->get_var(
+						$wpdb->prepare(
+							"SELECT COUNT(*)
+							FROM {$wpdb->prefix}irecommendthis_votes
+							WHERE post_id = %d AND ip = %s",
+							$post_id,
+							$anonymized_ip
+						)
+					);
 
-					// Only insert if no vote exists for this IP and post
-					if ( empty( $vote_status_by_ip ) || $vote_status_by_ip == 0 ) {
-						$sql = $wpdb->prepare( "INSERT INTO {$wpdb->prefix}irecommendthis_votes VALUES ('', NOW(), %d, %s )", $post_id, $anonymized_ip );
-						$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					// Only insert if no vote exists for this IP and post.
+					if ( empty( $vote_status_by_ip ) || 0 === $vote_status_by_ip ) {
+						$wpdb->query(
+							$wpdb->prepare(
+								"INSERT INTO {$wpdb->prefix}irecommendthis_votes
+								VALUES ('', NOW(), %d, %s )",
+								$post_id,
+								$anonymized_ip
+							)
+						);
 					}
-				}
-			}
+				}//end if
+			}//end if
 
-			// Check for cookie
+			// Check for cookie.
 			$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
 
 			// Handle the case where the user is un-recommending.
-			if ( $cookie_exists && isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-				// Remove cookie for unrecommend action
+			if (
+				$cookie_exists &&
+				isset( $_POST['unrecommend'] ) &&
+				'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
+			) {
+				// Remove cookie for unrecommend action.
 				setcookie( 'irecommendthis_' . $post_id, '', time() - 3600, '/' );
 
-				// Decrement the count
+				// Decrement the count.
 				$recommended = max( 0, $recommended - 1 );
-			}
-			// Handle the case where the user is recommending.
-			else if ( isset( $_POST['unrecommend'] ) && 'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-				// Set cookie for recommend action - set for 1 year
+			} elseif (
+				isset( $_POST['unrecommend'] ) &&
+				'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
+			) {
+				// Set cookie for recommend action - set for 1 year.
 				setcookie( 'irecommendthis_' . $post_id, time(), time() + 31536000, '/' );
 
-				// Increment the count
+				// Increment the count.
 				++$recommended;
-			}
+			}//end if
 
 			// Update the recommendation count.
 			update_post_meta( $post_id, '_recommended', $recommended );
@@ -128,9 +171,9 @@ class Themeist_IRecommendThis_Public_Processor {
 			 *
 			 * @since 4.0.0
 			 *
-			 * @param int    $post_id      The ID of the post that was recommended.
-			 * @param int    $recommended  The updated recommendation count.
-			 * @param string $action       The action performed: 'get' or 'update'.
+			 * @param int    $post_id     The ID of the post that was recommended.
+			 * @param int    $recommended The updated recommendation count.
+			 * @param string $action      The action performed: 'get' or 'update'.
 			 */
 			do_action( 'irecommendthis_after_process_recommendation', $post_id, $recommended, $action );
 
@@ -141,7 +184,7 @@ class Themeist_IRecommendThis_Public_Processor {
 				: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 
 			return apply_filters( 'irecommendthis_before_count', $output );
-		}
+		}//end if
 	}
 
 	/**
@@ -158,18 +201,18 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @return string The anonymized (hashed) IP.
 	 */
 	public static function anonymize_ip( $ip ) {
-		// Empty IPs should return a consistent hash
+		// Empty IPs should return a consistent hash.
 		if ( empty( $ip ) ) {
 			$ip = 'unknown';
 		}
 
-		// Use WordPress salt for authentication
+		// Use WordPress salt for authentication.
 		$auth_salt = wp_salt( 'auth' );
 
-		// Use site-specific hash for additional entropy
+		// Use site-specific hash for additional entropy.
 		$site_hash = defined( 'COOKIEHASH' ) ? COOKIEHASH : md5( site_url() );
 
-		// Create the hash using WordPress hash function with site context
+		// Create the hash using WordPress hash function with site context.
 		$hashed_ip = wp_hash( $ip . $site_hash, 'auth' );
 
 		return $hashed_ip;

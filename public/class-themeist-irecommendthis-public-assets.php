@@ -42,14 +42,14 @@ class Themeist_IRecommendThis_Public_Assets {
 	 * Enqueue scripts and styles for the plugin.
 	 */
 	public function enqueue_scripts() {
-		// Get plugin settings
+		// Get plugin settings.
 		$options = get_option( 'irecommendthis_settings' );
 
-		// Validate and set default values for CSS options
+		// Validate and set default values for CSS options.
 		$disable_css     = isset( $options['disable_css'] ) ? intval( $options['disable_css'] ) : 0;
 		$recommend_style = isset( $options['recommend_style'] ) ? intval( $options['recommend_style'] ) : 0;
 
-		// Enqueue styles if CSS is not disabled
+		// Enqueue styles if CSS is not disabled.
 		if ( 0 === $disable_css ) {
 			$css_file = ( 0 === $recommend_style ) ? 'irecommendthis.css' : 'irecommendthis-heart.css';
 			$css_path = plugin_dir_path( $this->plugin_file ) . 'css/' . $css_file;
@@ -62,21 +62,24 @@ class Themeist_IRecommendThis_Public_Assets {
 			}
 		}
 
-		// Register and enqueue the main JavaScript file
-		$js_url = plugins_url( 'js/irecommendthis.js', $this->plugin_file );
+		// Register and enqueue the main JavaScript file.
+		$js_url  = plugins_url( 'js/irecommendthis.js', $this->plugin_file );
 		$js_path = plugin_dir_path( $this->plugin_file ) . 'js/irecommendthis.js';
 
-		wp_register_script( 'irecommendthis', $js_url, array( 'jquery' ),
+		wp_register_script(
+			'irecommendthis',
+			$js_url,
+			array( 'jquery' ),
 			file_exists( $js_path ) ? filemtime( $js_path ) : THEMEIST_IRT_VERSION,
 			true
 		);
 
 		wp_enqueue_script( 'irecommendthis' );
 
-		// Generate a standard WordPress nonce with the new name
+		// Generate a standard WordPress nonce with the new name.
 		$nonce = wp_create_nonce( 'irecommendthis-nonce' );
 
-		// Localize script with nonce and settings
+		// Localize script with nonce and settings.
 		wp_localize_script(
 			'irecommendthis',
 			'irecommendthis',
@@ -87,17 +90,17 @@ class Themeist_IRecommendThis_Public_Assets {
 			)
 		);
 
-		// For backward compatibility - maintain old JS variable name for one more version
-		// @deprecated 4.0.0 Use 'irecommendthis' variable instead
+		// For backward compatibility - maintain old JS variable name for one more version.
+		// @deprecated 4.0.0 Use 'irecommendthis' variable instead.
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			// Only add in debug mode for developer awareness
+			// Only add in debug mode for developer awareness.
 			wp_localize_script(
 				'irecommendthis',
 				'dot_irecommendthis',
 				array(
-					'nonce'   => $nonce,
-					'ajaxurl' => admin_url( 'admin-ajax.php' ),
-					'options' => wp_json_encode( $options ),
+					'nonce'      => $nonce,
+					'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+					'options'    => wp_json_encode( $options ),
 					'deprecated' => true,
 				)
 			);
