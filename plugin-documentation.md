@@ -268,6 +268,12 @@ The recommendation process follows this workflow:
 4. **UI Update**:
    - JS updates button state and count
    - Changes active state and appearance
+   - Updates aria-label and title attributes for accessibility
+
+5. **Cache Clearing** (new in 4.0.0):
+   - If integrated with caching plugins, the `irecommendthis_after_process_recommendation` hook fires
+   - Cache clearing functions can be triggered for the specific post
+   - Ensures visitors see updated recommendation counts even with caching
 
 ## Hooks and Customization
 
@@ -275,6 +281,13 @@ The recommendation process follows this workflow:
 
 - `irecommendthis_before_count` - Modify HTML output before count display
 - `the_content` - Used to add recommendation button to content
+
+### Actions
+
+- `irecommendthis_after_process_recommendation` - Fires after a post's recommendation count is updated, with params:
+  - `$post_id` (int) - The ID of the post that was recommended
+  - `$recommended` (int) - The updated recommendation count
+  - `$action` (string) - The action performed: 'get' or 'update'
 
 ### Template Tags
 
@@ -330,6 +343,35 @@ Getting the HTML instead of displaying:
         <?php echo $button; ?>
     </div>
 <?php endif; ?>
+```
+
+### Styling the Archive/Index Button Wrapper
+
+On archive and index pages, the recommendation button is now wrapped in a paragraph with a class:
+
+```html
+<p class="irecommendthis-wrapper">
+    <!-- Recommendation button -->
+</p>
+```
+
+You can target this wrapper with CSS for better layout control:
+
+```css
+.irecommendthis-wrapper {
+    margin-top: 1em;
+    text-align: right;
+}
+
+/* Different alignment on specific page types */
+.home .irecommendthis-wrapper {
+    text-align: center;
+}
+
+.archive .irecommendthis-wrapper {
+    border-top: 1px solid #eee;
+    padding-top: 0.5em;
+}
 ```
 
 ### Displaying Most Recommended Posts
@@ -456,6 +498,69 @@ if ( has_user_recommended( get_the_ID() ) ) {
 } else {
     echo '<div class="please-recommend">If you enjoyed this content, please recommend it!</div>';
 }
+```
+
+### Integration with Caching Plugins
+
+The plugin now provides a dedicated hook for caching plugin integration. Here's an example with popular caching plugins:
+
+```php
+/**
+ * Clear cache for a post when its recommendation count changes
+ */
+function my_clear_post_cache_on_recommendation( $post_id, $count, $action ) {
+    // Only run on actual updates
+    if ( 'update' === $action ) {
+        // WP Rocket
+        if ( function_exists( 'rocket_clean_post' ) ) {
+            rocket_clean_post( $post_id );
+        }
+
+        // W3 Total Cache
+        if ( function_exists( 'w3tc_flush_post' ) ) {
+            w3tc_flush_post( $post_id );
+        }
+
+        // WP Super Cache
+        if ( function_exists( 'wp_cache_post_change' ) ) {
+            wp_cache_post_change( $post_id );
+        }
+
+        // LiteSpeed Cache
+        if ( class_exists( 'LiteSpeed\Core' ) ) {
+            do_action( 'litespeed_purge_post', $post_id );
+        }
+    }
+}
+add_action( 'irecommendthis_after_process_recommendation', 'my_clear_post_cache_on_recommendation', 10, 3 );
+```
+
+### Enhanced HTML Attributes
+
+Version 4.0.0 adds enhanced HTML attributes for better accessibility and JavaScript interaction:
+
+```html
+<a href="#"
+   class="irecommendthis"
+   data-post-id="123"
+   data-like="Recommend this"
+   data-unlike="Unrecommend this"
+   aria-label="Recommend this"
+   title="Recommend this">
+   <span class="irecommendthis-count">5</span>
+   <span class="irecommendthis-suffix">likes</span>
+</a>
+```
+
+The new attributes make it easier to create custom behavior with JavaScript. For example:
+
+```javascript
+// Toggle button text based on state
+jQuery('.irecommendthis').on('click', function() {
+    var $this = jQuery(this);
+    var newText = $this.hasClass('active') ? $this.data('unlike') : $this.data('like');
+    $this.find('.like-text').text(newText);
+});
 ```
 
 ### Creating a User's Recommendation List
