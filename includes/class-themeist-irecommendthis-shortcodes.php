@@ -102,20 +102,38 @@ class Themeist_IRecommendThis_Shortcodes {
 		// Check cookie status
 		$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
 
+		// Use the existing title settings for the like/unlike text
+		$like_text = empty( $options['link_title_new'] )
+			? __( 'Recommend this', 'i-recommend-this' )
+			: $options['link_title_new'];
+
+		$unlike_text = empty( $options['link_title_active'] )
+			? __( 'Unrecommend this', 'i-recommend-this' )
+			: $options['link_title_active'];
+
 		if ( $cookie_exists || $vote_status_by_ip > 0 ) {
 			$class = 'irecommendthis active irecommendthis-post-' . $post_id;
-			$title = empty( $options['link_title_active'] ) ? __( 'You already recommended this', 'i-recommend-this' ) : $options['link_title_active'];
+			$title = $unlike_text;
+			$current_state = $unlike_text;
 		} else {
 			$class = 'irecommendthis irecommendthis-post-' . $post_id;
-			$title = empty( $options['link_title_new'] ) ? __( 'Recommend this', 'i-recommend-this' ) : $options['link_title_new'];
+			$title = $like_text;
+			$current_state = $like_text;
 		}
 
-		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" data-post-id="' . esc_attr( $post_id ) . '" title="' . esc_attr( $title ) . '">';
+		// Enhanced HTML with better attribute support for accessibility and JavaScript interaction
+		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" ';
+		$irt_html .= 'data-post-id="' . esc_attr( $post_id ) . '" ';
+		$irt_html .= 'data-like="' . esc_attr( $like_text ) . '" ';
+		$irt_html .= 'data-unlike="' . esc_attr( $unlike_text ) . '" ';
+		$irt_html .= 'aria-label="' . esc_attr( $title ) . '" ';
+		$irt_html .= 'title="' . esc_attr( $title ) . '">';
 		$irt_html .= $output;
 		$irt_html .= '</a>';
 
 		return $irt_html;
 	}
+
 
 	/**
 	 * Shortcode handler for displaying the top recommended posts.
