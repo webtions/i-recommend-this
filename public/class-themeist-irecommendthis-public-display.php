@@ -40,8 +40,8 @@ class Themeist_IRecommendThis_Public_Display {
 			return $content;
 		}
 
-		// Get plugin settings with fallback for backward compatibility
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		// Get plugin settings
+		$options = get_option( 'irecommendthis_settings' );
 
 		// Support both new and old setting keys
 		$add_to_posts = isset( $options['add_to_posts'] ) ? $options['add_to_posts'] : '0';
