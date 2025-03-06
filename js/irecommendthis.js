@@ -1,126 +1,171 @@
+/**
+ * I Recommend This Plugin Script
+ *
+ * This script handles the AJAX-based "recommend" functionality in WordPress.
+ * It listens for clicks on elements with the .irecommendthis class and sends
+ * an AJAX request to update the recommendation count.
+ *
+ * @package   IRecommendThis
+ * @version   1.0
+ */
 jQuery(function($) {
-	// Wait for the DOM to be ready
-	$(document).on('click', '.irecommendthis', function(event) {
-		event.preventDefault(); // Prevent the default link behavior
-		var link = $(this);
+	/**
+	 * Cache global AJAX settings and parse options from the localized variable `irecommendthis`.
+	 */
+	var ajaxSettings = (typeof irecommendthis !== 'undefined') ? irecommendthis : null;
+	if (!ajaxSettings) {
+		console.error('AJAX settings not found - plugin may not be properly initialized');
+		return;
+	}
 
-		// If the link is already processing, do nothing
-		if (link.hasClass('processing')) {
+	var options = {};
+	try {
+		options = JSON.parse(ajaxSettings.options);
+	} catch (e) {
+		console.error('Error parsing options JSON:', e);
+	}
+
+	/**
+	 * Helper function to extract the post ID from various possible sources:
+	 *   1. data-post-id attribute
+	 *   2. The element's ID (e.g., #irecommendthis-123)
+	 *   3. A class name (e.g., .irecommendthis-post-123)
+	 *
+	 * @param {object} $el - The jQuery element from which to extract the post ID.
+	 * @return {string|undefined} - The extracted post ID or undefined if not found.
+	 */
+	function getPostId($el) {
+		var postId = $el.data('post-id');
+
+		// Fallback: extract ID from element ID
+		if (!postId && $el.attr('id')) {
+			postId = $el.attr('id').replace('irecommendthis-', '');
+		}
+
+		// Fallback: extract ID from class name
+		if (!postId) {
+			$.each($el.attr('class').split(' '), function(_, className) {
+				if (className.indexOf('irecommendthis-post-') === 0) {
+					postId = className.replace('irecommendthis-post-', '');
+					return false; // Break out of the loop once we find it
+				}
+			});
+		}
+
+		return postId;
+	}
+
+	/**
+	 * Because we don't know where the like button might appear in the DOM,
+	 * we use event delegation on the document.
+	 */
+	$(document).on('click', '.irecommendthis', function(event) {
+		event.preventDefault();
+		var $link = $(this);
+
+		// Prevent multiple processing if this button is already in-process
+		if ($link.hasClass('processing')) {
 			return false;
 		}
 
-		var unrecommend = link.hasClass('active');
+		// Determine if this click is "unrecommend" (the button is already active)
+		var unrecommend = $link.hasClass('active');
 
-		// First try to use the data attribute (preferred method)
-		var id = link.data('post-id');
-
-		// Fallback: extract post ID from the element ID if data attribute not present
-		if (!id && link.attr('id')) {
-			id = link.attr('id').replace('irecommendthis-', '');
-		}
-
-		// Fallback: try to extract post ID from class name if no other method works
-		if (!id) {
-			var postClass = link.attr('class').split(' ').find(function(c) {
-				return c.startsWith('irecommendthis-post-');
-			});
-
-			if (postClass) {
-				id = postClass.replace('irecommendthis-post-', '');
-			}
-		}
-
-		// If we still don't have an ID, there's a problem
+		// Attempt to retrieve the post ID via our helper
+		var id = getPostId($link);
 		if (!id) {
 			console.error('Could not determine post ID for recommendation');
 			return false;
 		}
 
-		var suffix = link.find('.irecommendthis-suffix').text(); // Get the suffix text
+		// Retrieve suffix text from the .irecommendthis-suffix element (if present)
+		var suffix = $link.find('.irecommendthis-suffix').text();
 
-		// Get the AJAX settings from the localized variable
-		var ajaxSettings = irecommendthis;
+		// Add a 'processing' class to prevent duplicate clicks
+		$link.addClass('processing');
 
-		if (!ajaxSettings) {
-			console.error('AJAX settings not found - plugin may not be properly initialized');
-			return false;
+		/**
+		 * Read an optional removal_delay from ajaxSettings (in ms).
+		 * If not provided or invalid, default to 250 ms.
+		 */
+		var removalDelay = parseInt(ajaxSettings.removal_delay, 10);
+		if (isNaN(removalDelay)) {
+			removalDelay = 250;
 		}
 
-		// Get the nonce from the localized data
-		var nonce = ajaxSettings.nonce;
-
-		link.addClass('processing'); // Add processing class to the link
-
-		// Make an AJAX request
+		/**
+		 * Make the AJAX request to WordPress admin-ajax.php
+		 */
 		$.ajax({
 			url: ajaxSettings.ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'irecommendthis', // Use the standard action name
-				recommend_id: id,
-				suffix: suffix,
-				unrecommend: unrecommend,
-				nonce: nonce,
+				action: 'irecommendthis',      // Must match the server-side hook
+				recommend_id: id,             // The post ID
+				suffix: suffix,               // Any suffix text (e.g., "Likes")
+				unrecommend: unrecommend,     // True/false for toggling
+				nonce: ajaxSettings.nonce     // Security nonce
 			},
 			success: function(data) {
-				// Handle errors gracefully
+				// Check if the server responded with an error
 				if (typeof data === 'object' && data.success === false) {
 					console.error('Error:', data.data ? data.data.message : 'Unknown error');
-					link.removeClass('processing');
 					return;
 				}
 
-				// Parse the options from the plugin settings
-				var options = JSON.parse(ajaxSettings.options);
+				// Determine which title we should display after the click
 				var title_new = options.link_title_new || "Recommend this";
 				var title_active = options.link_title_active || "You already recommended this";
 				var title = unrecommend ? title_new : title_active;
 
-				// Update all buttons with the same post ID
-				$('.irecommendthis[data-post-id="' + id + '"], #irecommendthis-' + id).each(function() {
-					$(this).html(data)
+				// Cache a selector for all related buttons with this post ID
+				var $buttons = $('.irecommendthis[data-post-id="' + id + '"], #irecommendthis-' + id + ', .irecommendthis-post-' + id);
+
+				// Update each matching button
+				$buttons.each(function() {
+					var $button = $(this);
+
+					// Replace the HTML content with the response data
+					$button.html(data)
+						// Toggle 'active' state
 						.toggleClass('active')
+						// Update the tooltip/title
 						.attr('title', title);
 
-					// Check if the count is zero and hide/show accordingly
-					var count = $(this).find('.irecommendthis-count').text().trim();
+					// Check the numeric count, if present
+					var countText = $button.find('.irecommendthis-count').text().trim();
+					var count = parseInt(countText, 10);
 
-					if (parseInt(count) === 0 && parseInt(options.hide_zero) === 1) {
-						$(this).find('.irecommendthis-count').hide();
-					} else {
-						$(this).find('.irecommendthis-count').show();
-					}
-				});
-
-				// Also update using class selector for any elements that might not have the data attribute
-				$('.irecommendthis-post-' + id).each(function() {
-					if (!$(this).data('post-id') && !$(this).attr('id')) {
-						$(this).html(data)
-							.toggleClass('active')
-							.attr('title', title);
-
-						var count = $(this).find('.irecommendthis-count').text().trim();
-						if (parseInt(count) === 0 && parseInt(options.hide_zero) === 1) {
-							$(this).find('.irecommendthis-count').hide();
+					if (!isNaN(count)) {
+						// Hide count if zero and user wants to hide zero counts
+						if (count === 0 && parseInt(options.hide_zero, 10) === 1) {
+							$button.find('.irecommendthis-count').hide();
 						} else {
-							$(this).find('.irecommendthis-count').show();
+							$button.find('.irecommendthis-count').show();
 						}
 					}
 				});
-
-				// Remove processing class from all affected elements
-				$('.irecommendthis[data-post-id="' + id + '"], #irecommendthis-' + id + ', .irecommendthis-post-' + id)
-					.removeClass('processing');
 			},
 			error: function(xhr, status, error) {
+				// Log any AJAX errors for debugging
 				console.error('AJAX Error:', status, error);
 				if (xhr.responseJSON && xhr.responseJSON.data) {
 					console.error('Error details:', xhr.responseJSON.data);
 				}
-				link.removeClass('processing'); // Remove processing class on error
+			},
+			complete: function() {
+				/**
+				 * Slight delay to avoid UI flicker on very fast responses.
+				 * This is configured by ajaxSettings.removal_delay, defaulting to 250 ms.
+				 */
+				setTimeout(function() {
+					$('.irecommendthis[data-post-id="' + id + '"], #irecommendthis-' + id + ', .irecommendthis-post-' + id)
+						.removeClass('processing');
+				}, removalDelay);
 			}
 		});
 
-		return false; // Prevent the default link behavior
+		// Prevent default link behavior
+		return false;
 	});
 });
