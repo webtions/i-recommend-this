@@ -49,12 +49,12 @@ class Themeist_IRecommendThis_Public_Display {
 
 		// Append recommendation button to singular posts
 		if ( is_singular( 'post' ) && $add_to_posts ) {
-			$content .= Themeist_IRecommendThis_Shortcodes::recommend();
+			$content .= '<p class="irecommendthis-wrapper">' . Themeist_IRecommendThis_Shortcodes::recommend() . '</p>';
 		}
 
 		// Append recommendation button to other post archive pages
 		if ( ( is_home() || is_category() || is_tag() || is_author() || is_date() || is_search() ) && $add_to_other ) {
-			$content .= Themeist_IRecommendThis_Shortcodes::recommend();
+			$content .= '<p class="irecommendthis-wrapper">' . Themeist_IRecommendThis_Shortcodes::recommend() . '</p>';
 		}
 
 		return $content;
