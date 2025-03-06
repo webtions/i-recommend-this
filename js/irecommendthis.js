@@ -127,11 +127,6 @@ jQuery(
 								return;
 							}
 
-							// Determine which title to display after the click.
-							var title_new    = options.link_title_new || 'Recommend this';
-							var title_active = options.link_title_active || 'You already recommended this';
-							var title        = unrecommend ? title_new : title_active;
-
 							// Cache a selector for all related buttons with this post ID.
 							var $buttons = $( '.irecommendthis[data-post-id="' + id + '"], #irecommendthis-' + id + ', .irecommendthis-post-' + id );
 
@@ -140,12 +135,26 @@ jQuery(
 								function () {
 									var $button = $( this );
 
+									// Get text state from data attributes (if available)
+									var likeText = $button.data('like');
+									var unlikeText = $button.data('unlike');
+
+									// Fallback to options if data attributes aren't available
+									if (!likeText) likeText = options.link_title_new || 'Recommend this';
+									if (!unlikeText) unlikeText = options.link_title_active || 'Unrecommend this';
+
 									// Replace the HTML content with the response data.
 									$button.html( data );
+
 									// Toggle the 'active' state.
 									$button.toggleClass( 'active' );
-									// Update the tooltip/title.
-									$button.attr( 'title', title );
+
+									// Use like/unlike text based on new button state
+									var newState = $button.hasClass('active') ? unlikeText : likeText;
+
+									// Update both title and aria-label for accessibility
+									$button.attr( 'title', newState );
+									$button.attr( 'aria-label', newState );
 
 									// Check the numeric count, if present.
 									var countText = $button.find( '.irecommendthis-count' ).text().trim();

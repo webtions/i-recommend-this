@@ -19,14 +19,14 @@ class Themeist_IRecommendThis_Shortcodes {
 	 */
 	public static function register_shortcodes() {
 		// Old shortcode name for backward compatibility.
-		// @deprecated 4.0.0 Use 'irecommendthis' instead.
+		// @deprecated 4.0.0 Use 'irecommendthis' instead
 		add_shortcode( 'dot_recommends', array( __CLASS__, 'shortcode_recommends' ) );
 
 		// New shortcode name.
 		add_shortcode( 'irecommendthis', array( __CLASS__, 'shortcode_recommends' ) );
 
 		// Old shortcode name for backward compatibility.
-		// @deprecated 4.0.0 Use 'irecommendthis_top_posts' instead.
+		// @deprecated 4.0.0 Use 'irecommendthis_top_posts' instead
 		add_shortcode( 'dot_recommended_top_posts', array( __CLASS__, 'shortcode_recommended_top_posts' ) );
 
 		// New shortcode name.
@@ -94,15 +94,16 @@ class Themeist_IRecommendThis_Shortcodes {
 		$vote_status_by_ip = 0;
 		if ( '0' !== $options['enable_unique_ip'] ) {
 			global $wpdb;
-			$anonymized_ip     = Themeist_IRecommendThis_Public_Processor::anonymize_ip( $ip );
-			$sql               = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
+			$anonymized_ip = Themeist_IRecommendThis_Public_Processor::anonymize_ip($ip);
+			$sql = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		// Check cookie status.
+		// Check cookie status
 		$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
 
-		// Use the existing title settings for the like/unlike text.
+		// Use the existing title settings for the like/unlike text
+		// Updated default text for better action clarity
 		$like_text = empty( $options['link_title_new'] )
 			? __( 'Recommend this', 'i-recommend-this' )
 			: $options['link_title_new'];
@@ -112,16 +113,16 @@ class Themeist_IRecommendThis_Shortcodes {
 			: $options['link_title_active'];
 
 		if ( $cookie_exists || $vote_status_by_ip > 0 ) {
-			$class         = 'irecommendthis active irecommendthis-post-' . $post_id;
-			$title         = $unlike_text;
+			$class = 'irecommendthis active irecommendthis-post-' . $post_id;
+			$title = $unlike_text;
 			$current_state = $unlike_text;
 		} else {
-			$class         = 'irecommendthis irecommendthis-post-' . $post_id;
-			$title         = $like_text;
+			$class = 'irecommendthis irecommendthis-post-' . $post_id;
+			$title = $like_text;
 			$current_state = $like_text;
 		}
 
-		// Enhanced HTML with better attribute support for accessibility and JavaScript interaction.
+		// Enhanced HTML with better attribute support for accessibility and JavaScript interaction
 		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" ';
 		$irt_html .= 'data-post-id="' . esc_attr( $post_id ) . '" ';
 		$irt_html .= 'data-like="' . esc_attr( $like_text ) . '" ';

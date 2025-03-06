@@ -41,8 +41,8 @@ class Themeist_IRecommendThis_Admin_Settings {
 		add_settings_field( 'text_zero_suffix', __( 'Text after 0 Count', 'i-recommend-this' ), array( $this, 'render_text_zero_suffix_field' ), 'irecommendthis-settings', 'irecommendthis' );
 		add_settings_field( 'text_one_suffix', __( 'Text after 1 Count', 'i-recommend-this' ), array( $this, 'render_text_one_suffix_field' ), 'irecommendthis-settings', 'irecommendthis' );
 		add_settings_field( 'text_more_suffix', __( 'Text after more than 1 Count', 'i-recommend-this' ), array( $this, 'render_text_more_suffix_field' ), 'irecommendthis-settings', 'irecommendthis' );
-		add_settings_field( 'link_title_new', __( 'Title for New posts', 'i-recommend-this' ), array( $this, 'render_link_title_new_field' ), 'irecommendthis-settings', 'irecommendthis' );
-		add_settings_field( 'link_title_active', __( 'Title for already voted posts', 'i-recommend-this' ), array( $this, 'render_link_title_active_field' ), 'irecommendthis-settings', 'irecommendthis' );
+		add_settings_field( 'link_title_new', __( 'Text for new recommendations', 'i-recommend-this' ), array( $this, 'render_link_title_new_field' ), 'irecommendthis-settings', 'irecommendthis' );
+		add_settings_field( 'link_title_active', __( 'Text for removing recommendations', 'i-recommend-this' ), array( $this, 'render_link_title_active_field' ), 'irecommendthis-settings', 'irecommendthis' );
 
 		// Privacy options.
 		add_settings_field( 'enable_unique_ip', __( 'Enable IP tracking', 'i-recommend-this' ), array( $this, 'render_enable_unique_ip_field' ), 'irecommendthis-settings', 'irecommendthis' );
@@ -192,7 +192,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 		}
 
 		echo '<input type="text" name="irecommendthis_settings[link_title_new]" class="regular-text" value="' . esc_attr( $options['link_title_new'] ) . '" /><br />
-		<span class="description">' . esc_html__( 'Link Title element for posts not yet voted by a user.', 'i-recommend-this' ) . '</span>';
+		<span class="description">' . esc_html__( 'Text shown for the recommendation button for posts not yet recommended. Default: "Recommend this"', 'i-recommend-this' ) . '</span>';
 	}
 
 	/**
@@ -205,7 +205,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 		}
 
 		echo '<input type="text" name="irecommendthis_settings[link_title_active]" class="regular-text" value="' . esc_attr( $options['link_title_active'] ) . '" /><br />
-		<span class="description">' . esc_html__( 'Link Title element for posts already voted by a user.', 'i-recommend-this' ) . '</span>';
+		<span class="description">' . esc_html__( 'Text shown for the recommendation button for posts already recommended. Default: "Unrecommend this"', 'i-recommend-this' ) . '</span>';
 	}
 
 	/**
