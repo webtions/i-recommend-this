@@ -29,7 +29,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	public function register_settings() {
 		register_setting( 'irecommendthis_settings', 'irecommendthis_settings', array( $this, 'validate_settings' ) );
 
-		add_settings_section( 'irecommendthis_settings', '', array( $this, 'render_settings_intro' ), 'irecommendthis_settings' );
+		add_settings_section( 'irecommendthis', '', array( $this, 'render_settings_intro' ), 'irecommendthis_settings' );
 
 		// Display options.
 		add_settings_field( 'show_on', __( 'Automatically display on', 'i-recommend-this' ), array( $this, 'render_show_on_field' ), 'irecommendthis_settings', 'irecommendthis' );
