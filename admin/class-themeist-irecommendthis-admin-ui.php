@@ -126,8 +126,8 @@ class Themeist_IRecommendThis_Admin_UI {
 	private function render_general_tab() {
 		?>
 		<form method="post" action="options.php" class="irecommendthis-settings-form">
-			<?php settings_fields( 'irecommendthis-settings' ); ?>
-			<?php do_settings_sections( 'irecommendthis-settings' ); ?>
+			<?php settings_fields( 'irecommendthis_settings' ); ?>
+			<?php do_settings_sections( 'irecommendthis_settings' ); ?>
 			<p class="submit">
 				<input type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Changes', 'i-recommend-this' ); ?>"/>
 			</p>

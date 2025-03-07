@@ -54,6 +54,7 @@ class Themeist_IRecommendThis {
 
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
 		add_action( 'init', array( $this, 'update_check' ) );
+		add_action( 'init', array( $this, 'migrate_plugin_settings' ) );
 		add_action( 'admin_notices', array( $this, 'check_db_table' ) );
 	}
 

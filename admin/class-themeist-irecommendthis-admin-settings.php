@@ -27,25 +27,25 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Register settings and their sections/fields.
 	 */
 	public function register_settings() {
-		register_setting( 'irecommendthis-settings', 'irecommendthis_settings', array( $this, 'validate_settings' ) );
+		register_setting( 'irecommendthis_settings', 'irecommendthis_settings', array( $this, 'validate_settings' ) );
 
-		add_settings_section( 'irecommendthis', '', array( $this, 'render_settings_intro' ), 'irecommendthis-settings' );
+		add_settings_section( 'irecommendthis_settings', '', array( $this, 'render_settings_intro' ), 'irecommendthis_settings' );
 
 		// Display options.
-		add_settings_field( 'show_on', __( 'Automatically display on', 'i-recommend-this' ), array( $this, 'render_show_on_field' ), 'irecommendthis-settings', 'irecommendthis' );
-		add_settings_field( 'recommend_style', __( 'Choose a style', 'i-recommend-this' ), array( $this, 'render_recommend_style_field' ), 'irecommendthis-settings', 'irecommendthis' );
-		add_settings_field( 'disable_css', __( 'Disable CSS', 'i-recommend-this' ), array( $this, 'render_disable_css_field' ), 'irecommendthis-settings', 'irecommendthis' );
-		add_settings_field( 'hide_zero', __( 'Hide Zero Count', 'i-recommend-this' ), array( $this, 'render_hide_zero_field' ), 'irecommendthis-settings', 'irecommendthis' );
+		add_settings_field( 'show_on', __( 'Automatically display on', 'i-recommend-this' ), array( $this, 'render_show_on_field' ), 'irecommendthis_settings', 'irecommendthis' );
+		add_settings_field( 'recommend_style', __( 'Choose a style', 'i-recommend-this' ), array( $this, 'render_recommend_style_field' ), 'irecommendthis_settings', 'irecommendthis' );
+		add_settings_field( 'disable_css', __( 'Disable CSS', 'i-recommend-this' ), array( $this, 'render_disable_css_field' ), 'irecommendthis_settings', 'irecommendthis' );
+		add_settings_field( 'hide_zero', __( 'Hide Zero Count', 'i-recommend-this' ), array( $this, 'render_hide_zero_field' ), 'irecommendthis_settings', 'irecommendthis' );
 
 		// Text options.
-		add_settings_field( 'text_zero_suffix', __( 'Text after 0 Count', 'i-recommend-this' ), array( $this, 'render_text_zero_suffix_field' ), 'irecommendthis-settings', 'irecommendthis' );
-		add_settings_field( 'text_one_suffix', __( 'Text after 1 Count', 'i-recommend-this' ), array( $this, 'render_text_one_suffix_field' ), 'irecommendthis-settings', 'irecommendthis' );
-		add_settings_field( 'text_more_suffix', __( 'Text after more than 1 Count', 'i-recommend-this' ), array( $this, 'render_text_more_suffix_field' ), 'irecommendthis-settings', 'irecommendthis' );
-		add_settings_field( 'link_title_new', __( 'Text for new recommendations', 'i-recommend-this' ), array( $this, 'render_link_title_new_field' ), 'irecommendthis-settings', 'irecommendthis' );
-		add_settings_field( 'link_title_active', __( 'Text for removing recommendations', 'i-recommend-this' ), array( $this, 'render_link_title_active_field' ), 'irecommendthis-settings', 'irecommendthis' );
+		add_settings_field( 'text_zero_suffix', __( 'Text after 0 Count', 'i-recommend-this' ), array( $this, 'render_text_zero_suffix_field' ), 'irecommendthis_settings', 'irecommendthis' );
+		add_settings_field( 'text_one_suffix', __( 'Text after 1 Count', 'i-recommend-this' ), array( $this, 'render_text_one_suffix_field' ), 'irecommendthis_settings', 'irecommendthis' );
+		add_settings_field( 'text_more_suffix', __( 'Text after more than 1 Count', 'i-recommend-this' ), array( $this, 'render_text_more_suffix_field' ), 'irecommendthis_settings', 'irecommendthis' );
+		add_settings_field( 'link_title_new', __( 'Text for new recommendations', 'i-recommend-this' ), array( $this, 'render_link_title_new_field' ), 'irecommendthis_settings', 'irecommendthis' );
+		add_settings_field( 'link_title_active', __( 'Text for removing recommendations', 'i-recommend-this' ), array( $this, 'render_link_title_active_field' ), 'irecommendthis_settings', 'irecommendthis' );
 
 		// Privacy options.
-		add_settings_field( 'enable_unique_ip', __( 'Enable IP tracking', 'i-recommend-this' ), array( $this, 'render_enable_unique_ip_field' ), 'irecommendthis-settings', 'irecommendthis' );
+		add_settings_field( 'enable_unique_ip', __( 'Enable IP tracking', 'i-recommend-this' ), array( $this, 'render_enable_unique_ip_field' ), 'irecommendthis_settings', 'irecommendthis' );
 	}
 
 	/**
