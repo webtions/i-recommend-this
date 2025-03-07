@@ -86,24 +86,40 @@ class Themeist_IRecommendThis {
 	 * to ensure a smooth upgrade path for existing users.
 	 */
 	public function migrate_plugin_settings() {
-		// Migrate settings from old to new option keys.
-		$old_settings     = get_option( 'dot_irecommendthis_settings' );
-		$current_settings = get_option( 'irecommendthis_settings' );
+	    // Check if old settings exist
+	    $old_settings = get_option('dot_irecommendthis_settings');
 
-		// Only migrate if old settings exist and current settings are empty/don't exist.
-		if ( $old_settings && empty( $current_settings ) ) {
-			update_option( 'irecommendthis_settings', $old_settings );
-			// Keep the old setting for one more version, but we'll remove this in a future version.
-			// Don't delete the old settings yet to allow for rollback if needed.
-		}
+	    if ($old_settings) {
+	        // Old settings exist - use them as the basis for the new settings
+	        $current_settings = get_option('irecommendthis_settings', array());
 
-		// Migrate database version.
-		$old_db_version = get_option( 'dot_irecommendthis_db_version' );
-		if ( $old_db_version ) {
-			update_option( 'irecommendthis_db_version', $old_db_version );
-			// Keep the old version for one more version cycle.
-			// Don't delete the old version yet to allow for rollback if needed.
-		}
+	        // If current settings don't exist OR they're empty and old settings exist
+	        if (false === $current_settings || (is_array($current_settings) && empty($current_settings))) {
+	            // Copy old settings to new option
+	            update_option('irecommendthis_settings', $old_settings);
+	        }
+	    } else {
+	        // No old settings exist, ensure defaults exist for new installs
+	        $current_settings = get_option('irecommendthis_settings');
+
+	        if (false === $current_settings) {
+	            // Initialize with defaults for a new installation
+	            $default_settings = array(
+	                'add_to_posts'      => '0',
+	                'add_to_other'      => '0',
+	                'text_zero_suffix'  => '',
+	                'text_one_suffix'   => '',
+	                'text_more_suffix'  => '',
+	                'link_title_new'    => '',
+	                'link_title_active' => '',
+	                'disable_css'       => '0',
+	                'hide_zero'         => '0',
+	                'enable_unique_ip'  => '0',
+	                'recommend_style'   => '0'
+	            );
+	            add_option('irecommendthis_settings', $default_settings);
+	        }
+	    }
 	}
 
 	/**
