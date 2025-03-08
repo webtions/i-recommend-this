@@ -1,0 +1,18 @@
+# Items to ignore when downloading a zip
+
+readme.md                  export-ignore
+.gitattributes             export-ignore
+.gitignore                 export-ignore
+.editorconfig              export-ignore
+.nvmrc                     export-ignore
+
+phpcs.xml                  export-ignore
+package.json               export-ignore
+package-lock.json          export-ignore
+
+readme.md                  export-ignore
+SECURITY.md                export-ignore
+plugin-documentation.md    export-ignore
+
+src/                       export-ignore
+node_modules/              export-ignore
