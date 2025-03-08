@@ -35,7 +35,7 @@ require_once __DIR__ . '/public/class-themeist-most-recommended-posts-widget.php
 require_once __DIR__ . '/includes/class-themeist-irecommendthis-ajax.php';
 require_once __DIR__ . '/includes/class-themeist-irecommendthis-shortcodes.php';
 require_once __DIR__ . '/includes/functions.php';
-require_once __DIR__ . '/includes/block-registration.php';
+require_once __DIR__ . '/blocks/blocks.php';
 
 // Create instance of plugin class.
 global $themeist_i_recommend_this;

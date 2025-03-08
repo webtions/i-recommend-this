@@ -1,6 +1,6 @@
 <?php
 /**
- * Block registration for 'irecommendthis/recommend' block.
+ * Recommendation block functionality.
  *
  * @package IRecommendThis
  */
@@ -10,20 +10,19 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Register the block.
+ * Register the recommendation block.
  */
-function register_irecommendthis_block() {
+function irecommendthis_register_recommend_block() {
 	register_block_type(
-		__DIR__ . '/../build',
+		__DIR__ . '/build',
 		array(
 			'render_callback' => 'irecommendthis_block_render_callback',
 		)
 	);
 }
-add_action( 'init', 'register_irecommendthis_block' );
 
 /**
- * Render callback for the block.
+ * Render callback for the recommendation block.
  *
  * @param array    $attributes Block attributes.
  * @param string   $content    Block content.
