@@ -68,14 +68,14 @@ class Themeist_IRecommendThis_Admin_UI {
 
 		wp_enqueue_style(
 			'irecommendthis-admin-settings',
-			plugins_url( 'css/admin-settings.css', dirname( __FILE__ ) ),
+			plugins_url( 'assets/css/admin-settings.csdfs', dirname( __FILE__ ) ),
 			array(),
 			THEMEIST_IRT_VERSION
 		);
 
 		wp_enqueue_script(
 			'irecommendthis-admin-tabs',
-			plugins_url( 'js/admin-tabs.js', dirname( __FILE__ ) ),
+			plugins_url( 'assets/js/admin-tabs.js', dirname( __FILE__ ) ),
 			array( 'jquery' ),
 			THEMEIST_IRT_VERSION,
 			true

@@ -52,8 +52,8 @@ class Themeist_IRecommendThis_Public_Assets {
 		// Enqueue styles if CSS is not disabled.
 		if ( 0 === $disable_css ) {
 			$css_file = ( 0 === $recommend_style ) ? 'irecommendthis.css' : 'irecommendthis-heart.css';
-			$css_path = plugin_dir_path( $this->plugin_file ) . 'css/' . $css_file;
-			$css_url  = plugins_url( 'css/' . $css_file, $this->plugin_file );
+			$css_path = plugin_dir_path( $this->plugin_file ) . 'assets/css/' . $css_file;
+			$css_url = plugins_url( 'assets/css/' . $css_file, $this->plugin_file );
 
 			if ( file_exists( $css_path ) ) {
 				wp_enqueue_style( 'irecommendthis', $css_url, array(), filemtime( $css_path ) );
@@ -63,8 +63,8 @@ class Themeist_IRecommendThis_Public_Assets {
 		}
 
 		// Register and enqueue the main JavaScript file.
-		$js_url  = plugins_url( 'js/irecommendthis.js', $this->plugin_file );
-		$js_path = plugin_dir_path( $this->plugin_file ) . 'js/irecommendthis.js';
+		$js_url = plugins_url( 'assets/js/irecommendthis.js', $this->plugin_file );
+		$js_path = plugin_dir_path( $this->plugin_file ) . 'assets/js/irecommendthis.js';
 
 		wp_register_script(
 			'irecommendthis',
