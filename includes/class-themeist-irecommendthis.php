@@ -86,40 +86,40 @@ class Themeist_IRecommendThis {
 	 * to ensure a smooth upgrade path for existing users.
 	 */
 	public function migrate_plugin_settings() {
-	    // Check if old settings exist
-	    $old_settings = get_option('dot_irecommendthis_settings');
+		// Check if old settings exist
+		$old_settings = get_option('dot_irecommendthis_settings');
 
-	    if ($old_settings) {
-	        // Old settings exist - use them as the basis for the new settings
-	        $current_settings = get_option('irecommendthis_settings', array());
+		if ($old_settings) {
+			// Old settings exist - use them as the basis for the new settings
+			$current_settings = get_option('irecommendthis_settings', array());
 
-	        // If current settings don't exist OR they're empty and old settings exist
-	        if (false === $current_settings || (is_array($current_settings) && empty($current_settings))) {
-	            // Copy old settings to new option
-	            update_option('irecommendthis_settings', $old_settings);
-	        }
-	    } else {
-	        // No old settings exist, ensure defaults exist for new installs
-	        $current_settings = get_option('irecommendthis_settings');
+			// If current settings don't exist OR they're empty and old settings exist
+			if (false === $current_settings || (is_array($current_settings) && empty($current_settings))) {
+				// Copy old settings to new option
+				update_option('irecommendthis_settings', $old_settings);
+			}
+		} else {
+			// No old settings exist, ensure defaults exist for new installs
+			$current_settings = get_option('irecommendthis_settings');
 
-	        if (false === $current_settings) {
-	            // Initialize with defaults for a new installation
-	            $default_settings = array(
-	                'add_to_posts'      => '0',
-	                'add_to_other'      => '0',
-	                'text_zero_suffix'  => '',
-	                'text_one_suffix'   => '',
-	                'text_more_suffix'  => '',
-	                'link_title_new'    => '',
-	                'link_title_active' => '',
-	                'disable_css'       => '0',
-	                'hide_zero'         => '0',
-	                'enable_unique_ip'  => '0',
-	                'recommend_style'   => '0'
-	            );
-	            add_option('irecommendthis_settings', $default_settings);
-	        }
-	    }
+			if (false === $current_settings) {
+				// Initialize with defaults for a new installation
+					$default_settings = array(
+					'add_to_posts'      => '0',
+					'add_to_other'      => '0',
+					'text_zero_suffix'  => 'Like this',
+					'text_one_suffix'   => 'Like',
+					'text_more_suffix'  => 'Likes',
+					'link_title_new'    => 'Like this',
+					'link_title_active' => 'Unlike this',
+					'disable_css'       => '0',
+					'hide_zero'         => '1',
+					'enable_unique_ip'  => '0',
+					'recommend_style'   => '1'
+				);
+				add_option('irecommendthis_settings', $default_settings);
+			}
+		}
 	}
 
 	/**
