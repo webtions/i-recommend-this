@@ -44,29 +44,36 @@ class Themeist_IRecommendThis_Shortcodes {
 			array(
 				'id'               => null,
 				'use_current_post' => false,
+				'wrapper'          => true,
 			),
 			$atts
 		);
+
+		// Convert string 'false' to boolean false
+		if ( is_string( $atts['wrapper'] ) && 'false' === strtolower( $atts['wrapper'] ) ) {
+			$atts['wrapper'] = false;
+		}
 
 		// If use_current_post is true or we're in a loop and no ID is specified, use current post ID.
 		if (
 			( 'true' === $atts['use_current_post'] || true === $atts['use_current_post'] ) ||
 			( empty( $atts['id'] ) && in_the_loop() )
 		) {
-			return self::recommend( get_the_ID() );
+			return self::recommend( get_the_ID(), 'get', $atts['wrapper'] );
 		}
 
-		return self::recommend( intval( $atts['id'] ) );
+		return self::recommend( intval( $atts['id'] ), 'get', $atts['wrapper'] );
 	}
 
 	/**
 	 * Display the recommendation button.
 	 *
-	 * @param int    $id Post ID.
-	 * @param string $action Action to perform: 'get' or 'update'.
+	 * @param int    $id      Post ID.
+	 * @param string $action  Action to perform: 'get' or 'update'.
+	 * @param bool   $wrapper Whether to wrap the output in a container div.
 	 * @return string HTML output for the recommendation button.
 	 */
-	public static function recommend( $id = null, $action = 'get' ) {
+	public static function recommend( $id = null, $action = 'get', $wrapper = true ) {
 		global $post;
 
 		$post_id = $id ? $id : get_the_ID();
@@ -94,16 +101,16 @@ class Themeist_IRecommendThis_Shortcodes {
 		$vote_status_by_ip = 0;
 		if ( '0' !== $options['enable_unique_ip'] ) {
 			global $wpdb;
-			$anonymized_ip = Themeist_IRecommendThis_Public_Processor::anonymize_ip($ip);
-			$sql = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
+			$anonymized_ip    = Themeist_IRecommendThis_Public_Processor::anonymize_ip( $ip );
+			$sql              = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		// Check cookie status
+		// Check cookie status.
 		$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
 
-		// Use the existing title settings for the like/unlike text
-		// Updated default text for better action clarity
+		// Use the existing title settings for the like/unlike text.
+		// Updated default text for better action clarity.
 		$like_text = empty( $options['link_title_new'] )
 			? __( 'Recommend this', 'i-recommend-this' )
 			: $options['link_title_new'];
@@ -113,16 +120,16 @@ class Themeist_IRecommendThis_Shortcodes {
 			: $options['link_title_active'];
 
 		if ( $cookie_exists || $vote_status_by_ip > 0 ) {
-			$class = 'irecommendthis active irecommendthis-post-' . $post_id;
-			$title = $unlike_text;
+			$class         = 'irecommendthis active irecommendthis-post-' . $post_id;
+			$title         = $unlike_text;
 			$current_state = $unlike_text;
 		} else {
-			$class = 'irecommendthis irecommendthis-post-' . $post_id;
-			$title = $like_text;
+			$class         = 'irecommendthis irecommendthis-post-' . $post_id;
+			$title         = $like_text;
 			$current_state = $like_text;
 		}
 
-		// Enhanced HTML with better attribute support for accessibility and JavaScript interaction
+		// Enhanced HTML with better attribute support for accessibility and JavaScript interaction.
 		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" ';
 		$irt_html .= 'data-post-id="' . esc_attr( $post_id ) . '" ';
 		$irt_html .= 'data-like="' . esc_attr( $like_text ) . '" ';
@@ -132,9 +139,13 @@ class Themeist_IRecommendThis_Shortcodes {
 		$irt_html .= $output;
 		$irt_html .= '</a>';
 
+		// Add wrapper div if requested.
+		if ( $wrapper ) {
+			$irt_html = '<div class="irecommendthis-wrapper">' . $irt_html . '</div>';
+		}
+
 		return $irt_html;
 	}
-
 
 	/**
 	 * Shortcode handler for displaying the top recommended posts.

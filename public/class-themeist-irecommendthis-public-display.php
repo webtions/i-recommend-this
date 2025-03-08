@@ -48,13 +48,15 @@ class Themeist_IRecommendThis_Public_Display {
 		$add_to_other = isset( $options['add_to_other'] ) ? $options['add_to_other'] : '0';
 
 		// Append recommendation button to singular posts.
+		// Pass wrapper=false since we're adding the wrapper here.
 		if ( is_singular( 'post' ) && $add_to_posts ) {
-			$content .= '<p class="irecommendthis-wrapper">' . Themeist_IRecommendThis_Shortcodes::recommend() . '</p>';
+			$content .= '<div class="irecommendthis-wrapper">' . Themeist_IRecommendThis_Shortcodes::recommend( null, 'get', false ) . '</div>';
 		}
 
 		// Append recommendation button to other post archive pages.
+		// Pass wrapper=false since we're adding the wrapper here.
 		if ( ( is_home() || is_category() || is_tag() || is_author() || is_date() || is_search() ) && $add_to_other ) {
-			$content .= '<p class="irecommendthis-wrapper">' . Themeist_IRecommendThis_Shortcodes::recommend() . '</p>';
+			$content .= '<div class="irecommendthis-wrapper">' . Themeist_IRecommendThis_Shortcodes::recommend( null, 'get', false ) . '</div>';
 		}
 
 		return $content;

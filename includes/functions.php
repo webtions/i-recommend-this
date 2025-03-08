@@ -10,11 +10,12 @@
  *
  * This is the preferred function to use in theme templates.
  *
- * @param int|null $id The post ID. If null, the current post ID is used.
+ * @param int|null $id          The post ID. If null, the current post ID is used.
  * @param bool     $should_echo Whether to echo the output or return it.
+ * @param bool     $wrapper     Whether to wrap the output in a container div.
  * @return string|void The recommendation button HTML if $should_echo is false.
  */
-function irecommendthis( $id = null, $should_echo = true ) {
+function irecommendthis( $id = null, $should_echo = true, $wrapper = true ) {
 	// Sanitize the post ID.
 	$id = ( null === $id ) ? get_the_ID() : absint( $id );
 
@@ -22,7 +23,7 @@ function irecommendthis( $id = null, $should_echo = true ) {
 	$should_echo = (bool) $should_echo;
 
 	// Get the output from the shortcode.
-	$output = Themeist_IRecommendThis_Shortcodes::recommend( $id, 'get' );
+	$output = Themeist_IRecommendThis_Shortcodes::recommend( $id, 'get', $wrapper );
 
 	// Echo or return the output based on the $should_echo parameter.
 	if ( $should_echo ) {
@@ -38,11 +39,12 @@ function irecommendthis( $id = null, $should_echo = true ) {
  *
  * @deprecated 4.0.0 Use irecommendthis() instead.
  *
- * @param int|null $id The post ID. If null, the current post ID is used.
+ * @param int|null $id          The post ID. If null, the current post ID is used.
  * @param bool     $should_echo Whether to echo the output or return it.
+ * @param bool     $wrapper     Whether to wrap the output in a container div.
  * @return string|void The recommendation button HTML if $should_echo is false.
  */
-function dot_irecommendthis( $id = null, $should_echo = true ) {
+function dot_irecommendthis( $id = null, $should_echo = true, $wrapper = true ) {
 	// Trigger deprecation notice in debug mode
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
@@ -58,5 +60,5 @@ function dot_irecommendthis( $id = null, $should_echo = true ) {
 		);
 	}
 
-	return irecommendthis( $id, $should_echo );
+	return irecommendthis( $id, $should_echo, $wrapper );
 }

@@ -45,9 +45,9 @@ function irecommendthis_block_render_callback( $attributes, $content, $block ) {
 
 	$align_class = isset( $attributes['alignText'] ) ? "has-text-align-{$attributes['alignText']}" : 'has-text-align-left';
 
-	// Use the existing shortcode to render the content.
-	$output  = '<div class="wp-block-irecommendthis-recommend ' . esc_attr( $align_class ) . '">';
-	$output .= do_shortcode( '[irecommendthis id="' . esc_attr( $post_id ) . '"]' );
+	// Use the existing shortcode to render the content, but with wrapper=false since we'll add our own wrapper.
+	$output  = '<div class="wp-block-irecommendthis-recommend irecommendthis-wrapper ' . esc_attr( $align_class ) . '">';
+	$output .= do_shortcode( '[irecommendthis id="' . esc_attr( $post_id ) . '" wrapper="false"]' );
 	$output .= '</div>';
 
 	return $output;
