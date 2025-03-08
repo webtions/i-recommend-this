@@ -96,7 +96,7 @@ class Themeist_IRecommendThis_Admin_UI {
 
 			<h2 class="nav-tab-wrapper">
 				<?php foreach ( $tabs as $tab => $name ) : ?>
-					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=irecommendthis_settings&tab=' . $tab ) ); ?>"
+					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=irecommendthis-settings&tab=' . $tab ) ); ?>"
 					   class="nav-tab <?php echo $this->current_tab === $tab ? 'nav-tab-active' : ''; ?>">
 						<?php echo esc_html( $name ); ?>
 					</a>

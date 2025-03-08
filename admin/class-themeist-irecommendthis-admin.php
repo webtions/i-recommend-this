@@ -136,7 +136,7 @@ class Themeist_IRecommendThis_Admin {
 		$page_title = __( 'I Recommend This', 'i-recommend-this' );
 		$menu_title = __( 'I Recommend This', 'i-recommend-this' );
 		$capability = 'manage_options';
-		$menu_slug  = 'irecommendthis_settings';
+		$menu_slug  = 'irecommendthis-settings';
 		$function   = array( $this->ui_component, 'render_settings_page' );
 
 		add_options_page( $page_title, $menu_title, $capability, $menu_slug, $function );
