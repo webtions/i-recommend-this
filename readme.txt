@@ -81,25 +81,25 @@ You can [help translate this plugin into your language](https://translate.wordpr
 4. **Display the Recommend/Like Button**
    - By default, the recommend/like button is added to the bottom of individual posts.
    - To display the recommend/like button in a custom location, add the following code to your theme template files (e.g., `single.php`):
-     `<?php if ( function_exists( 'irecommendthis' ) ) irecommendthis(); ?>`
+	 `<?php if ( function_exists( 'irecommendthis' ) ) irecommendthis(); ?>`
 
 5. **Use Shortcodes**
    - To display the recommend/like button on any page or post, use the `[irecommendthis]` shortcode.
    - To display the most recommended posts, use the `[irecommendthis_top_posts]` shortcode with customizable attributes. Example:
-     `[irecommendthis_top_posts post_type='post' container='div' number='10' year='2023' monthnum='7']`
+	 `[irecommendthis_top_posts post_type='post' container='div' number='10' year='2023' monthnum='7']`
 
 6. **Display the Most Recommended Posts**
    - To display the most recommended posts in your theme templates, use the following code:
-     ```<?php if ( function_exists( 'irecommendthis' ) ) echo do_shortcode( "[irecommendthis_top_posts container='div' post_type='post' number='10' year='2023' monthnum='7']" ); ?>`
+	 ```<?php if ( function_exists( 'irecommendthis' ) ) echo do_shortcode( "[irecommendthis_top_posts container='div' post_type='post' number='10' year='2023' monthnum='7']" ); ?>`
 
 7. **Add the Most Recommended Posts Widget**
    - The plugin includes a widget to display the most recommended posts.
    - To add the widget:
-     1. Go to `Appearance` > `Widgets` in the WordPress admin dashboard.
-     2. Locate the `Most Recommended Posts` widget in the list of available widgets.
-     3. Drag the widget to the desired widget area (e.g., sidebar, footer).
-     4. Configure the widget settings, including the title, number of posts to display, and other options.
-     5. Click `Save` to add the widget to your site.
+	 1. Go to `Appearance` > `Widgets` in the WordPress admin dashboard.
+	 2. Locate the `Most Recommended Posts` widget in the list of available widgets.
+	 3. Drag the widget to the desired widget area (e.g., sidebar, footer).
+	 4. Configure the widget settings, including the title, number of posts to display, and other options.
+	 5. Click `Save` to add the widget to your site.
 
 == Frequently Asked Questions ==
 
@@ -139,32 +139,72 @@ Please report security bugs found in the source code through the [Patchstack Vul
 
 == Upgrade Notice ==
 
+= 4.0.0 =
+Major version with architecture changes. After upgrading, go to Settings > I Recommend This > DB Tools tab and run "Optimize Database" to update database structure. If using custom CSS for the recommendation button, update selectors to target .irecommendthis-wrapper. For theme developers: Template tag now includes optional wrapper parameter and better post ID detection for query loops. Review plugin documentation for implementation details. All changes are backward compatible but leverage new features for better performance.
+
+= 3.10.3 =
+Fixes critical issue with block editor and query loops that could cause incorrect post IDs to be used.
+
+= 3.10.2 =
+Resolves template tag output issue that prevented recommendation links from displaying correctly.
+
+= 3.10.1 =
+Fixes AJAX request handling to ensure proper recommendation functionality.
+
 
 == Changelog ==
 
-= 4.0.0 =
-* Refactored AJAX JS: added getPostId helper, improved caching, and introduced configurable 250ms removal delay.
-* Major architecture overhaul with component-based design
-* New naming convention: irecommendthis instead of dot_irecommendthis
-* Updated shortcodes to [irecommendthis] and [irecommendthis_top_posts] (old function still supported)
-* Added new template tag irecommendthis() (old function still supported)
-* Enhanced GDPR compliance with IP anonymization
-* Improved database structure with better indexing
-* Enhanced JavaScript for better reliability
-* Improved security with better nonce handling
-* Added database optimization tools
+= 4.0.0 - (10 March 2025) =
+* Core Improvements:
+	- Completely rebuilt plugin with a modern component-based architecture
+	- Changed naming from "dot_irecommendthis" to "irecommendthis" throughout
+	- Consolidated settings and tools into a single, organized admin interface
 
-= 3.10.3 =
-* Fix: Resolved issue with duplicate post IDs in query blocks
-* Added: Context awareness to properly identify post IDs in query loops
-* Enhanced: Shortcode functionality to respect post context in WordPress loops
-* Added: JavaScript fallback to detect and fix incorrect IDs at runtime
-* Improved: Database optimization for better performance and compatibility
-* Refactored: Database management error handling
-* Removed: Development-specific logging methods
-* Security: Improved error handling following WordPress best practices
-* Fixed: Potential security risks in database management logging
-* Enhanced: Plugin stability and error notification mechanisms
+* UI & Display:
+	- Added consistent div wrappers for recommendation buttons
+	- Fixed layout issues with buttons in different contexts
+	- Added wrapper parameter for fine-tuned layout control
+
+* JavaScript & Interactions:
+	- Fixed like/unlike functionality with backward compatibility
+	- Added enhanced HTML attributes for better accessibility
+	- Implemented smoother button state transitions
+
+* Block Editor Integration:
+	- Improved button targeting with class-based selectors
+	- Enhanced post ID detection in query loops and block contexts
+
+* Performance & Optimization:
+	- Added database indexes and optimized queries for faster performance
+	- Implemented database optimization tools with improved error handling
+	- Added hook for caching plugin integration
+
+* Developer Tools:
+	- Updated shortcodes and template functions with backward compatibility
+	- Added new wrapper control options for theme developers
+
+* Security & Privacy:
+	- Implemented IP anonymization using global hashing for GDPR compliance
+	- Improved nonce verification throughout the plugin
+
+= 3.10.3 - (27 February 2025) =
+* Block Editor Integration:
+    - Fixed duplicate post ID issues in query blocks
+    - Added context awareness to properly identify post IDs in query loops
+    - Improved compatibility with Query Block using data attributes
+
+* Performance & Optimization:
+    - Implemented database optimizations for better performance
+    - Enhanced error handling in database operations
+
+* JavaScript & Interactions:
+    - Added detection and correction for incorrect IDs at runtime
+    - Enhanced shortcode functionality in WordPress loops
+
+* Bug Fixes:
+    - Resolved coding standards compliance issues
+    - Fixed potential security vulnerabilities in database management
+    - Removed unnecessary development logging code
 
 = 3.10.2 =
 * Fix: Template tag not outputting the recommend link
@@ -175,11 +215,144 @@ Please report security bugs found in the source code through the [Patchstack Vul
 = 3.10.0 =
 * Security update
 * Code Refactor
-* Added Gutenberg block support
-
-= 3.9.1 =
-Fixes multiple security issues
+* Added Block
 
 = 3.9.1 =
 * Security update
 
+= 3.9.0 =
+* Added support for un-recommending/un-liking a post
+* Fixed data sanitization
+* Fixed data escaping
+
+= 3.8.1 =
+* Added data sanitization
+* Separate & recoded widget
+* Support for multiple widget instances
+
+= 3.8.0 =
+* Added data sanitization
+* Made IP saving options
+* Restructured plugin code
+
+= 3.7.8 =
+* Vulnerabilities fixed by DannyvanKooten
+
+= 3.7.7 =
+* Dutch Translation added by Tim de Hoog
+* Added support for IPv6
+
+= 3.7.6 =
+* Fixed version number in dot-irecommendthis.php
+
+= 3.7.5 =
+* Updated Readme
+
+= 3.7.4 =
+* The template tag now accepts a POST ID, thanks to [Oskar Adin](https://github.com/osadi).
+
+= 3.7.3 =
+* Fixed a possible SQL injection vulnerability reported by [Oskar Adin](https://github.com/osadi) and fixed by [Danny van Kooten](https://twitter.com/DannyvanKooten).
+
+= 3.7.2 =
+* Updated 'dot_irecommendthis.js' file to make the plugin work even when the like button is on a hidden element. Thanks to [forthewinn](http://wordpress.org/support/profile/forthewinn). [Support Ticket](http://wordpress.org/support/topic/recommendation-to-fix-usage-in-hiddenexpanding-elements)
+
+= 3.7.1 =
+* Spanish translation added. Thanks to Andrew Kurtis from [WebHostingHub](http://www.webhostinghub.com/)
+
+= 3.7.0 =
+* Removed wrong tags set for this plugin earlier. My sincere apologies for the extra update mess.
+
+= 2.6.5 =
+* Replaced deprecated jQuery function `live` with `on` in dot_irecommendthis.js
+
+= 2.6.4 =
+* Moved enqueued JS from wp_head() to wp_footer().
+
+= 2.6.3 =
+* Fixed undefined index errors for disable_unique_ip, link_title_new & link_title_active. Thanks to [sebabornia](http://wordpress.org/support/profile/sebabornia)
+
+= 2.6.2 =
+* French translation added. Thanks to Murat from [wptheme.fr](http://wptheme.fr/)
+
+= 2.6.1 =
+* Updates to Persian translation
+
+= 2.6.0 =
+* Added Persian translation - Thanks to [HSG](http://profiles.wordpress.org/HSG/)
+* Added the number of likes on the Post Edit page along with a sorting option. Thanks to [HSG](http://profiles.wordpress.org/HSG/)
+
+= 2.5.3 =
+* Fixed PHP error in Widget.
+* Converted text strings in the widget to be translatable.
+
+= 2.5.2 =
+* Replaced 'before' & 'after' attributes in shortcode 'dot_recommended_posts' with a single attribute 'container'
+
+= 2.5.1 =
+* Changed shortcode name from dot_recommends_posts to dot_recommended_posts
+
+= 2.5.0 =
+* Added new shortcode with multiple options to display the most recommended post/post_type of all time or from a specific date
+
+= 2.4.2 =
+* Bug fix. Thanks to @mmaxim
+
+= 2.4.1 =
+* Fixed undefined index error.
+
+= 2.4.0 =
+* Added filter dot_irt_before_count to allow custom content or icons before the count.
+
+= 2.3.0 =
+* Added option to hide count if count is zero
+* Added option to disable saving of IP address in the database
+
+= 2.2.0 =
+* Added option to customize the link title. You can now remove the word recommend and add anything you like. Ideas suggested by Krystina Montemurro.
+
+= 2.1.5 =
+* Support URL update for new plugin details page.
+
+= 2.1.4 =
+* Removed 2 instances of double quotes. Thanks to [boyevul](http://profiles.wordpress.org/boyevul/)
+
+= 2.1.3 =
+* Fixed errors shown when Debug mode was on. Thanks to [Air](http://profiles.wordpress.org/air-1/)
+
+= 2.1.2 =
+* Fixed CSS Disable issue. Thanks to Nicolas Mollet.
+
+= 2.1 =
+* Fixed Naming Errors. Thanks to Marian Hillmar.
+* Fixed Shortcode name & Added support to place like button anywhere pointing to any post. Thanks to Bryant Williams for the code.
+
+= 2.0 =
+* This is a major revamp. The entire plugin structure is now based on OOP
+* Settings are now stored using Settings API and Settings page is created based on WordPress standards.
+* This plugin contains code from "Zilla Like" plugin developed by Orman Clark of www.themezilla.com.
+* Translation files are finally added.
+
+= 1.4.3 =
+* All deprecated functions removed. Plugin might not work on WordPress versions older than 3.
+
+= 1.4.1 =
+* Fixed bug that broke update.
+
+= 1.4 =
+* Added feature to display custom text when a post is liked.
+
+= 1.3 =
+* Removed 2 functions "register_widget_control()" & "register_sidebar_widget()" deprecated in version 2.8 with latest functions
+
+= 1.2 =
+* More bugs fixed.
+
+= 1.1 =
+* Fixed Bug that did not allow displaying text next to the counter.
+* Updated code using branch of original plugin on GitHub
+
+= 1.0 =
+* Removed JQuery loading style when heart is clicked.
+* Modified CSS & Images of LeBen's "I Like This" plugin based on what many users requested.
+* This is the first version
