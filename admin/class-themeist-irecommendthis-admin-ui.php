@@ -103,6 +103,19 @@ class Themeist_IRecommendThis_Admin_UI {
 				<?php endforeach; ?>
 			</h2>
 
+			<?php
+			// Display database updated notice if applicable
+			if ( isset( $_GET['db_updated'] ) && check_admin_referer( 'irecommendthis_update_success', 'updated_nonce' ) ) {
+				if ( '1' === sanitize_text_field( wp_unslash( $_GET['db_updated'] ) ) ) {
+					?>
+					<div class="notice notice-success is-dismissible">
+						<p><?php esc_html_e( 'Database has been updated successfully!', 'i-recommend-this' ); ?></p>
+					</div>
+					<?php
+				}
+			}
+			?>
+
 			<div class="tab-content">
 				<?php
 				if ( $this->current_tab === 'general' ) {
@@ -139,16 +152,7 @@ class Themeist_IRecommendThis_Admin_UI {
 	 * Render the database tools tab.
 	 */
 	private function render_dbtools_tab() {
-		// Display update success message if applicable
-		if ( isset( $_GET['updated'] ) && check_admin_referer( 'irecommendthis_update_success', 'updated_nonce' ) ) {
-			if ( '1' === sanitize_text_field( wp_unslash( $_GET['updated'] ) ) ) {
-				echo '<div class="notice notice-success is-dismissible"><p>' .
-					esc_html__( 'Database has been updated successfully!', 'i-recommend-this' ) .
-					'</p></div>';
-			}
-		}
 		?>
-
 		<div class="card">
 			<h2><?php esc_html_e( 'Database Optimization', 'i-recommend-this' ); ?></h2>
 			<p><?php esc_html_e( 'This tool will optimize the database tables used by the I Recommend This plugin. It will add appropriate indexes and update the table structure for better performance.', 'i-recommend-this' ); ?></p>

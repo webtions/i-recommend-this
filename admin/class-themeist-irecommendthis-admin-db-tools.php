@@ -65,11 +65,12 @@ class Themeist_IRecommendThis_Admin_DB_Tools {
 		$updated_nonce = wp_create_nonce( 'irecommendthis_update_success' );
 
 		// Redirect with success message and nonce.
+		// Using db_updated instead of updated to avoid triggering WordPress settings notice
 		$redirect_url = add_query_arg(
 			array(
 				'page'          => 'irecommendthis-settings',
 				'tab'           => 'dbtools',
-				'updated'       => '1',
+				'db_updated'    => '1',
 				'updated_nonce' => $updated_nonce,
 			),
 			admin_url( 'options-general.php' )
@@ -106,11 +107,12 @@ class Themeist_IRecommendThis_Admin_DB_Tools {
 		$updated_nonce = wp_create_nonce( 'irecommendthis_update_success' );
 
 		// Redirect with success message and nonce.
+		// Using db_updated instead of updated to avoid triggering WordPress settings notice
 		$redirect_url = add_query_arg(
 			array(
 				'page'          => 'irecommendthis-settings',
 				'tab'           => 'dbtools',
-				'updated'       => '1',
+				'db_updated'    => '1',
 				'updated_nonce' => $updated_nonce,
 			),
 			admin_url( 'options-general.php' )
