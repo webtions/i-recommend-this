@@ -28,13 +28,13 @@ define( 'THEMEIST_IRT_VERSION', '4.0.0' );
 define( 'THEMEIST_IRT_DB_VERSION', '3.0.0' );
 
 // Require includes.
-require_once __DIR__ . '/includes/class-themeist-irecommendthis.php';
+require_once __DIR__ . '/core/class-themeist-irecommendthis.php';
 require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';
 require_once __DIR__ . '/public/class-themeist-irecommendthis-public.php';
 require_once __DIR__ . '/public/class-themeist-most-recommended-posts-widget.php';
-require_once __DIR__ . '/includes/class-themeist-irecommendthis-ajax.php';
-require_once __DIR__ . '/includes/class-themeist-irecommendthis-shortcodes.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/core/class-themeist-irecommendthis-ajax.php';
+require_once __DIR__ . '/core/class-themeist-irecommendthis-shortcodes.php';
+require_once __DIR__ . '/core/functions.php';
 require_once __DIR__ . '/blocks/blocks.php';
 
 // Create instance of plugin class.
