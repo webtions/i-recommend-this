@@ -58,8 +58,9 @@ class Themeist_IRecommendThis_Admin_DB_Tools {
 			wp_die( esc_html__( 'Security check failed. Please try again.', 'i-recommend-this' ) );
 		}
 
-		// Run the update.
-		$result = $this->plugin->update();
+		// Run the update using our DB upgrader.
+		$db_upgrader = $this->plugin->get_db_upgrader();
+		$result = $db_upgrader->update();
 
 		// Create a nonce for the redirect.
 		$updated_nonce = wp_create_nonce( 'irecommendthis_update_success' );
@@ -100,8 +101,9 @@ class Themeist_IRecommendThis_Admin_DB_Tools {
 			wp_die( esc_html__( 'Security check failed. The link you used has expired or is invalid. Please try again with a new link.', 'i-recommend-this' ) );
 		}
 
-		// Run the update.
-		$result = $this->plugin->update();
+		// Run the update using our DB upgrader.
+		$db_upgrader = $this->plugin->get_db_upgrader();
+		$result = $db_upgrader->update();
 
 		// Create a nonce for the redirect.
 		$updated_nonce = wp_create_nonce( 'irecommendthis_update_success' );
@@ -125,22 +127,17 @@ class Themeist_IRecommendThis_Admin_DB_Tools {
 	 * Display database table information.
 	 */
 	public function display_database_info() {
-		global $wpdb;
-		$table_name = $wpdb->prefix . 'irecommendthis_votes';
+		// Use the DB upgrader to get table information
+		$db_upgrader = $this->plugin->get_db_upgrader();
+		$table_exists = $db_upgrader->table_exists();
 
-		// Check if table exists.
-		$table_exists = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT COUNT(1) FROM information_schema.tables WHERE table_schema = %s AND table_name = %s',
-				DB_NAME,
-				$table_name
-			)
-		);
-
-		if ( empty( $table_exists ) ) {
+		if (!$table_exists) {
 			echo '<div class="notice notice-error inline"><p>' . esc_html__( 'The database table does not exist.', 'i-recommend-this' ) . '</p></div>';
 			return;
 		}
+
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'irecommendthis_votes';
 
 		// Get table structure - can't use prepare directly on table name.
 		$table_name_escaped = esc_sql( $table_name );
@@ -163,8 +160,8 @@ class Themeist_IRecommendThis_Admin_DB_Tools {
 			$grouped_indexes[ $index->Key_name ][] = $index->Column_name;
 		}
 
-		// Database version - check new option name first, then fall back to old one
-		$db_version = get_option( 'irecommendthis_db_version', get_option( 'dot_irecommendthis_db_version', 'Unknown' ) );
+		// Database version.
+		$db_version = $db_upgrader->get_db_version();
 
 		echo '<p><strong>' . esc_html__( 'Current Database Version:', 'i-recommend-this' ) . '</strong> ' . esc_html( $db_version ) . '</p>';
 

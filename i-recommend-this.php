@@ -28,6 +28,7 @@ define( 'THEMEIST_IRT_VERSION', '4.0.0' );
 define( 'THEMEIST_IRT_DB_VERSION', '3.0.0' );
 
 // Require includes.
+require_once __DIR__ . '/core/class-themeist-irecommendthis-db-upgrader.php';
 require_once __DIR__ . '/core/class-themeist-irecommendthis.php';
 require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';
 require_once __DIR__ . '/public/class-themeist-irecommendthis-public.php';
