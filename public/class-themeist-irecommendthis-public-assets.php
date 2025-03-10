@@ -76,34 +76,19 @@ class Themeist_IRecommendThis_Public_Assets {
 
 		wp_enqueue_script( 'irecommendthis' );
 
-		// Generate a standard WordPress nonce with the new name.
+		// Create a nonce for secure AJAX requests and localize it.
 		$nonce = wp_create_nonce( 'irecommendthis-nonce' );
 
-		// Localize script with nonce and settings.
+		// Localize script with nonce and settings using new naming
 		wp_localize_script(
 			'irecommendthis',
 			'irecommendthis',
 			array(
-				'nonce'   => $nonce,
-				'ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'options' => wp_json_encode( $options ),
+				'nonce'         => $nonce,
+				'ajaxurl'       => admin_url( 'admin-ajax.php' ),
+				'options'       => wp_json_encode( $options ),
+				'removal_delay' => 250, // Add configurable delay for button state transitions
 			)
 		);
-
-		// For backward compatibility - maintain old JS variable name for one more version.
-		// @deprecated 4.0.0 Use 'irecommendthis' variable instead.
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			// Only add in debug mode for developer awareness.
-			wp_localize_script(
-				'irecommendthis',
-				'dot_irecommendthis',
-				array(
-					'nonce'      => $nonce,
-					'ajaxurl'    => admin_url( 'admin-ajax.php' ),
-					'options'    => wp_json_encode( $options ),
-					'deprecated' => true,
-				)
-			);
-		}
 	}
 }
