@@ -23,31 +23,12 @@ class Themeist_IRecommendThis_Ajax {
 		add_action( 'wp_ajax_irecommendthis', array( $this, 'ajax_callback' ) );
 		add_action( 'wp_ajax_nopriv_irecommendthis', array( $this, 'ajax_callback' ) );
 
-		// Legacy hooks for backward compatibility.
-		add_action( 'wp_ajax_dot-irecommendthis', array( $this, 'legacy_ajax_callback' ) );
-		add_action( 'wp_ajax_nopriv_dot-irecommendthis', array( $this, 'legacy_ajax_callback' ) );
-
 		/**
 		 * Action fired after AJAX hooks are registered.
 		 *
 		 * @since 4.0.0
 		 */
 		do_action( 'irecommendthis_ajax_hooks_registered' );
-	}
-
-	/**
-	 * Legacy AJAX callback - redirects to main callback for backward compatibility.
-	 */
-	public function legacy_ajax_callback() {
-		/**
-		 * Action fired before legacy AJAX request is processed.
-		 *
-		 * @since 4.0.0
-		 * @param array $_POST The POST data.
-		 */
-		do_action( 'irecommendthis_before_legacy_ajax', $_POST );
-
-		$this->ajax_callback();
 	}
 
 	/**
@@ -67,15 +48,21 @@ class Themeist_IRecommendThis_Ajax {
 		/**
 		 * Filter the post ID before processing.
 		 *
-		 * Allows modifying the post ID that will be used for the recommendation.
-		 *
 		 * @since 4.0.0
 		 * @param int $post_id The post ID.
 		 */
 		$post_id = apply_filters( 'irecommendthis_ajax_post_id', $post_id );
 
-		// Check for nonce.
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'irecommendthis-nonce' ) ) {
+		// Check for valid post
+		if ( ! get_post( $post_id ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid post ID' ) );
+			exit;
+		}
+
+		// Check for nonce
+		$nonce_value = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+
+		if ( ! wp_verify_nonce( $nonce_value, 'irecommendthis-nonce' ) ) {
 			/**
 			 * Action fired when nonce verification fails.
 			 *
@@ -83,12 +70,6 @@ class Themeist_IRecommendThis_Ajax {
 			 * @param int $post_id The post ID.
 			 */
 			do_action( 'irecommendthis_ajax_nonce_failure', $post_id );
-
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				// In debug mode, log more detailed error.
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( 'I Recommend This: Nonce verification failed' );
-			}
 
 			// Get plugin settings.
 			$options          = get_option( 'irecommendthis_settings' );
@@ -107,6 +88,12 @@ class Themeist_IRecommendThis_Ajax {
 				)
 			);
 			exit;
+		}
+
+		// Check for unrecommend parameter
+		$unrecommend = false;
+		if ( isset( $_POST['unrecommend'] ) ) {
+			$unrecommend = 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) );
 		}
 
 		/**
