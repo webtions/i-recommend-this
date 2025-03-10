@@ -203,8 +203,7 @@ class Themeist_IRecommendThis_Public_Processor {
 				$cookie_params = array(
 					'expires'  => time() - 3600, // In the past to delete
 					'path'     => '/',
-					'domain'   => defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '',
-					'secure'   => false,
+					'secure'   => self::is_connection_secure(),
 					'httponly' => true,
 					'samesite' => 'Lax',
 				);
@@ -225,7 +224,7 @@ class Themeist_IRecommendThis_Public_Processor {
 						'',
 						$cookie_params['expires'],
 						$cookie_params['path'],
-						$cookie_params['domain'],
+						'',
 						$cookie_params['secure'],
 						$cookie_params['httponly']
 					);
@@ -253,8 +252,7 @@ class Themeist_IRecommendThis_Public_Processor {
 				$cookie_params = array(
 					'expires'  => time() + 31536000,
 					'path'     => '/',
-					'domain'   => defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '',
-					'secure'   => false, //is_ssl()
+					'secure'   => self::is_connection_secure(),
 					'httponly' => true,
 					'samesite' => 'Lax',
 				);
@@ -275,7 +273,7 @@ class Themeist_IRecommendThis_Public_Processor {
 						time(),
 						$cookie_params['expires'],
 						$cookie_params['path'],
-						$cookie_params['domain'],
+						'',
 						$cookie_params['secure'],
 						$cookie_params['httponly']
 					);
@@ -331,6 +329,46 @@ class Themeist_IRecommendThis_Public_Processor {
 			 */
 			return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
 		}//end if
+	}
+
+	/**
+	 * Determine if the current connection is secure.
+	 *
+	 * Checks various server variables to determine if the connection
+	 * is using HTTPS, including behind proxies and load balancers.
+	 *
+	 * @return bool Whether the connection is secure.
+	 */
+	private static function is_connection_secure() {
+		// Standard SSL check
+		if ( is_ssl() ) {
+			return true;
+		}
+
+		// Check common proxy/load balancer headers
+		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === strtolower( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
+			return true;
+		}
+
+		if ( isset( $_SERVER['HTTP_X_FORWARDED_SSL'] ) && ( 'on' === strtolower( $_SERVER['HTTP_X_FORWARDED_SSL'] ) || '1' === $_SERVER['HTTP_X_FORWARDED_SSL'] ) ) {
+			return true;
+		}
+
+		if ( isset( $_SERVER['HTTP_FRONT_END_HTTPS'] ) && ( 'on' === strtolower( $_SERVER['HTTP_FRONT_END_HTTPS'] ) || '1' === $_SERVER['HTTP_FRONT_END_HTTPS'] ) ) {
+			return true;
+		}
+
+		// Cloudflare specific
+		if ( isset( $_SERVER['HTTP_CF_VISITOR'] ) && false !== strpos( $_SERVER['HTTP_CF_VISITOR'], 'https' ) ) {
+			return true;
+		}
+
+		// Site configuration check - this helps when the site is configured for HTTPS but accessed via HTTP
+		if ( defined( 'FORCE_SSL_ADMIN' ) && FORCE_SSL_ADMIN ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
