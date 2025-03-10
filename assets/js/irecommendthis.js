@@ -5,196 +5,236 @@
  * It listens for clicks on elements with the .irecommendthis class and sends
  * an AJAX request to update the recommendation count.
  *
- * @package   IRecommendThis
- * @version   1.0
+ * @package IRecommendThis
+ * @version 4.0.0
  */
 
-jQuery(
-	function ( $ ) {
-		/**
-		 * Cache global AJAX settings and parse options from the localized variable `irecommendthis`.
-		 */
-		var ajaxSettings = ( typeof irecommendthis !== 'undefined' ) ? irecommendthis : null;
-		if ( ! ajaxSettings ) {
-			console.error( 'AJAX settings not found - plugin may not be properly initialized' );
-			return;
-		}
+jQuery(function($) {
+    'use strict';
 
-		var options = {};
-		try {
-			options = JSON.parse( ajaxSettings.options );
-		} catch ( e ) {
-			console.error( 'Error parsing options JSON:', e );
-		}
+    // IRecommendThis main object
+    const IRecommendThis = {
+        /**
+         * Initialize the recommendation system
+         */
+        init: function() {
+            // Get configuration settings
+            this.settings = this.getSettings();
 
-		/**
-		 * Helper function to extract the post ID from various possible sources:
-		 * 1. data-post-id attribute.
-		 * 2. The element's ID (e.g., #irecommendthis-123).
-		 * 3. A class name (e.g., .irecommendthis-post-123).
-		 *
-		 * @param {object} $el The jQuery element from which to extract the post ID.
-		 * @return {string|undefined} The extracted post ID or undefined if not found.
-		 */
-		function getPostId( $el ) {
-			var postId = $el.data( 'post-id' );
+            // Initialize event listeners
+            this.bindEvents();
+        },
 
-			// Fallback: extract ID from element ID.
-			if ( ! postId && $el.attr( 'id' ) ) {
-				postId = $el.attr( 'id' ).replace( 'irecommendthis-', '' );
-			}
+        /**
+         * Get settings from the localized variables
+         */
+        getSettings: function() {
+            // Try to get settings from the new variable name first
+            let settings = (typeof irecommendthis !== 'undefined') ? irecommendthis : null;
 
-			// Fallback: extract ID from class name.
-			if ( ! postId ) {
-				$.each(
-					$el.attr( 'class' ).split( ' ' ),
-					function ( _, className ) {
-						if ( className.indexOf( 'irecommendthis-post-' ) === 0 ) {
-							postId = className.replace( 'irecommendthis-post-', '' );
-							return false;
-						}
-					}
-				);
-			}
+            // Fall back to the legacy variable name if needed
+            if (!settings && typeof dot_irecommendthis !== 'undefined') {
+                settings = dot_irecommendthis;
+                console.warn('Using deprecated dot_irecommendthis variable.');
+            }
 
-			return postId;
-		}
+            if (!settings) {
+                console.error('AJAX settings not found - plugin may not be properly initialized');
+                return {
+                    ajaxurl: ajaxurl || '',
+                    nonce: '',
+                    options: '{}',
+                    removal_delay: 250
+                };
+            }
 
-		/**
-		 * Use event delegation on the document because we don't know where
-		 * the like button might appear.
-		 */
-		$( document ).on(
-			'click',
-			'.irecommendthis',
-			function ( event ) {
-				event.preventDefault();
-				var $link = $( this );
+            // Parse options
+            try {
+                settings.parsedOptions = JSON.parse(settings.options);
+            } catch (e) {
+                console.error('Error parsing options JSON:', e);
+                settings.parsedOptions = {};
+            }
 
-				// Prevent multiple processing if this button is already in process.
-				if ( $link.hasClass( 'processing' ) ) {
-					return false;
-				}
+            return settings;
+        },
 
-				// Determine if this click is "unrecommend" (the button is already active).
-				var unrecommend = $link.hasClass( 'active' );
+        /**
+         * Bind event listeners
+         */
+        bindEvents: function() {
+            // Use event delegation for all recommendation buttons
+            $(document).on('click', '.irecommendthis', this.handleRecommendClick.bind(this));
+        },
 
-				// Attempt to retrieve the post ID via our helper.
-				var id = getPostId( $link );
-				if ( ! id ) {
-					console.error( 'Could not determine post ID for recommendation' );
-					return false;
-				}
+        /**
+         * Handle recommendation button clicks
+         */
+        handleRecommendClick: function(event) {
+            event.preventDefault();
 
-				// Retrieve suffix text from the .irecommendthis-suffix element (if present).
-				var suffix = $link.find( '.irecommendthis-suffix' ).text();
+            const $link = $(event.currentTarget);
 
-				// Add a 'processing' class to prevent duplicate clicks.
-				$link.addClass( 'processing' );
+            // Prevent multiple processing if this button is already in process
+            if ($link.hasClass('processing')) {
+                return false;
+            }
 
-				/**
-				 * Read an optional removal_delay from ajaxSettings (in ms).
-				 * If not provided or invalid, default to 250 ms.
-				 */
-				var removalDelay = parseInt( ajaxSettings.removal_delay, 10 );
-				if ( isNaN( removalDelay ) ) {
-					removalDelay = 250;
-				}
+            // Get post ID
+            const postId = this.getPostId($link);
+            if (!postId) {
+                console.error('Could not determine post ID for recommendation');
+                return false;
+            }
 
-				/**
-				 * Make the AJAX request to WordPress admin-ajax.php.
-				 */
-				$.ajax(
-					{
-						url  : ajaxSettings.ajaxurl,
-						type : 'POST',
-						data : {
-							// Must match the server-side hook.
-							action      : 'irecommendthis',
-							// The post ID.
-							recommend_id: id,
-							// Any suffix text (e.g., "Likes").
-							suffix      : suffix,
-							// True/false for toggling.
-							unrecommend : unrecommend,
-							// Security nonce.
-							nonce       : ajaxSettings.nonce
-						},
-						success: function ( data ) {
-							// Check if the server responded with an error.
-							if ( typeof data === 'object' && data.success === false ) {
-								console.error( 'Error:', data.data ? data.data.message : 'Unknown error' );
-								return;
-							}
+            // Get state information
+            const unrecommend = $link.hasClass('active');
+            const suffix = $link.find('.irecommendthis-suffix').text();
 
-							// Cache a selector for all related buttons with this post ID.
-							var $buttons = $( '.irecommendthis[data-post-id="' + id + '"], #irecommendthis-' + id + ', .irecommendthis-post-' + id );
+            // Process the recommendation
+            this.processRecommendation(postId, unrecommend, suffix, $link);
 
-							// Update each matching button.
-							$buttons.each(
-								function () {
-									var $button = $( this );
+            return false;
+        },
 
-									// Get text state from data attributes (if available)
-									var likeText = $button.data('like');
-									var unlikeText = $button.data('unlike');
+        /**
+         * Extract the post ID from a recommendation link
+         */
+        getPostId: function($el) {
+            // Try data attribute first
+            let postId = $el.data('post-id');
 
-									// Fallback to options if data attributes aren't available
-									if (!likeText) likeText = options.link_title_new || 'Recommend this';
-									if (!unlikeText) unlikeText = options.link_title_active || 'Unrecommend this';
+            // Fall back to ID attribute
+            if (!postId && $el.attr('id')) {
+                postId = $el.attr('id').replace('irecommendthis-', '');
+            }
 
-									// Replace the HTML content with the response data.
-									$button.html( data );
+            // Last resort: check class names
+            if (!postId && $el.attr('class')) {
+                $.each($el.attr('class').split(' '), function(_, className) {
+                    if (className.indexOf('irecommendthis-post-') === 0) {
+                        postId = className.replace('irecommendthis-post-', '');
+                        return false;
+                    }
+                });
+            }
 
-									// Toggle the 'active' state.
-									$button.toggleClass( 'active' );
+            return postId;
+        },
 
-									// Use like/unlike text based on new button state
-									var newState = $button.hasClass('active') ? unlikeText : likeText;
+        /**
+         * Process a recommendation through AJAX
+         */
+        processRecommendation: function(postId, unrecommend, suffix, $link) {
+            // Add a 'processing' class to prevent duplicate clicks
+            $link.addClass('processing');
 
-									// Update both title and aria-label for accessibility
-									$button.attr( 'title', newState );
-									$button.attr( 'aria-label', newState );
+            // Get all buttons for this post for later updating
+            const allButtons = this.getAllButtonsForPost(postId);
 
-									// Check the numeric count, if present.
-									var countText = $button.find( '.irecommendthis-count' ).text().trim();
-									var count     = parseInt( countText, 10 );
+            // Make the AJAX request
+            $.ajax({
+                url: this.settings.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'irecommendthis',
+                    recommend_id: postId,
+                    suffix: suffix,
+                    unrecommend: unrecommend,
+                    nonce: this.settings.nonce
+                },
+                success: (data) => this.handleSuccess(data, postId, unrecommend, allButtons),
+                error: (xhr, status, error) => this.handleError(xhr, status, error, $link),
+                complete: () => this.handleComplete(postId, allButtons)
+            });
+        },
 
-									if ( ! isNaN( count ) ) {
-										// Hide count if zero and user wants to hide zero counts.
-										if ( count === 0 && parseInt( options.hide_zero, 10 ) === 1 ) {
-											$button.find( '.irecommendthis-count' ).hide();
-										} else {
-											$button.find( '.irecommendthis-count' ).show();
-										}
-									}
-								}
-							);
-						},
-						error: function ( xhr, status, error ) {
-							// Log any AJAX errors for debugging.
-							console.error( 'AJAX Error:', status, error );
-							if ( xhr.responseJSON && xhr.responseJSON.data ) {
-								console.error( 'Error details:', xhr.responseJSON.data );
-							}
-						},
-						complete: function () {
-							/**
-							 * Slight delay to avoid UI flicker on very fast responses.
-							 * This is configured by ajaxSettings.removal_delay, defaulting to 250 ms.
-							 */
-							setTimeout(
-								function () {
-									$( '.irecommendthis[data-post-id="' + id + '"], #irecommendthis-' + id + ', .irecommendthis-post-' + id )
-										.removeClass( 'processing' );
-								},
-								removalDelay
-							);
-						}
-					}
-				);
-				return false;
-			}
-		);
-	}
-);
+        /**
+         * Get all recommendation buttons for a specific post
+         */
+        getAllButtonsForPost: function(postId) {
+            return $(`.irecommendthis[data-post-id="${postId}"], #irecommendthis-${postId}, .irecommendthis-post-${postId}`);
+        },
+
+        /**
+         * Handle successful AJAX response
+         */
+        handleSuccess: function(data, postId, unrecommend, $buttons) {
+            // Check if the server responded with an error
+            if (typeof data === 'object' && data.success === false) {
+                console.error('Error:', data.data ? data.data.message : 'Unknown error');
+                return;
+            }
+
+            const options = this.settings.parsedOptions;
+
+            // Get text states from data attributes or settings
+            const defaultLikeText = options.link_title_new || 'Recommend this';
+            const defaultUnlikeText = options.link_title_active || 'Unrecommend this';
+
+            // Update each matching button
+            $buttons.each(function() {
+                const $button = $(this);
+
+                // Get text state from data attributes (if available)
+                const likeText = $button.data('like') || defaultLikeText;
+                const unlikeText = $button.data('unlike') || defaultUnlikeText;
+
+                // Replace the HTML content with the response data
+                $button.html(data);
+
+                // Toggle the 'active' state
+                $button.toggleClass('active');
+
+                // Update both title and aria-label for accessibility
+                const newState = $button.hasClass('active') ? unlikeText : likeText;
+                $button.attr('title', newState);
+                $button.attr('aria-label', newState);
+
+                // Check the numeric count, if present
+                const $count = $button.find('.irecommendthis-count');
+                if ($count.length) {
+                    const countText = $count.text().trim();
+                    const count = parseInt(countText, 10);
+
+                    if (!isNaN(count)) {
+                        // Hide count if zero and user wants to hide zero counts
+                        if (count === 0 && parseInt(options.hide_zero, 10) === 1) {
+                            $count.hide();
+                        } else {
+                            $count.show();
+                        }
+                    }
+                }
+            });
+        },
+
+        /**
+         * Handle AJAX errors
+         */
+        handleError: function(xhr, status, error, $link) {
+            console.error('AJAX Error:', status, error);
+            if (xhr.responseJSON && xhr.responseJSON.data) {
+                console.error('Error details:', xhr.responseJSON.data);
+            }
+            $link.removeClass('processing');
+        },
+
+        /**
+         * Handle AJAX completion
+         */
+        handleComplete: function(postId, $buttons) {
+            const removalDelay = parseInt(this.settings.removal_delay, 10) || 250;
+
+            // Slight delay to avoid UI flicker on very fast responses
+            setTimeout(function() {
+                $buttons.removeClass('processing');
+            }, removalDelay);
+        }
+    };
+
+    // Initialize when DOM is ready
+    $(document).ready(function() {
+        IRecommendThis.init();
+    });
+});
