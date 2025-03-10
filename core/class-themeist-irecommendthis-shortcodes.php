@@ -3,6 +3,7 @@
  * Shortcodes for the I Recommend This plugin.
  *
  * @package IRecommendThis
+ * @subpackage Core
  */
 
 if ( ! defined( 'WPINC' ) ) {
@@ -31,6 +32,13 @@ class Themeist_IRecommendThis_Shortcodes {
 
 		// New shortcode name.
 		add_shortcode( 'irecommendthis_top_posts', array( __CLASS__, 'shortcode_recommended_top_posts' ) );
+
+		/**
+		 * Action fired after shortcodes are registered.
+		 *
+		 * @since 4.0.0
+		 */
+		do_action( 'irecommendthis_shortcodes_registered' );
 	}
 
 	/**
@@ -46,8 +54,17 @@ class Themeist_IRecommendThis_Shortcodes {
 				'use_current_post' => false,
 				'wrapper'          => true,
 			),
-			$atts
+			$atts,
+			'irecommendthis'
 		);
+
+		/**
+		 * Filter the shortcode attributes before processing.
+		 *
+		 * @since 4.0.0
+		 * @param array $atts Shortcode attributes.
+		 */
+		$atts = apply_filters( 'irecommendthis_shortcode_atts', $atts );
 
 		// Convert string 'false' to boolean false
 		if ( is_string( $atts['wrapper'] ) && 'false' === strtolower( $atts['wrapper'] ) ) {
@@ -75,6 +92,16 @@ class Themeist_IRecommendThis_Shortcodes {
 	 */
 	public static function recommend( $id = null, $action = 'get', $wrapper = true ) {
 		global $post;
+
+		/**
+		 * Action fired before recommendation link is generated.
+		 *
+		 * @since 4.0.0
+		 * @param int    $id      Post ID.
+		 * @param string $action  Action: 'get' or 'update'.
+		 * @param bool   $wrapper Whether to wrap in container.
+		 */
+		do_action( 'irecommendthis_before_recommend', $id, $action, $wrapper );
 
 		$post_id = $id ? $id : get_the_ID();
 		$options = get_option( 'irecommendthis_settings' );
@@ -139,10 +166,38 @@ class Themeist_IRecommendThis_Shortcodes {
 		$irt_html .= $output;
 		$irt_html .= '</a>';
 
+		/**
+		 * Filter the recommendation HTML before wrapping.
+		 *
+		 * @since 4.0.0
+		 * @param string $irt_html The HTML for the recommendation link.
+		 * @param int    $post_id  The post ID.
+		 * @param bool   $wrapper  Whether to wrap in container.
+		 */
+		$irt_html = apply_filters( 'irecommendthis_button_html', $irt_html, $post_id, $wrapper );
+
 		// Add wrapper div if requested.
 		if ( $wrapper ) {
-			$irt_html = '<div class="irecommendthis-wrapper">' . $irt_html . '</div>';
+			/**
+			 * Filter the wrapper class name.
+			 *
+			 * @since 4.0.0
+			 * @param string $wrapper_class The wrapper CSS class.
+			 * @param int    $post_id       The post ID.
+			 */
+			$wrapper_class = apply_filters( 'irecommendthis_wrapper_class', 'irecommendthis-wrapper', $post_id );
+			$irt_html = '<div class="' . esc_attr( $wrapper_class ) . '">' . $irt_html . '</div>';
 		}
+
+		/**
+		 * Action fired after recommendation link is generated.
+		 *
+		 * @since 4.0.0
+		 * @param string $irt_html The final HTML.
+		 * @param int    $post_id  The post ID.
+		 * @param string $action   Action: 'get' or 'update'.
+		 */
+		do_action( 'irecommendthis_after_recommend', $irt_html, $post_id, $action );
 
 		return $irt_html;
 	}
@@ -164,8 +219,16 @@ class Themeist_IRecommendThis_Shortcodes {
 				'show_count' => 1,
 			),
 			$atts,
-			'recommended_top_posts'
+			'irecommendthis_top_posts'
 		);
+
+		/**
+		 * Filter the top posts shortcode attributes.
+		 *
+		 * @since 4.0.0
+		 * @param array $atts Shortcode attributes.
+		 */
+		$atts = apply_filters( 'irecommendthis_top_posts_atts', $atts );
 
 		return self::recommended_top_posts_output( $atts );
 	}
@@ -186,6 +249,14 @@ class Themeist_IRecommendThis_Shortcodes {
 		$year       = intval( $atts['year'] );
 		$monthnum   = intval( $atts['monthnum'] );
 		$show_count = intval( $atts['show_count'] );
+
+		/**
+		 * Action fired before querying for top posts.
+		 *
+		 * @since 4.0.0
+		 * @param array $atts The processed shortcode attributes.
+		 */
+		do_action( 'irecommendthis_before_top_posts_query', $atts );
 
 		// Improved query with better joins and explicit column selection.
 		$params = array();
@@ -211,26 +282,114 @@ class Themeist_IRecommendThis_Shortcodes {
 		$sql     .= ' ORDER BY CAST(pm.meta_value AS UNSIGNED) DESC LIMIT %d';
 		$params[] = $number;
 
+		/**
+		 * Filter the SQL query for top posts.
+		 *
+		 * @since 4.0.0
+		 * @param string $sql    The SQL query.
+		 * @param array  $params The query parameters.
+		 * @param array  $atts   The processed shortcode attributes.
+		 */
+		$sql = apply_filters( 'irecommendthis_top_posts_sql', $sql, $params, $atts );
+
 		$query = $wpdb->prepare( $sql, $params ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		$posts = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 
 		$return = '';
 
+		/**
+		 * Action fired before rendering top posts list.
+		 *
+		 * @since 4.0.0
+		 * @param array $posts The query results.
+		 * @param array $atts  The processed shortcode attributes.
+		 */
+		do_action( 'irecommendthis_before_top_posts_output', $posts, $atts );
+
 		foreach ( $posts as $item ) {
 			$post_title = get_the_title( $item->ID );
 			$permalink  = get_permalink( $item->ID );
 			$post_count = intval( $item->meta_value );
 
-			$return .= '<' . esc_html( $container ) . '>';
-			$return .= '<a href="' . esc_url( $permalink ) . '" title="' . esc_attr( $post_title ) . '" rel="nofollow">' . esc_html( $post_title ) . '</a> ';
+			/**
+			 * Filter the opening HTML tag for each top post item.
+			 *
+			 * @since 4.0.0
+			 * @param string $open_tag The opening HTML tag.
+			 * @param string $container The container element.
+			 * @param object $item The current post item.
+			 */
+			$open_tag = apply_filters( 'irecommendthis_top_post_open_tag', '<' . esc_html( $container ) . '>', $container, $item );
+			$return .= $open_tag;
+
+			/**
+			 * Filter the post link HTML.
+			 *
+			 * @since 4.0.0
+			 * @param string $link_html The link HTML.
+			 * @param object $item The current post item.
+			 * @param string $permalink The post permalink.
+			 * @param string $post_title The post title.
+			 */
+			$link_html = apply_filters(
+				'irecommendthis_top_post_link',
+				'<a href="' . esc_url( $permalink ) . '" title="' . esc_attr( $post_title ) . '" rel="nofollow">' . esc_html( $post_title ) . '</a> ',
+				$item,
+				$permalink,
+				$post_title
+			);
+			$return .= $link_html;
 
 			if ( 1 === $show_count ) {
-				$return .= '<span class="votes">' . esc_html( $post_count ) . '</span> ';
+				/**
+				 * Filter the count display HTML.
+				 *
+				 * @since 4.0.0
+				 * @param string $count_html The count HTML.
+				 * @param int    $post_count The post count.
+				 * @param object $item The current post item.
+				 */
+				$count_html = apply_filters(
+					'irecommendthis_top_post_count',
+					'<span class="votes">' . esc_html( $post_count ) . '</span> ',
+					$post_count,
+					$item
+				);
+				$return .= $count_html;
 			}
 
-			$return .= '</' . esc_html( $container ) . '>';
+			/**
+			 * Filter the closing HTML tag for each top post item.
+			 *
+			 * @since 4.0.0
+			 * @param string $close_tag The closing HTML tag.
+			 * @param string $container The container element.
+			 * @param object $item The current post item.
+			 */
+			$close_tag = apply_filters( 'irecommendthis_top_post_close_tag', '</' . esc_html( $container ) . '>', $container, $item );
+			$return .= $close_tag;
 		}
+
+		/**
+		 * Filter the final top posts HTML.
+		 *
+		 * @since 4.0.0
+		 * @param string $return The HTML output.
+		 * @param array  $posts  The query results.
+		 * @param array  $atts   The processed shortcode attributes.
+		 */
+		$return = apply_filters( 'irecommendthis_top_posts_html', $return, $posts, $atts );
+
+		/**
+		 * Action fired after rendering top posts list.
+		 *
+		 * @since 4.0.0
+		 * @param string $return The HTML output.
+		 * @param array  $posts  The query results.
+		 * @param array  $atts   The processed shortcode attributes.
+		 */
+		do_action( 'irecommendthis_after_top_posts_output', $return, $posts, $atts );
 
 		return $return;
 	}

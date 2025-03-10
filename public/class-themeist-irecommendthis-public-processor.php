@@ -38,6 +38,14 @@ class Themeist_IRecommendThis_Public_Processor {
 			return;
 		}
 
+		/**
+		 * Filter the post ID before processing recommendation.
+		 *
+		 * @since 4.0.0
+		 * @param int $post_id The post ID.
+		 */
+		$post_id = apply_filters( 'irecommendthis_process_post_id', $post_id );
+
 		// Sanitize suffix inputs.
 		$text_zero_suffix = sanitize_text_field( $text_zero_suffix );
 		$text_one_suffix  = sanitize_text_field( $text_one_suffix );
@@ -48,6 +56,16 @@ class Themeist_IRecommendThis_Public_Processor {
 		$recommended      = (int) get_post_meta( $post_id, '_recommended', true );
 		$hide_zero        = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
 		$enable_unique_ip = isset( $options['enable_unique_ip'] ) ? (int) $options['enable_unique_ip'] : 0;
+
+		/**
+		 * Filter the current recommendation count before processing.
+		 *
+		 * @since 4.0.0
+		 * @param int    $recommended The current recommendation count.
+		 * @param int    $post_id     The post ID.
+		 * @param string $action      The action being performed ('get' or 'update').
+		 */
+		$recommended = apply_filters( 'irecommendthis_pre_process_count', $recommended, $post_id, $action );
 
 		/**
 		 * Function for getting the suffix based on the recommendation count.
@@ -64,30 +82,49 @@ class Themeist_IRecommendThis_Public_Processor {
 
 		// Handling the 'get' action.
 		if ( 'get' === $action ) {
+			/**
+			 * Action fired before getting the recommendation count.
+			 *
+			 * @since 4.0.0
+			 * @param int $post_id     The post ID.
+			 * @param int $recommended The current recommendation count.
+			 */
+			do_action( 'irecommendthis_before_get_recommendation', $post_id, $recommended );
+
 			// Initialize recommendation count if not set.
 			if ( ! $recommended ) {
 				$recommended = 0;
 				add_post_meta( $post_id, '_recommended', $recommended, true );
 			}
 
-			// Output HTML for the recommendation count.
+			// Output HTML for the recommendation button.
 			$suffix = $get_suffix( $recommended );
 			$output = ( 0 === $recommended && 1 === $hide_zero )
 				? '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
 				: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 
-			return apply_filters( 'irecommendthis_before_count', $output );
+			/**
+			 * Filter the recommendation count HTML output.
+			 *
+			 * @since 4.0.0
+			 * @param string $output      The HTML output.
+			 * @param int    $recommended The recommendation count.
+			 * @param int    $post_id     The post ID.
+			 * @param string $suffix      The suffix text.
+			 */
+			return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
 		}
 
 		// Handling the 'update' action.
 		if ( 'update' === $action ) {
-			// Verify nonce to protect form data.
-			if (
-				! isset( $_POST['nonce'] ) ||
-				! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'irecommendthis-nonce' )
-			) {
-				return;
-			}
+			/**
+			 * Action fired before updating the recommendation count.
+			 *
+			 * @since 4.0.0
+			 * @param int $post_id     The post ID.
+			 * @param int $recommended The current recommendation count.
+			 */
+			do_action( 'irecommendthis_before_update_recommendation', $post_id, $recommended );
 
 			global $wpdb;
 
@@ -109,6 +146,15 @@ class Themeist_IRecommendThis_Public_Processor {
 							$anonymized_ip
 						)
 					);
+
+					/**
+					 * Action fired after deleting an IP record.
+					 *
+					 * @since 4.0.0
+					 * @param int    $post_id       The post ID.
+					 * @param string $anonymized_ip The anonymized IP.
+					 */
+					do_action( 'irecommendthis_ip_record_deleted', $post_id, $anonymized_ip );
 				} else {
 					// Check if user has already voted.
 					$vote_status_by_ip = $wpdb->get_var(
@@ -131,6 +177,15 @@ class Themeist_IRecommendThis_Public_Processor {
 								$anonymized_ip
 							)
 						);
+
+						/**
+						 * Action fired after adding an IP record.
+						 *
+						 * @since 4.0.0
+						 * @param int    $post_id       The post ID.
+						 * @param string $anonymized_ip The anonymized IP.
+						 */
+						do_action( 'irecommendthis_ip_record_added', $post_id, $anonymized_ip );
 					}
 				}//end if
 			}//end if
@@ -149,6 +204,16 @@ class Themeist_IRecommendThis_Public_Processor {
 
 				// Decrement the count.
 				$recommended = max( 0, $recommended - 1 );
+
+				/**
+				 * Action fired after decrementing recommendation count.
+				 *
+				 * @since 4.0.0
+				 * @param int  $post_id     The post ID.
+				 * @param int  $recommended The updated recommendation count.
+				 * @param bool $cookie_exists Whether a cookie existed.
+				 */
+				do_action( 'irecommendthis_count_decremented', $post_id, $recommended, $cookie_exists );
 			} elseif (
 				isset( $_POST['unrecommend'] ) &&
 				'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
@@ -158,13 +223,23 @@ class Themeist_IRecommendThis_Public_Processor {
 
 				// Increment the count.
 				++$recommended;
+
+				/**
+				 * Action fired after incrementing recommendation count.
+				 *
+				 * @since 4.0.0
+				 * @param int  $post_id     The post ID.
+				 * @param int  $recommended The updated recommendation count.
+				 * @param bool $cookie_exists Whether a cookie existed.
+				 */
+				do_action( 'irecommendthis_count_incremented', $post_id, $recommended, $cookie_exists );
 			}//end if
 
 			// Update the recommendation count.
 			update_post_meta( $post_id, '_recommended', $recommended );
 
 			/**
-			 * Fires after a post's recommendation count is updated.
+			 * Action fired after a post's recommendation count is updated.
 			 *
 			 * This action provides a hook point for cache clearing and other post-update actions.
 			 * Useful for integration with caching plugins to refresh content when recommendations change.
@@ -183,7 +258,16 @@ class Themeist_IRecommendThis_Public_Processor {
 				? '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
 				: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 
-			return apply_filters( 'irecommendthis_before_count', $output );
+			/**
+			 * Filter the recommendation count HTML output.
+			 *
+			 * @since 4.0.0
+			 * @param string $output      The HTML output.
+			 * @param int    $recommended The recommendation count.
+			 * @param int    $post_id     The post ID.
+			 * @param string $suffix      The suffix text.
+			 */
+			return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
 		}//end if
 	}
 
@@ -215,6 +299,13 @@ class Themeist_IRecommendThis_Public_Processor {
 		// Create the hash using WordPress hash function with site context.
 		$hashed_ip = wp_hash( $ip . $site_hash, 'auth' );
 
-		return $hashed_ip;
+		/**
+		 * Filter the anonymized IP address.
+		 *
+		 * @since 4.0.0
+		 * @param string $hashed_ip The anonymized IP.
+		 * @param string $ip        The original IP.
+		 */
+		return apply_filters( 'irecommendthis_anonymized_ip', $hashed_ip, $ip );
 	}
 }
