@@ -204,7 +204,7 @@ class Themeist_IRecommendThis_Public_Processor {
 					'expires'  => time() - 3600, // In the past to delete
 					'path'     => '/',
 					'domain'   => defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '',
-					'secure'   => is_ssl(),
+					'secure'   => false,
 					'httponly' => true,
 					'samesite' => 'Lax',
 				);
@@ -254,7 +254,7 @@ class Themeist_IRecommendThis_Public_Processor {
 					'expires'  => time() + 31536000,
 					'path'     => '/',
 					'domain'   => defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '',
-					'secure'   => is_ssl(),
+					'secure'   => false, //is_ssl()
 					'httponly' => true,
 					'samesite' => 'Lax',
 				);
