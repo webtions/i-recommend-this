@@ -199,8 +199,39 @@ class Themeist_IRecommendThis_Public_Processor {
 				isset( $_POST['unrecommend'] ) &&
 				'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
 			) {
-				// Remove cookie for unrecommend action.
-				setcookie( 'irecommendthis_' . $post_id, '', time() - 3600, '/' );
+				// Prepare secure cookie parameters
+				$cookie_params = array(
+					'expires'  => time() - 3600, // In the past to delete
+					'path'     => '/',
+					'domain'   => defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '',
+					'secure'   => is_ssl(),
+					'httponly' => true,
+					'samesite' => 'Lax',
+				);
+
+				/**
+				 * Filter cookie parameters for deletion.
+				 *
+				 * @since 4.0.0
+				 * @param array $cookie_params Cookie parameters.
+				 * @param int   $post_id       The post ID.
+				 */
+				$cookie_params = apply_filters( 'irecommendthis_cookie_delete_params', $cookie_params, $post_id );
+
+				// PHP 7.3+ can use array syntax, but we need to be compatible with older versions
+				if ( PHP_VERSION_ID < 70300 ) {
+					setcookie(
+						'irecommendthis_' . $post_id,
+						'',
+						$cookie_params['expires'],
+						$cookie_params['path'],
+						$cookie_params['domain'],
+						$cookie_params['secure'],
+						$cookie_params['httponly']
+					);
+				} else {
+					setcookie( 'irecommendthis_' . $post_id, '', $cookie_params );
+				}
 
 				// Decrement the count.
 				$recommended = max( 0, $recommended - 1 );
@@ -209,8 +240,8 @@ class Themeist_IRecommendThis_Public_Processor {
 				 * Action fired after decrementing recommendation count.
 				 *
 				 * @since 4.0.0
-				 * @param int  $post_id     The post ID.
-				 * @param int  $recommended The updated recommendation count.
+				 * @param int  $post_id       The post ID.
+				 * @param int  $recommended   The updated recommendation count.
 				 * @param bool $cookie_exists Whether a cookie existed.
 				 */
 				do_action( 'irecommendthis_count_decremented', $post_id, $recommended, $cookie_exists );
@@ -218,8 +249,39 @@ class Themeist_IRecommendThis_Public_Processor {
 				isset( $_POST['unrecommend'] ) &&
 				'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
 			) {
-				// Set cookie for recommend action - set for 1 year.
-				setcookie( 'irecommendthis_' . $post_id, time(), time() + 31536000, '/' );
+				// Prepare secure cookie parameters - set for 1 year
+				$cookie_params = array(
+					'expires'  => time() + 31536000,
+					'path'     => '/',
+					'domain'   => defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '',
+					'secure'   => is_ssl(),
+					'httponly' => true,
+					'samesite' => 'Lax',
+				);
+
+				/**
+				 * Filter cookie parameters for setting.
+				 *
+				 * @since 4.0.0
+				 * @param array $cookie_params Cookie parameters.
+				 * @param int   $post_id       The post ID.
+				 */
+				$cookie_params = apply_filters( 'irecommendthis_cookie_set_params', $cookie_params, $post_id );
+
+				// PHP 7.3+ can use array syntax, but we need to be compatible with older versions
+				if ( PHP_VERSION_ID < 70300 ) {
+					setcookie(
+						'irecommendthis_' . $post_id,
+						time(),
+						$cookie_params['expires'],
+						$cookie_params['path'],
+						$cookie_params['domain'],
+						$cookie_params['secure'],
+						$cookie_params['httponly']
+					);
+				} else {
+					setcookie( 'irecommendthis_' . $post_id, time(), $cookie_params );
+				}
 
 				// Increment the count.
 				++$recommended;
@@ -228,8 +290,8 @@ class Themeist_IRecommendThis_Public_Processor {
 				 * Action fired after incrementing recommendation count.
 				 *
 				 * @since 4.0.0
-				 * @param int  $post_id     The post ID.
-				 * @param int  $recommended The updated recommendation count.
+				 * @param int  $post_id       The post ID.
+				 * @param int  $recommended   The updated recommendation count.
 				 * @param bool $cookie_exists Whether a cookie existed.
 				 */
 				do_action( 'irecommendthis_count_incremented', $post_id, $recommended, $cookie_exists );
