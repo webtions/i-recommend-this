@@ -84,7 +84,7 @@ class Themeist_IRecommendThis_Admin_UI {
 	 * @param string $hook The current admin page.
 	 */
 	public function enqueue_admin_scripts( $hook ) {
-		if ( 'settings_page_irecommendthis_settings' !== $hook ) {
+		if ( 'settings_page_irecommendthis-settings' !== $hook ) {
 			return;
 		}
 
