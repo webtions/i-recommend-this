@@ -35,7 +35,7 @@ class Themeist_IRecommendThis_Public_Processor {
 	) {
 		// Validate post ID.
 		if ( ! is_numeric( $post_id ) ) {
-			return;
+			return '';
 		}
 
 		/**
@@ -51,11 +51,9 @@ class Themeist_IRecommendThis_Public_Processor {
 		$text_one_suffix  = sanitize_text_field( $text_one_suffix );
 		$text_more_suffix = sanitize_text_field( $text_more_suffix );
 
-		// Fetch options and recommendation count.
-		$options          = get_option( 'irecommendthis_settings' );
-		$recommended      = (int) get_post_meta( $post_id, '_recommended', true );
-		$hide_zero        = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
-		$enable_unique_ip = isset( $options['enable_unique_ip'] ) ? (int) $options['enable_unique_ip'] : 0;
+		// Get recommendation settings and count.
+		$settings    = self::get_recommendation_settings( $post_id );
+		$recommended = $settings['recommended'];
 
 		/**
 		 * Filter the current recommendation count before processing.
@@ -67,268 +65,300 @@ class Themeist_IRecommendThis_Public_Processor {
 		 */
 		$recommended = apply_filters( 'irecommendthis_pre_process_count', $recommended, $post_id, $action );
 
-		/**
-		 * Function for getting the suffix based on the recommendation count.
-		 */
-		$get_suffix = function ( $count ) use ( $text_zero_suffix, $text_one_suffix, $text_more_suffix ) {
-			if ( 0 === $count ) {
-				return $text_zero_suffix;
-			} elseif ( 1 === $count ) {
-				return $text_one_suffix;
-			} else {
-				return $text_more_suffix;
-			}
-		};
-
-		// Handling the 'get' action.
 		if ( 'get' === $action ) {
-			/**
-			 * Action fired before getting the recommendation count.
-			 *
-			 * @since 4.0.0
-			 * @param int $post_id     The post ID.
-			 * @param int $recommended The current recommendation count.
-			 */
-			do_action( 'irecommendthis_before_get_recommendation', $post_id, $recommended );
-
-			// Initialize recommendation count if not set.
-			if ( ! $recommended ) {
-				$recommended = 0;
-				add_post_meta( $post_id, '_recommended', $recommended, true );
-			}
-
-			// Output HTML for the recommendation button.
-			$suffix = $get_suffix( $recommended );
-			$output = ( 0 === $recommended && 1 === $hide_zero )
-				? '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
-				: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
-
-			/**
-			 * Filter the recommendation count HTML output.
-			 *
-			 * @since 4.0.0
-			 * @param string $output      The HTML output.
-			 * @param int    $recommended The recommendation count.
-			 * @param int    $post_id     The post ID.
-			 * @param string $suffix      The suffix text.
-			 */
-			return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
+			return self::get_recommendation_count( $post_id, $recommended, $settings, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
+		} elseif ( 'update' === $action ) {
+			return self::update_recommendation_count( $post_id, $recommended, $settings, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
 		}
 
-		// Handling the 'update' action.
-		if ( 'update' === $action ) {
-			/**
-			 * Action fired before updating the recommendation count.
-			 *
-			 * @since 4.0.0
-			 * @param int $post_id     The post ID.
-			 * @param int $recommended The current recommendation count.
-			 */
-			do_action( 'irecommendthis_before_update_recommendation', $post_id, $recommended );
+		return '';
+	}
 
-			global $wpdb;
+	/**
+	 * Get recommendation settings for a post.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return array Settings array.
+	 */
+	private static function get_recommendation_settings( $post_id ) {
+		// Fetch options and recommendation count.
+		$options     = get_option( 'irecommendthis_settings' );
+		$recommended = (int) get_post_meta( $post_id, '_recommended', true );
+		$hide_zero   = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
+		$enable_unique_ip = isset( $options['enable_unique_ip'] ) ? (int) $options['enable_unique_ip'] : 0;
 
-			// Process unique IP address checking if enabled.
-			if ( 0 !== $enable_unique_ip ) {
-				$ip            = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-				$anonymized_ip = self::anonymize_ip( $ip );
+		return [
+			'options'          => $options,
+			'recommended'      => $recommended,
+			'hide_zero'        => $hide_zero,
+			'enable_unique_ip' => $enable_unique_ip
+		];
+	}
 
-				if (
-					isset( $_POST['unrecommend'] ) &&
-					'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
-				) {
-					// Delete the vote record for this IP and post.
-					$wpdb->query(
-						$wpdb->prepare(
-							"DELETE FROM {$wpdb->prefix}irecommendthis_votes
-							WHERE post_id = %d AND ip = %s",
-							$post_id,
-							$anonymized_ip
-						)
-					);
+	/**
+	 * Get the suffix for a recommendation count.
+	 *
+	 * @param int    $count             Recommendation count.
+	 * @param string $text_zero_suffix  Text for zero suffix.
+	 * @param string $text_one_suffix   Text for one suffix.
+	 * @param string $text_more_suffix  Text for more suffix.
+	 * @return string Suffix text.
+	 */
+	private static function get_suffix( $count, $text_zero_suffix, $text_one_suffix, $text_more_suffix ) {
+		if ( 0 === $count ) {
+			return $text_zero_suffix;
+		} elseif ( 1 === $count ) {
+			return $text_one_suffix;
+		} else {
+			return $text_more_suffix;
+		}
+	}
 
-					/**
-					 * Action fired after deleting an IP record.
-					 *
-					 * @since 4.0.0
-					 * @param int    $post_id       The post ID.
-					 * @param string $anonymized_ip The anonymized IP.
-					 */
-					do_action( 'irecommendthis_ip_record_deleted', $post_id, $anonymized_ip );
-				} else {
-					// Check if user has already voted.
-					$vote_status_by_ip = $wpdb->get_var(
-						$wpdb->prepare(
-							"SELECT COUNT(*)
-							FROM {$wpdb->prefix}irecommendthis_votes
-							WHERE post_id = %d AND ip = %s",
-							$post_id,
-							$anonymized_ip
-						)
-					);
+	/**
+	 * Get the HTML output for a recommendation count.
+	 *
+	 * @param int    $post_id           Post ID.
+	 * @param int    $recommended       Recommendation count.
+	 * @param array  $settings          Settings array.
+	 * @param string $text_zero_suffix  Text for zero suffix.
+	 * @param string $text_one_suffix   Text for one suffix.
+	 * @param string $text_more_suffix  Text for more suffix.
+	 * @return string HTML output.
+	 */
+	private static function get_recommendation_count( $post_id, $recommended, $settings, $text_zero_suffix, $text_one_suffix, $text_more_suffix ) {
+		$hide_zero = $settings['hide_zero'];
 
-					// Only insert if no vote exists for this IP and post.
-					if ( empty( $vote_status_by_ip ) || 0 === $vote_status_by_ip ) {
-						$wpdb->query(
-							$wpdb->prepare(
-								"INSERT INTO {$wpdb->prefix}irecommendthis_votes
-								VALUES ('', NOW(), %d, %s )",
-								$post_id,
-								$anonymized_ip
-							)
-						);
+		/**
+		 * Action fired before getting the recommendation count.
+		 *
+		 * @since 4.0.0
+		 * @param int $post_id     The post ID.
+		 * @param int $recommended The current recommendation count.
+		 */
+		do_action( 'irecommendthis_before_get_recommendation', $post_id, $recommended );
 
-						/**
-						 * Action fired after adding an IP record.
-						 *
-						 * @since 4.0.0
-						 * @param int    $post_id       The post ID.
-						 * @param string $anonymized_ip The anonymized IP.
-						 */
-						do_action( 'irecommendthis_ip_record_added', $post_id, $anonymized_ip );
-					}
-				}//end if
-			}//end if
+		// Initialize recommendation count if not set.
+		if ( ! $recommended ) {
+			$recommended = 0;
+			add_post_meta( $post_id, '_recommended', $recommended, true );
+		}
 
-			// Check for cookie.
-			$cookie_exists = isset( $_COOKIE[ 'irecommendthis_' . $post_id ] );
+		// Get the appropriate suffix.
+		$suffix = self::get_suffix( $recommended, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
 
-			// Handle the case where the user is un-recommending.
-			if (
-				$cookie_exists &&
-				isset( $_POST['unrecommend'] ) &&
-				'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
-			) {
-				// Prepare secure cookie parameters
-				$cookie_params = array(
-					'expires'  => time() - 3600, // In the past to delete
-					'path'     => '/',
-					'secure'   => self::is_connection_secure(),
-					'httponly' => true,
-					'samesite' => 'Lax',
-				);
+		// Create output HTML.
+		$output = self::generate_count_html( $recommended, $suffix, $hide_zero );
 
-				/**
-				 * Filter cookie parameters for deletion.
-				 *
-				 * @since 4.0.0
-				 * @param array $cookie_params Cookie parameters.
-				 * @param int   $post_id       The post ID.
-				 */
-				$cookie_params = apply_filters( 'irecommendthis_cookie_delete_params', $cookie_params, $post_id );
+		/**
+		 * Filter the recommendation count HTML output.
+		 *
+		 * @since 4.0.0
+		 * @param string $output      The HTML output.
+		 * @param int    $recommended The recommendation count.
+		 * @param int    $post_id     The post ID.
+		 * @param string $suffix      The suffix text.
+		 */
+		return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
+	}
 
-				// PHP 7.3+ can use array syntax, but we need to be compatible with older versions
-				if ( PHP_VERSION_ID < 70300 ) {
-					setcookie(
-						'irecommendthis_' . $post_id,
-						'',
-						$cookie_params['expires'],
-						$cookie_params['path'],
-						'',
-						$cookie_params['secure'],
-						$cookie_params['httponly']
-					);
-				} else {
-					setcookie( 'irecommendthis_' . $post_id, '', $cookie_params );
-				}
+	/**
+	 * Update the recommendation count for a post.
+	 *
+	 * @param int    $post_id           Post ID.
+	 * @param int    $recommended       Recommendation count.
+	 * @param array  $settings          Settings array.
+	 * @param string $text_zero_suffix  Text for zero suffix.
+	 * @param string $text_one_suffix   Text for one suffix.
+	 * @param string $text_more_suffix  Text for more suffix.
+	 * @return string HTML output.
+	 */
+	private static function update_recommendation_count( $post_id, $recommended, $settings, $text_zero_suffix, $text_one_suffix, $text_more_suffix ) {
+		$hide_zero        = $settings['hide_zero'];
+		$enable_unique_ip = $settings['enable_unique_ip'];
 
-				// Decrement the count.
-				$recommended = max( 0, $recommended - 1 );
+		/**
+		 * Action fired before updating the recommendation count.
+		 *
+		 * @since 4.0.0
+		 * @param int $post_id     The post ID.
+		 * @param int $recommended The current recommendation count.
+		 */
+		do_action( 'irecommendthis_before_update_recommendation', $post_id, $recommended );
 
-				/**
-				 * Action fired after decrementing recommendation count.
-				 *
-				 * @since 4.0.0
-				 * @param int  $post_id       The post ID.
-				 * @param int  $recommended   The updated recommendation count.
-				 * @param bool $cookie_exists Whether a cookie existed.
-				 */
-				do_action( 'irecommendthis_count_decremented', $post_id, $recommended, $cookie_exists );
-			} elseif (
-				isset( $_POST['unrecommend'] ) &&
-				'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
-			) {
-				// Prepare secure cookie parameters - set for 1 year
-				$cookie_params = array(
-					'expires'  => time() + 31536000,
-					'path'     => '/',
-					'secure'   => self::is_connection_secure(),
-					'httponly' => true,
-					'samesite' => 'Lax',
-				);
+		// Process IP-based tracking if enabled.
+		if ( 0 !== $enable_unique_ip ) {
+			self::process_ip_based_recommendation( $post_id );
+		}
 
-				/**
-				 * Filter cookie parameters for setting.
-				 *
-				 * @since 4.0.0
-				 * @param array $cookie_params Cookie parameters.
-				 * @param int   $post_id       The post ID.
-				 */
-				$cookie_params = apply_filters( 'irecommendthis_cookie_set_params', $cookie_params, $post_id );
+		// Process cookie-based recommendation and get updated count.
+		$recommended = self::process_cookie_based_recommendation( $post_id, $recommended );
 
-				// PHP 7.3+ can use array syntax, but we need to be compatible with older versions
-				if ( PHP_VERSION_ID < 70300 ) {
-					setcookie(
-						'irecommendthis_' . $post_id,
-						time(),
-						$cookie_params['expires'],
-						$cookie_params['path'],
-						'',
-						$cookie_params['secure'],
-						$cookie_params['httponly']
-					);
-				} else {
-					setcookie( 'irecommendthis_' . $post_id, time(), $cookie_params );
-				}
+		// Update the recommendation count.
+		update_post_meta( $post_id, '_recommended', $recommended );
 
-				// Increment the count.
-				++$recommended;
+		/**
+		 * Action fired after a post's recommendation count is updated.
+		 *
+		 * This action provides a hook point for cache clearing and other post-update actions.
+		 * Useful for integration with caching plugins to refresh content when recommendations change.
+		 *
+		 * @since 4.0.0
+		 *
+		 * @param int    $post_id     The ID of the post that was recommended.
+		 * @param int    $recommended The updated recommendation count.
+		 * @param string $action      The action performed: 'get' or 'update'.
+		 */
+		do_action( 'irecommendthis_after_process_recommendation', $post_id, $recommended, 'update' );
 
-				/**
-				 * Action fired after incrementing recommendation count.
-				 *
-				 * @since 4.0.0
-				 * @param int  $post_id       The post ID.
-				 * @param int  $recommended   The updated recommendation count.
-				 * @param bool $cookie_exists Whether a cookie existed.
-				 */
-				do_action( 'irecommendthis_count_incremented', $post_id, $recommended, $cookie_exists );
-			}//end if
+		// Get the appropriate suffix.
+		$suffix = self::get_suffix( $recommended, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
 
-			// Update the recommendation count.
-			update_post_meta( $post_id, '_recommended', $recommended );
+		// Create output HTML.
+		$output = self::generate_count_html( $recommended, $suffix, $hide_zero );
+
+		/**
+		 * Filter the recommendation count HTML output.
+		 *
+		 * @since 4.0.0
+		 * @param string $output      The HTML output.
+		 * @param int    $recommended The recommendation count.
+		 * @param int    $post_id     The post ID.
+		 * @param string $suffix      The suffix text.
+		 */
+		return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
+	}
+
+	/**
+	 * Process IP-based recommendation.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	private static function process_ip_based_recommendation( $post_id ) {
+		global $wpdb;
+
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$anonymized_ip = self::anonymize_ip( $ip );
+
+		// Check for unrecommend action.
+		if ( isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$wpdb->prefix}irecommendthis_votes
+					WHERE post_id = %d AND ip = %s",
+					$post_id,
+					$anonymized_ip
+				)
+			);
 
 			/**
-			 * Action fired after a post's recommendation count is updated.
-			 *
-			 * This action provides a hook point for cache clearing and other post-update actions.
-			 * Useful for integration with caching plugins to refresh content when recommendations change.
+			 * Action fired after deleting an IP record.
 			 *
 			 * @since 4.0.0
-			 *
-			 * @param int    $post_id     The ID of the post that was recommended.
-			 * @param int    $recommended The updated recommendation count.
-			 * @param string $action      The action performed: 'get' or 'update'.
+			 * @param int    $post_id       The post ID.
+			 * @param string $anonymized_ip The anonymized IP.
 			 */
-			do_action( 'irecommendthis_after_process_recommendation', $post_id, $recommended, $action );
+			do_action( 'irecommendthis_ip_record_deleted', $post_id, $anonymized_ip );
+			return;
+		}
 
-			// Output HTML for the recommendation button.
-			$suffix = $get_suffix( $recommended );
-			$output = ( 0 === $recommended && 1 === $hide_zero )
-				? '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>'
-				: '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
+		$vote_status_by_ip = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*)
+				FROM {$wpdb->prefix}irecommendthis_votes
+				WHERE post_id = %d AND ip = %s",
+				$post_id,
+				$anonymized_ip
+			)
+		);
+
+		// Insert only if no vote exists.
+		if ( empty( $vote_status_by_ip ) || 0 === (int) $vote_status_by_ip ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->prefix}irecommendthis_votes
+					VALUES ('', NOW(), %d, %s )",
+					$post_id,
+					$anonymized_ip
+				)
+			);
 
 			/**
-			 * Filter the recommendation count HTML output.
+			 * Action fired after adding an IP record.
 			 *
 			 * @since 4.0.0
-			 * @param string $output      The HTML output.
-			 * @param int    $recommended The recommendation count.
-			 * @param int    $post_id     The post ID.
-			 * @param string $suffix      The suffix text.
+			 * @param int    $post_id       The post ID.
+			 * @param string $anonymized_ip The anonymized IP.
 			 */
-			return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
-		}//end if
+			do_action( 'irecommendthis_ip_record_added', $post_id, $anonymized_ip );
+		}
+	}
+
+	/**
+	 * Process cookie-based recommendation.
+	 *
+	 * @param int $post_id     Post ID.
+	 * @param int $recommended Current recommendation count.
+	 * @return int Updated recommendation count.
+	 */
+	private static function process_cookie_based_recommendation($post_id, $recommended) {
+	    $cookie_name = 'irecommendthis_' . $post_id;
+	    $cookie_exists = isset($_COOKIE[$cookie_name]);
+	    $is_unrecommend = isset($_POST['unrecommend']) && 'true' === sanitize_text_field(wp_unslash($_POST['unrecommend']));
+	    $is_recommend = isset($_POST['unrecommend']) && 'false' === sanitize_text_field(wp_unslash($_POST['unrecommend']));
+
+	    // Case 1: User is unliking a post they previously liked
+	    if ($cookie_exists && $is_unrecommend) {
+	        // Delete the cookie (set its expiration to the past)
+	        setcookie($cookie_name, '', time() - 3600, '/');
+
+	        // Only decrement if cookie existed
+	        $recommended = max(0, $recommended - 1);
+
+	        do_action('irecommendthis_count_decremented', $post_id, $recommended, $cookie_exists);
+	    }
+	    // Case 2: User is liking a post they haven't liked before
+	    elseif ($is_recommend && !$cookie_exists) {
+	        // Set cookie for 1 year
+	        setcookie($cookie_name, (string)time(), time() + 31536000, '/');
+
+	        // Increment the count
+	        ++$recommended;
+
+	        do_action('irecommendthis_count_incremented', $post_id, $recommended, $cookie_exists);
+	    }
+	    // Case 3: User clicked but cookie logic isn't aligned with expected state
+	    // This can happen if cookies were cleared on client side but DB still tracks like
+	    elseif (($is_unrecommend && !$cookie_exists) || ($is_recommend && $cookie_exists)) {
+	        // In this case, we don't change the count but sync the cookie state with the requested action
+
+	        if ($is_unrecommend) {
+	            // User thinks they liked it but no cookie exists - don't change count
+	            // This happens when users clear cookies but the button still shows as active
+	            // We don't need to do anything - next click will like it again
+	        } else {
+	            // User is trying to like but the cookie already exists
+	            // This can happen when cookie wasn't properly cleared in a previous unlike
+	            // Set cookie again to ensure state consistency
+	            setcookie($cookie_name, (string)time(), time() + 31536000, '/');
+	        }
+	    }
+
+	    return $recommended;
+	}
+
+	/**
+	 * Generate HTML for the recommendation count.
+	 *
+	 * @param int    $recommended Count of recommendations.
+	 * @param string $suffix      Suffix text.
+	 * @param int    $hide_zero   Whether to hide zero count.
+	 * @return string HTML output.
+	 */
+	private static function generate_count_html( $recommended, $suffix, $hide_zero ) {
+		if ( 0 === $recommended && 1 === $hide_zero ) {
+			return '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
+		}
+		return '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 	}
 
 	/**
@@ -340,35 +370,35 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @return bool Whether the connection is secure.
 	 */
 	private static function is_connection_secure() {
-		// Standard SSL check
-		if ( is_ssl() ) {
-			return true;
-		}
+	    // Standard SSL check
+	    if (is_ssl()) {
+	        return true;
+	    }
 
-		// Check common proxy/load balancer headers
-		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === strtolower( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
-			return true;
-		}
+	    // Check common proxy/load balancer headers
+	    if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 'https' === strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+	        return true;
+	    }
 
-		if ( isset( $_SERVER['HTTP_X_FORWARDED_SSL'] ) && ( 'on' === strtolower( $_SERVER['HTTP_X_FORWARDED_SSL'] ) || '1' === $_SERVER['HTTP_X_FORWARDED_SSL'] ) ) {
-			return true;
-		}
+	    if (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && ('on' === strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) || '1' === $_SERVER['HTTP_X_FORWARDED_SSL'])) {
+	        return true;
+	    }
 
-		if ( isset( $_SERVER['HTTP_FRONT_END_HTTPS'] ) && ( 'on' === strtolower( $_SERVER['HTTP_FRONT_END_HTTPS'] ) || '1' === $_SERVER['HTTP_FRONT_END_HTTPS'] ) ) {
-			return true;
-		}
+	    if (isset($_SERVER['HTTP_FRONT_END_HTTPS']) && ('on' === strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) || '1' === $_SERVER['HTTP_FRONT_END_HTTPS'])) {
+	        return true;
+	    }
 
-		// Cloudflare specific
-		if ( isset( $_SERVER['HTTP_CF_VISITOR'] ) && false !== strpos( $_SERVER['HTTP_CF_VISITOR'], 'https' ) ) {
-			return true;
-		}
+	    // Cloudflare specific
+	    if (isset($_SERVER['HTTP_CF_VISITOR']) && false !== strpos($_SERVER['HTTP_CF_VISITOR'], 'https')) {
+	        return true;
+	    }
 
-		// Site configuration check - this helps when the site is configured for HTTPS but accessed via HTTP
-		if ( defined( 'FORCE_SSL_ADMIN' ) && FORCE_SSL_ADMIN ) {
-			return true;
-		}
+	    // Site configuration check - this helps when the site is configured for HTTPS but accessed via HTTP
+	    if (defined('FORCE_SSL_ADMIN') && FORCE_SSL_ADMIN) {
+	        return true;
+	    }
 
-		return false;
+	    return false;
 	}
 
 	/**
@@ -385,20 +415,12 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @return string The anonymized (hashed) IP.
 	 */
 	public static function anonymize_ip( $ip ) {
-		// Empty IPs should return a consistent hash.
 		if ( empty( $ip ) ) {
 			$ip = 'unknown';
 		}
-
-		// Use WordPress salt for authentication.
 		$auth_salt = wp_salt( 'auth' );
-
-		// Use site-specific hash for additional entropy.
 		$site_hash = defined( 'COOKIEHASH' ) ? COOKIEHASH : md5( site_url() );
-
-		// Create the hash using WordPress hash function with site context.
 		$hashed_ip = wp_hash( $ip . $site_hash, 'auth' );
-
 		/**
 		 * Filter the anonymized IP address.
 		 *

@@ -126,7 +126,7 @@ jQuery(function($) {
 			// Get all buttons for this post for later updating
 			const allButtons = this.getAllButtonsForPost(postId);
 
-			// Make the AJAX request
+			// Make a single AJAX request with simpler approach
 			$.ajax({
 				url: this.settings.ajaxurl,
 				type: 'POST',
@@ -137,9 +137,19 @@ jQuery(function($) {
 					unrecommend: unrecommend,
 					nonce: this.settings.nonce
 				},
-				success: (data) => this.handleSuccess(data, postId, unrecommend, allButtons),
-				error: (xhr, status, error) => this.handleError(xhr, status, error, $link),
-				complete: () => this.handleComplete(postId, allButtons)
+				success: (data) => {
+					// Handle the response
+					this.handleSuccess(data, postId, unrecommend, allButtons);
+				},
+				error: (xhr, status, error) => {
+					this.handleError(xhr, status, error, $link);
+				},
+				complete: () => {
+					// Clean up processing state
+					setTimeout(() => {
+						allButtons.removeClass('processing');
+					}, this.settings.removal_delay || 250);
+				}
 			});
 		},
 
@@ -212,18 +222,6 @@ jQuery(function($) {
 				console.error('Error details:', xhr.responseJSON.data);
 			}
 			$link.removeClass('processing');
-		},
-
-		/**
-		 * Handle AJAX completion
-		 */
-		handleComplete: function(postId, $buttons) {
-			const removalDelay = parseInt(this.settings.removal_delay, 10) || 250;
-
-			// Slight delay to avoid UI flicker on very fast responses
-			setTimeout(function() {
-				$buttons.removeClass('processing');
-			}, removalDelay);
 		}
 	};
 
