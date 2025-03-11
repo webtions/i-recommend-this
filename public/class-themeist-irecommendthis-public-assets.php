@@ -53,7 +53,7 @@ class Themeist_IRecommendThis_Public_Assets {
 		if ( 0 === $disable_css ) {
 			$css_file = ( 0 === $recommend_style ) ? 'irecommendthis.css' : 'irecommendthis-heart.css';
 			$css_path = plugin_dir_path( $this->plugin_file ) . 'assets/css/' . $css_file;
-			$css_url = plugins_url( 'assets/css/' . $css_file, $this->plugin_file );
+			$css_url  = plugins_url( 'assets/css/' . $css_file, $this->plugin_file );
 
 			if ( file_exists( $css_path ) ) {
 				wp_enqueue_style( 'irecommendthis', $css_url, array(), filemtime( $css_path ) );
@@ -63,7 +63,7 @@ class Themeist_IRecommendThis_Public_Assets {
 		}
 
 		// Register and enqueue the main JavaScript file.
-		$js_url = plugins_url( 'assets/js/irecommendthis.js', $this->plugin_file );
+		$js_url  = plugins_url( 'assets/js/irecommendthis.js', $this->plugin_file );
 		$js_path = plugin_dir_path( $this->plugin_file ) . 'assets/js/irecommendthis.js';
 
 		wp_register_script(
@@ -79,7 +79,7 @@ class Themeist_IRecommendThis_Public_Assets {
 		// Create a nonce for secure AJAX requests and localize it.
 		$nonce = wp_create_nonce( 'irecommendthis-nonce' );
 
-		// Localize script with nonce and settings using new naming
+		// Localize script with nonce and settings using new naming.
 		wp_localize_script(
 			'irecommendthis',
 			'irecommendthis',
@@ -87,7 +87,8 @@ class Themeist_IRecommendThis_Public_Assets {
 				'nonce'         => $nonce,
 				'ajaxurl'       => admin_url( 'admin-ajax.php' ),
 				'options'       => wp_json_encode( $options ),
-				'removal_delay' => 250, // Add configurable delay for button state transitions
+				'removal_delay' => 250,
+			// Add configurable delay for button state transitions.
 			)
 		);
 	}

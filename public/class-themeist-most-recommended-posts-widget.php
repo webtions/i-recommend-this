@@ -327,7 +327,7 @@ class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 			 * @param object $item The current post item.
 			 */
 			do_action( 'irecommendthis_after_widget_item', $item );
-		}
+		}//end foreach
 
 		echo '</' . esc_attr( $list_tag ) . '>';
 

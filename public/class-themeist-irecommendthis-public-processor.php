@@ -82,17 +82,17 @@ class Themeist_IRecommendThis_Public_Processor {
 	 */
 	private static function get_recommendation_settings( $post_id ) {
 		// Fetch options and recommendation count.
-		$options     = get_option( 'irecommendthis_settings' );
-		$recommended = (int) get_post_meta( $post_id, '_recommended', true );
-		$hide_zero   = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
+		$options          = get_option( 'irecommendthis_settings' );
+		$recommended      = (int) get_post_meta( $post_id, '_recommended', true );
+		$hide_zero        = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
 		$enable_unique_ip = isset( $options['enable_unique_ip'] ) ? (int) $options['enable_unique_ip'] : 0;
 
-		return [
+		return array(
 			'options'          => $options,
 			'recommended'      => $recommended,
 			'hide_zero'        => $hide_zero,
-			'enable_unique_ip' => $enable_unique_ip
-		];
+			'enable_unique_ip' => $enable_unique_ip,
+		);
 	}
 
 	/**
@@ -236,11 +236,14 @@ class Themeist_IRecommendThis_Public_Processor {
 	private static function process_ip_based_recommendation( $post_id ) {
 		global $wpdb;
 
-		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$ip            = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$anonymized_ip = self::anonymize_ip( $ip );
 
-		// Check for unrecommend action.
-		if ( isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
+		// Check for unrecommend action with nonce verification.
+		if ( isset( $_POST['unrecommend'] ) && isset( $_POST['security'] )
+			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'irecommendthis-nonce' )
+			&& 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
+		) {
 			$wpdb->query(
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}irecommendthis_votes
@@ -300,50 +303,48 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @param int $recommended Current recommendation count.
 	 * @return int Updated recommendation count.
 	 */
-	private static function process_cookie_based_recommendation($post_id, $recommended) {
-	    $cookie_name = 'irecommendthis_' . $post_id;
-	    $cookie_exists = isset($_COOKIE[$cookie_name]);
-	    $is_unrecommend = isset($_POST['unrecommend']) && 'true' === sanitize_text_field(wp_unslash($_POST['unrecommend']));
-	    $is_recommend = isset($_POST['unrecommend']) && 'false' === sanitize_text_field(wp_unslash($_POST['unrecommend']));
+	private static function process_cookie_based_recommendation( $post_id, $recommended ) {
+		// Verify nonce for security.
+		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'irecommendthis-nonce' ) ) {
+			return $recommended;
+		}
 
-	    // Case 1: User is unliking a post they previously liked
-	    if ($cookie_exists && $is_unrecommend) {
-	        // Delete the cookie (set its expiration to the past)
-	        setcookie($cookie_name, '', time() - 3600, '/');
+		$cookie_name   = 'irecommendthis_' . $post_id;
+		$cookie_exists = isset( $_COOKIE[ $cookie_name ] );
 
-	        // Only decrement if cookie existed
-	        $recommended = max(0, $recommended - 1);
+		// Process unrecommend action.
+		if ( isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
+		) {
+			// Case 1: User is unliking a post they previously liked.
+			if ( $cookie_exists ) {
+				// Delete the cookie (set its expiration to the past).
+				setcookie( $cookie_name, '', time() - 3600, '/' );
 
-	        do_action('irecommendthis_count_decremented', $post_id, $recommended, $cookie_exists);
-	    }
-	    // Case 2: User is liking a post they haven't liked before
-	    elseif ($is_recommend && !$cookie_exists) {
-	        // Set cookie for 1 year
-	        setcookie($cookie_name, (string)time(), time() + 31536000, '/');
+				// Only decrement if cookie existed.
+				$recommended = max( 0, $recommended - 1 );
 
-	        // Increment the count
-	        ++$recommended;
+				do_action( 'irecommendthis_count_decremented', $post_id, $recommended, $cookie_exists );
+			}
+		} elseif ( isset( $_POST['unrecommend'] ) && 'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
+			// end if
+			// Case 2: User is liking a post they haven't liked before.
+			if ( ! $cookie_exists ) {
+				// Set cookie for 1 year.
+				setcookie( $cookie_name, (string) time(), time() + 31536000, '/' );
 
-	        do_action('irecommendthis_count_incremented', $post_id, $recommended, $cookie_exists);
-	    }
-	    // Case 3: User clicked but cookie logic isn't aligned with expected state
-	    // This can happen if cookies were cleared on client side but DB still tracks like
-	    elseif (($is_unrecommend && !$cookie_exists) || ($is_recommend && $cookie_exists)) {
-	        // In this case, we don't change the count but sync the cookie state with the requested action
+				// Increment the count.
+				++$recommended;
 
-	        if ($is_unrecommend) {
-	            // User thinks they liked it but no cookie exists - don't change count
-	            // This happens when users clear cookies but the button still shows as active
-	            // We don't need to do anything - next click will like it again
-	        } else {
-	            // User is trying to like but the cookie already exists
-	            // This can happen when cookie wasn't properly cleared in a previous unlike
-	            // Set cookie again to ensure state consistency
-	            setcookie($cookie_name, (string)time(), time() + 31536000, '/');
-	        }
-	    }
+				do_action( 'irecommendthis_count_incremented', $post_id, $recommended, $cookie_exists );
+			} else {
+				// User is trying to like but the cookie already exists.
+				// This can happen when cookie wasn't properly cleared in a previous unlike.
+				// Set cookie again to ensure state consistency.
+				setcookie( $cookie_name, (string) time(), time() + 31536000, '/' );
+			}
+		}//end if
 
-	    return $recommended;
+		return $recommended;
 	}
 
 	/**
@@ -359,46 +360,6 @@ class Themeist_IRecommendThis_Public_Processor {
 			return '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 		}
 		return '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
-	}
-
-	/**
-	 * Determine if the current connection is secure.
-	 *
-	 * Checks various server variables to determine if the connection
-	 * is using HTTPS, including behind proxies and load balancers.
-	 *
-	 * @return bool Whether the connection is secure.
-	 */
-	private static function is_connection_secure() {
-	    // Standard SSL check
-	    if (is_ssl()) {
-	        return true;
-	    }
-
-	    // Check common proxy/load balancer headers
-	    if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 'https' === strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
-	        return true;
-	    }
-
-	    if (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && ('on' === strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) || '1' === $_SERVER['HTTP_X_FORWARDED_SSL'])) {
-	        return true;
-	    }
-
-	    if (isset($_SERVER['HTTP_FRONT_END_HTTPS']) && ('on' === strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) || '1' === $_SERVER['HTTP_FRONT_END_HTTPS'])) {
-	        return true;
-	    }
-
-	    // Cloudflare specific
-	    if (isset($_SERVER['HTTP_CF_VISITOR']) && false !== strpos($_SERVER['HTTP_CF_VISITOR'], 'https')) {
-	        return true;
-	    }
-
-	    // Site configuration check - this helps when the site is configured for HTTPS but accessed via HTTP
-	    if (defined('FORCE_SSL_ADMIN') && FORCE_SSL_ADMIN) {
-	        return true;
-	    }
-
-	    return false;
 	}
 
 	/**
