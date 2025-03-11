@@ -134,7 +134,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Automatically display on' field.
 	 */
 	public function render_show_on_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 
 		if ( ! isset( $options['add_to_posts'] ) ) {
 			$options['add_to_posts'] = '0';
@@ -171,7 +171,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Hide Zero Count' field.
 	 */
 	public function render_hide_zero_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 		if ( ! isset( $options['hide_zero'] ) ) {
 			$options['hide_zero'] = '0';
 		}
@@ -201,7 +201,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Enable Unique IP' field.
 	 */
 	public function render_enable_unique_ip_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 		if ( ! isset( $options['enable_unique_ip'] ) ) {
 			$options['enable_unique_ip'] = '0';
 		}
@@ -232,7 +232,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Disable CSS' field.
 	 */
 	public function render_disable_css_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 		if ( ! isset( $options['disable_css'] ) ) {
 			$options['disable_css'] = '0';
 		}
@@ -262,7 +262,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Text Zero Suffix' field.
 	 */
 	public function render_text_zero_suffix_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 		if ( ! isset( $options['text_zero_suffix'] ) ) {
 			$options['text_zero_suffix'] = '';
 		}
@@ -291,7 +291,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Text One Suffix' field.
 	 */
 	public function render_text_one_suffix_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 		if ( ! isset( $options['text_one_suffix'] ) ) {
 			$options['text_one_suffix'] = '';
 		}
@@ -320,7 +320,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Text More Suffix' field.
 	 */
 	public function render_text_more_suffix_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 		if ( ! isset( $options['text_more_suffix'] ) ) {
 			$options['text_more_suffix'] = '';
 		}
@@ -349,7 +349,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Link Title for New Posts' field.
 	 */
 	public function render_link_title_new_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 		if ( ! isset( $options['link_title_new'] ) ) {
 			$options['link_title_new'] = '';
 		}
@@ -378,7 +378,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Link Title for Already Voted Posts' field.
 	 */
 	public function render_link_title_active_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 		if ( ! isset( $options['link_title_active'] ) ) {
 			$options['link_title_active'] = '';
 		}
@@ -407,7 +407,7 @@ class Themeist_IRecommendThis_Admin_Settings {
 	 * Render the 'Recommend Style' field.
 	 */
 	public function render_recommend_style_field() {
-		$options = get_option( 'irecommendthis_settings', get_option( 'dot_irecommendthis_settings', array() ) );
+		$options = get_option( 'irecommendthis_settings', array() );
 		if ( ! isset( $options['recommend_style'] ) ) {
 			$options['recommend_style'] = '0';
 		}
