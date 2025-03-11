@@ -3,10 +3,10 @@
     <description>I Recommend This Plugin coding standards.</description>
 
     <file>i-recommend-this.php</file>
-    <file>admin/</file>
-    <file>build/</file>
-    <file>includes/</file>
     <file>public/</file>
+    <file>core/</file>
+    <file>admin/</file>
+    <file>blocks/</file>
 
     <!-- Include the WordPress Coding Standards -->
     <rule ref="WordPress"/>
