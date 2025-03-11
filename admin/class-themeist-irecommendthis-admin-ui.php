@@ -48,7 +48,9 @@ class Themeist_IRecommendThis_Admin_UI {
 	public function __construct( $settings_component, $db_tools_component ) {
 		$this->settings_component = $settings_component;
 		$this->db_tools_component = $db_tools_component;
-		$this->current_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
+
+		// Default to 'general' tab, but don't process $_GET yet.
+		$this->current_tab = 'general';
 	}
 
 	/**
@@ -56,6 +58,24 @@ class Themeist_IRecommendThis_Admin_UI {
 	 */
 	public function initialize() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+	}
+
+	/**
+	 * Set the current tab with nonce verification.
+	 */
+	private function set_current_tab() {
+		// Check if tab parameter exists.
+		if ( ! isset( $_GET['tab'] ) ) {
+			return;
+		}
+
+		// Simple sanitization for the tab name (no nonce verification required).
+		$tab = sanitize_key( $_GET['tab'] );
+
+		// Validate tab is one we recognize.
+		if ( in_array( $tab, array( 'general', 'dbtools' ), true ) ) {
+			$this->current_tab = $tab;
+		}
 	}
 
 	/**
@@ -70,14 +90,14 @@ class Themeist_IRecommendThis_Admin_UI {
 
 		wp_enqueue_style(
 			'irecommendthis-admin-settings',
-			plugins_url( 'assets/css/admin-settings.csdfs', dirname( __FILE__ ) ),
+			plugins_url( 'assets/css/admin-settings.css', __DIR__ ),
 			array(),
 			THEMEIST_IRT_VERSION
 		);
 
 		wp_enqueue_script(
 			'irecommendthis-admin-tabs',
-			plugins_url( 'assets/js/admin-tabs.js', dirname( __FILE__ ) ),
+			plugins_url( 'assets/js/admin-tabs.js', __DIR__ ),
 			array( 'jquery' ),
 			THEMEIST_IRT_VERSION,
 			true
@@ -88,6 +108,9 @@ class Themeist_IRecommendThis_Admin_UI {
 	 * Render the settings page.
 	 */
 	public function render_settings_page() {
+		// Set the current tab now that WordPress is fully loaded.
+		$this->set_current_tab();
+
 		$tabs = array(
 			'general' => __( 'General', 'i-recommend-this' ),
 			'dbtools' => __( 'DB Tools', 'i-recommend-this' ),
@@ -99,15 +122,15 @@ class Themeist_IRecommendThis_Admin_UI {
 			<h2 class="nav-tab-wrapper">
 				<?php foreach ( $tabs as $tab => $name ) : ?>
 					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=irecommendthis-settings&tab=' . $tab ) ); ?>"
-					   class="nav-tab <?php echo $this->current_tab === $tab ? 'nav-tab-active' : ''; ?>">
+						class="nav-tab <?php echo $this->current_tab === $tab ? 'nav-tab-active' : ''; ?>">
 						<?php echo esc_html( $name ); ?>
 					</a>
 				<?php endforeach; ?>
 			</h2>
 
 			<?php
-			// Display database updated notice if applicable
-			if ( isset( $_GET['db_updated'] ) && check_admin_referer( 'irecommendthis_update_success', 'updated_nonce' ) ) {
+			// Display database updated notice if applicable.
+			if ( isset( $_GET['db_updated'] ) && isset( $_GET['updated_nonce'] ) && wp_verify_nonce( sanitize_key( $_GET['updated_nonce'] ), 'irecommendthis_update_success' ) ) {
 				if ( '1' === sanitize_text_field( wp_unslash( $_GET['db_updated'] ) ) ) {
 					?>
 					<div class="notice notice-success is-dismissible">
@@ -120,15 +143,15 @@ class Themeist_IRecommendThis_Admin_UI {
 
 			<div class="tab-content">
 				<?php
-				if ( $this->current_tab === 'general' ) {
+				if ( 'general' === $this->current_tab ) {
 					$this->render_general_tab();
-				} elseif ( $this->current_tab === 'dbtools' ) {
+				} elseif ( 'dbtools' === $this->current_tab ) {
 					$this->render_dbtools_tab();
 				}
 				?>
 			</div>
 
-			<?php if ( $this->current_tab === 'general' ) : ?>
+			<?php if ( 'general' === $this->current_tab ) : ?>
 				<?php $this->display_plugin_review_notice(); ?>
 			<?php endif; ?>
 		</div>
