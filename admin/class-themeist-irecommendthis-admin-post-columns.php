@@ -6,6 +6,8 @@
  * to display recommendation counts.
  *
  * @package IRecommendThis
+ * @subpackage Admin
+ * @since 4.0.0
  */
 
 if ( ! defined( 'WPINC' ) ) {

@@ -5,6 +5,8 @@
  * Handles adding links to the plugin on the plugins page.
  *
  * @package IRecommendThis
+ * @subpackage Admin
+ * @since 4.0.0
  */
 
 if ( ! defined( 'WPINC' ) ) {

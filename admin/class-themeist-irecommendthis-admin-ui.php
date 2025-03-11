@@ -5,6 +5,8 @@
  * Handles rendering of admin pages, tabs, and notices.
  *
  * @package IRecommendThis
+ * @subpackage Admin
+ * @since 4.0.0
  */
 
 if ( ! defined( 'WPINC' ) ) {
