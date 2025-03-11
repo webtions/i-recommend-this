@@ -45,7 +45,7 @@ class Themeist_IRecommendThis {
 		$this->version     = defined( 'THEMEIST_IRT_VERSION' ) ? THEMEIST_IRT_VERSION : '4.0.0';
 		$this->plugin_slug = 'i-recommend-this';
 
-		// Initialize DB upgrader
+		// Initialize DB upgrader.
 		$this->db_upgrader = new Themeist_IRecommendThis_DB_Upgrader( $this );
 	}
 
@@ -53,19 +53,19 @@ class Themeist_IRecommendThis {
 	 * Add hooks for plugin actions and filters.
 	 */
 	public function add_hooks() {
-		// Register activation hook
+		// Register activation hook.
 		register_activation_hook( $this->plugin_file, array( $this, 'activate' ) );
 
-		// Initialize the database upgrader
+		// Initialize the database upgrader.
 		$this->db_upgrader->init();
 
-		// Load text domain
+		// Load text domain.
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
 
-		// Migrate plugin settings
+		// Migrate plugin settings.
 		add_action( 'init', array( $this, 'migrate_plugin_settings' ) );
 
-		// Check for database issues
+		// Check for database issues.
 		add_action( 'admin_notices', array( $this, 'check_db_table' ) );
 
 		/**
@@ -83,7 +83,7 @@ class Themeist_IRecommendThis {
 	 * @param bool $network_wide Whether the plugin is being activated network-wide.
 	 */
 	public function activate( $network_wide ) {
-		// Migrate settings first
+		// Migrate settings first.
 		$this->migrate_plugin_settings();
 
 		/**
@@ -105,7 +105,7 @@ class Themeist_IRecommendThis {
 			$this->db_upgrader->create_table();
 		}
 
-		// Register plugin version
+		// Register plugin version.
 		$this->register_plugin_version();
 
 		/**
@@ -124,17 +124,17 @@ class Themeist_IRecommendThis {
 	 * to ensure a smooth upgrade path for existing users.
 	 */
 	public function migrate_plugin_settings() {
-		// Check if old settings exist
-		$old_settings = get_option('dot_irecommendthis_settings');
+		// Check if old settings exist.
+		$old_settings = get_option( 'dot_irecommendthis_settings' );
 
-		if ($old_settings) {
-			// Old settings exist - use them as the basis for the new settings
-			$current_settings = get_option('irecommendthis_settings', array());
+		if ( $old_settings ) {
+			// Old settings exist - use them as the basis for the new settings.
+			$current_settings = get_option( 'irecommendthis_settings', array() );
 
-			// If current settings don't exist OR they're empty and old settings exist
-			if (false === $current_settings || (is_array($current_settings) && empty($current_settings))) {
-				// Copy old settings to new option
-				update_option('irecommendthis_settings', $old_settings);
+			// If current settings don't exist OR they're empty and old settings exist.
+			if ( false === $current_settings || ( is_array( $current_settings ) && empty( $current_settings ) ) ) {
+				// Copy old settings to new option.
+				update_option( 'irecommendthis_settings', $old_settings );
 
 				/**
 				 * Action fired after plugin settings have been migrated from old format.
@@ -146,11 +146,11 @@ class Themeist_IRecommendThis {
 				do_action( 'irecommendthis_settings_migrated', $old_settings, $old_settings );
 			}
 		} else {
-			// No old settings exist, ensure defaults exist for new installs
-			$current_settings = get_option('irecommendthis_settings');
+			// No old settings exist, ensure defaults exist for new installs.
+			$current_settings = get_option( 'irecommendthis_settings' );
 
-			if (false === $current_settings) {
-				// Initialize with defaults for a new installation
+			if ( false === $current_settings ) {
+				// Initialize with defaults for a new installation.
 				$default_settings = array(
 					'add_to_posts'      => '0',
 					'add_to_other'      => '0',
@@ -162,9 +162,9 @@ class Themeist_IRecommendThis {
 					'disable_css'       => '0',
 					'hide_zero'         => '1',
 					'enable_unique_ip'  => '0',
-					'recommend_style'   => '1'
+					'recommend_style'   => '1',
 				);
-				add_option('irecommendthis_settings', $default_settings);
+				add_option( 'irecommendthis_settings', $default_settings );
 
 				/**
 				 * Action fired after default plugin settings have been created.
@@ -173,8 +173,8 @@ class Themeist_IRecommendThis {
 				 * @param array $default_settings The default plugin settings.
 				 */
 				do_action( 'irecommendthis_default_settings_created', $default_settings );
-			}
-		}
+			}//end if
+		}//end if
 	}
 
 	/**

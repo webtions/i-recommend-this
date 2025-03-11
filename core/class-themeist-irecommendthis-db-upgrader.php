@@ -48,7 +48,7 @@ class Themeist_IRecommendThis_DB_Upgrader {
 	 * @param Themeist_IRecommendThis $plugin Main plugin instance.
 	 */
 	public function __construct( $plugin ) {
-		$this->plugin = $plugin;
+		$this->plugin     = $plugin;
 		$this->db_version = defined( 'THEMEIST_IRT_DB_VERSION' ) ? THEMEIST_IRT_DB_VERSION : '3.0.0';
 	}
 
@@ -56,10 +56,10 @@ class Themeist_IRecommendThis_DB_Upgrader {
 	 * Initialize hooks.
 	 */
 	public function init() {
-		// Check for database updates on plugin initialization
+		// Check for database updates on plugin initialization.
 		add_action( 'init', array( $this, 'check_for_updates' ), 5 );
 
-		// Handle database updates for multisite
+		// Handle database updates for multisite.
 		add_action( 'wpmu_new_blog', array( $this, 'new_site_created' ) );
 	}
 
@@ -85,17 +85,17 @@ class Themeist_IRecommendThis_DB_Upgrader {
 			$current_db_version = get_option( 'dot_irecommendthis_db_version' );
 		}
 
-		// If no version is recorded or version is different, run update
+		// If no version is recorded or version is different, run update.
 		if ( ! $current_db_version || version_compare( $current_db_version, $this->db_version, '<' ) ) {
-			// Trigger action before database update
+			// Trigger action before database update.
 			do_action( 'irecommendthis_before_db_update', $current_db_version, $this->db_version );
 
 			$this->update();
 
-			// Update version in database
+			// Update version in database.
 			update_option( 'irecommendthis_db_version', $this->db_version );
 
-			// Trigger action after database update
+			// Trigger action after database update.
 			do_action( 'irecommendthis_after_db_update', $current_db_version, $this->db_version );
 		}
 	}
@@ -108,7 +108,7 @@ class Themeist_IRecommendThis_DB_Upgrader {
 	public function create_table() {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'irecommendthis_votes';
+		$table_name      = $wpdb->prefix . 'irecommendthis_votes';
 		$charset_collate = $wpdb->get_charset_collate();
 
 		// Updated IP column to VARCHAR(255) to accommodate hashed IPs.
@@ -146,7 +146,7 @@ class Themeist_IRecommendThis_DB_Upgrader {
 
 		$table_name = $wpdb->prefix . 'irecommendthis_votes';
 
-		// Ensure table exists, create if it doesn't
+		// Ensure table exists, create if it doesn't.
 		$table_exists = $wpdb->get_var(
 			$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
 		);
@@ -155,7 +155,7 @@ class Themeist_IRecommendThis_DB_Upgrader {
 			return $this->create_table();
 		}
 
-		// Run each update method in sequence
+		// Run each update method in sequence.
 		$success = $this->update_ip_column_size( $table_name );
 		$success = $success && $this->ensure_indexes( $table_name );
 		$success = $success && $this->maybe_anonymize_ips( $table_name );
@@ -172,19 +172,25 @@ class Themeist_IRecommendThis_DB_Upgrader {
 	private function update_ip_column_size( $table_name ) {
 		global $wpdb;
 
-		// Check existing column size for IP
+		// Check existing column size for IP.
 		$column_size = $wpdb->get_var(
 			$wpdb->prepare(
 				'SELECT CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS
-				WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = \'ip\'',
+				WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s',
 				DB_NAME,
-				$table_name
+				$table_name,
+				'ip'
 			)
 		);
 
-		// Update IP column to 255 characters if it's smaller (to accommodate hashed IPs)
+		// Update IP column to 255 characters if it's smaller (to accommodate hashed IPs).
 		if ( $column_size && (int) $column_size < 255 ) {
-			$result = $wpdb->query( "ALTER TABLE `$table_name` MODIFY ip VARCHAR(255) NOT NULL" );
+			// Note: We're using a direct query here, but with proper sanitization.
+			$table_name_escaped = esc_sql( $table_name );
+			$alter_sql          = "ALTER TABLE `$table_name_escaped` MODIFY ip VARCHAR(255) NOT NULL";
+
+			// Direct query necessary for schema alterations.
+			$result = $wpdb->query( $alter_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			return false !== $result;
 		}
 
@@ -203,28 +209,34 @@ class Themeist_IRecommendThis_DB_Upgrader {
 		$success = true;
 		$indexes = array(
 			'idx_post_id' => 'post_id',
-			'idx_time' => 'time'
+			'idx_time'    => 'time',
 		);
 
 		foreach ( $indexes as $index_name => $column ) {
 			$index_exists = $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT 1 FROM information_schema.statistics
+					'SELECT 1 FROM information_schema.statistics
 					WHERE table_schema = DATABASE()
 					AND table_name = %s
-					AND index_name = %s",
+					AND index_name = %s',
 					$table_name,
 					$index_name
 				)
 			);
 
 			if ( ! $index_exists ) {
-				$result = $wpdb->query( "ALTER TABLE `$table_name` ADD INDEX $index_name ($column)" );
+				// Note: Direct query necessary for adding indexes.
+				$table_name_escaped = esc_sql( $table_name );
+				$index_name_escaped = esc_sql( $index_name );
+				$column_escaped     = esc_sql( $column );
+				$add_index_sql      = "ALTER TABLE `$table_name_escaped` ADD INDEX $index_name_escaped ($column_escaped)";
+
+				$result = $wpdb->query( $add_index_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				if ( false === $result ) {
 					$success = false;
 				}
 			}
-		}
+		}//end foreach
 
 		return $success;
 	}
@@ -238,48 +250,54 @@ class Themeist_IRecommendThis_DB_Upgrader {
 	private function maybe_anonymize_ips( $table_name ) {
 		global $wpdb;
 
-		// Check if migration has already been performed
+		// Check if migration has already been performed.
 		$migration_done = get_option( 'irecommendthis_ip_migration_complete', false );
 		if ( $migration_done ) {
 			return true;
 		}
 
-		// Get plugin settings to check if IP tracking is enabled
-		$options = get_option( 'irecommendthis_settings' );
+		// Get plugin settings to check if IP tracking is enabled.
+		$options          = get_option( 'irecommendthis_settings' );
 		$enable_unique_ip = isset( $options['enable_unique_ip'] ) ? (int) $options['enable_unique_ip'] : 0;
 
-		// Only proceed if IP tracking is enabled
+		// Only proceed if IP tracking is enabled.
 		if ( 0 === $enable_unique_ip ) {
-			// Mark as done even if we skip (not needed when IP tracking is disabled)
+			// Mark as done even if we skip (not needed when IP tracking is disabled).
 			update_option( 'irecommendthis_ip_migration_complete', true );
 			return true;
 		}
 
-		// Process in batches to avoid timeouts
+		// Process in batches to avoid timeouts.
 		$processed = 0;
-		$has_more = true;
+		$has_more  = true;
 
 		while ( $has_more ) {
-			// Get a batch of records to process
-			$records = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT id, ip FROM $table_name
-					WHERE LENGTH(ip) < 40
-					LIMIT %d",
-					$this->batch_size
-				)
+			// Get a batch of records to process.
+			$table_name_escaped = esc_sql( $table_name );
+
+			// First prepare the statement without the table name.
+			$prepared_sql = $wpdb->prepare(
+				'WHERE LENGTH(ip) < %d LIMIT %d',
+				40,
+				$this->batch_size
 			);
 
-			// No more records, we're done
+			// Then combine it with the escaped table name in a separate step.
+			$query = "SELECT id, ip FROM `$table_name_escaped` $prepared_sql";
+
+			// Execute with a direct query since we can't prepare table names.
+			$records = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+			// No more records, we're done.
 			if ( empty( $records ) ) {
 				$has_more = false;
 				update_option( 'irecommendthis_ip_migration_complete', true );
 				break;
 			}
 
-			// Process each record in this batch
+			// Process each record in this batch.
 			foreach ( $records as $record ) {
-				// Skip if already looks like a hash
+				// Skip if already looks like a hash.
 				if ( strlen( $record->ip ) > 40 ) {
 					continue;
 				}
@@ -294,20 +312,20 @@ class Themeist_IRecommendThis_DB_Upgrader {
 					array( '%d' )
 				);
 
-				$processed++;
-			}
+				++$processed;
+			}//end foreach
 
-			// If we've processed less than the batch size, we're done
+			// If we've processed less than the batch size, we're done.
 			if ( count( $records ) < $this->batch_size ) {
 				$has_more = false;
 				update_option( 'irecommendthis_ip_migration_complete', true );
 			}
 
-			// Give the server a brief moment to breathe if we're processing a lot of records
+			// Give the server a brief moment to breathe if we're processing a lot of records.
 			if ( $processed > 5000 ) {
 				sleep( 1 );
 			}
-		}
+		}//end while
 
 		return true;
 	}
@@ -319,18 +337,18 @@ class Themeist_IRecommendThis_DB_Upgrader {
 	 * @return string The anonymized (hashed) IP.
 	 */
 	private function anonymize_ip( $ip ) {
-		// Empty IPs should return a consistent hash
+		// Empty IPs should return a consistent hash.
 		if ( empty( $ip ) ) {
 			$ip = 'unknown';
 		}
 
-		// Use WordPress salt for authentication
+		// Use WordPress salt for authentication.
 		$auth_salt = wp_salt( 'auth' );
 
-		// Use site-specific hash for additional entropy
+		// Use site-specific hash for additional entropy.
 		$site_hash = defined( 'COOKIEHASH' ) ? COOKIEHASH : md5( site_url() );
 
-		// Create the hash using WordPress hash function with site context
+		// Create the hash using WordPress hash function with site context.
 		$hashed_ip = wp_hash( $ip . $site_hash, 'auth' );
 
 		return $hashed_ip;
@@ -372,19 +390,23 @@ class Themeist_IRecommendThis_DB_Upgrader {
 			return false;
 		}
 
-		// Get table structure
-		$structure = $wpdb->get_results( "DESCRIBE $table_name" );
+		// Get table structure.
+		$table_name_escaped = esc_sql( $table_name );
+		$structure_sql      = "DESCRIBE `$table_name_escaped`";
+		$structure          = $wpdb->get_results( $structure_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		// Get indexes
-		$indexes = $wpdb->get_results( "SHOW INDEX FROM $table_name" );
+		// Get indexes.
+		$indexes_sql = "SHOW INDEX FROM `$table_name_escaped`";
+		$indexes     = $wpdb->get_results( $indexes_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		// Get record count
-		$count = $wpdb->get_var( "SELECT COUNT(*) FROM $table_name" );
+		// Get record count.
+		$count_sql = "SELECT COUNT(*) FROM `$table_name_escaped`";
+		$count     = $wpdb->get_var( $count_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return array(
-			'structure' => $structure,
-			'indexes' => $indexes,
-			'record_count' => $count
+			'structure'    => $structure,
+			'indexes'      => $indexes,
+			'record_count' => $count,
 		);
 	}
 }

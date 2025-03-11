@@ -20,14 +20,14 @@ class Themeist_IRecommendThis_Shortcodes {
 	 */
 	public static function register_shortcodes() {
 		// Old shortcode name for backward compatibility.
-		// @deprecated 4.0.0 Use 'irecommendthis' instead
+		// @deprecated 4.0.0 Use 'irecommendthis' instead.
 		add_shortcode( 'dot_recommends', array( __CLASS__, 'shortcode_recommends' ) );
 
 		// New shortcode name.
 		add_shortcode( 'irecommendthis', array( __CLASS__, 'shortcode_recommends' ) );
 
 		// Old shortcode name for backward compatibility.
-		// @deprecated 4.0.0 Use 'irecommendthis_top_posts' instead
+		// @deprecated 4.0.0 Use 'irecommendthis_top_posts' instead.
 		add_shortcode( 'dot_recommended_top_posts', array( __CLASS__, 'shortcode_recommended_top_posts' ) );
 
 		// New shortcode name.
@@ -66,7 +66,7 @@ class Themeist_IRecommendThis_Shortcodes {
 		 */
 		$atts = apply_filters( 'irecommendthis_shortcode_atts', $atts );
 
-		// Convert string 'false' to boolean false
+		// Convert string 'false' to boolean false.
 		if ( is_string( $atts['wrapper'] ) && 'false' === strtolower( $atts['wrapper'] ) ) {
 			$atts['wrapper'] = false;
 		}
@@ -128,8 +128,8 @@ class Themeist_IRecommendThis_Shortcodes {
 		$vote_status_by_ip = 0;
 		if ( '0' !== $options['enable_unique_ip'] ) {
 			global $wpdb;
-			$anonymized_ip    = Themeist_IRecommendThis_Public_Processor::anonymize_ip( $ip );
-			$sql              = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
+			$anonymized_ip     = Themeist_IRecommendThis_Public_Processor::anonymize_ip( $ip );
+			$sql               = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
 			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		}
 
@@ -186,7 +186,7 @@ class Themeist_IRecommendThis_Shortcodes {
 			 * @param int    $post_id       The post ID.
 			 */
 			$wrapper_class = apply_filters( 'irecommendthis_wrapper_class', 'irecommendthis-wrapper', $post_id );
-			$irt_html = '<div class="' . esc_attr( $wrapper_class ) . '">' . $irt_html . '</div>';
+			$irt_html      = '<div class="' . esc_attr( $wrapper_class ) . '">' . $irt_html . '</div>';
 		}
 
 		/**
@@ -321,7 +321,7 @@ class Themeist_IRecommendThis_Shortcodes {
 			 * @param object $item The current post item.
 			 */
 			$open_tag = apply_filters( 'irecommendthis_top_post_open_tag', '<' . esc_html( $container ) . '>', $container, $item );
-			$return .= $open_tag;
+			$return  .= $open_tag;
 
 			/**
 			 * Filter the post link HTML.
@@ -339,7 +339,7 @@ class Themeist_IRecommendThis_Shortcodes {
 				$permalink,
 				$post_title
 			);
-			$return .= $link_html;
+			$return   .= $link_html;
 
 			if ( 1 === $show_count ) {
 				/**
@@ -356,7 +356,7 @@ class Themeist_IRecommendThis_Shortcodes {
 					$post_count,
 					$item
 				);
-				$return .= $count_html;
+				$return    .= $count_html;
 			}
 
 			/**
@@ -368,8 +368,8 @@ class Themeist_IRecommendThis_Shortcodes {
 			 * @param object $item The current post item.
 			 */
 			$close_tag = apply_filters( 'irecommendthis_top_post_close_tag', '</' . esc_html( $container ) . '>', $container, $item );
-			$return .= $close_tag;
-		}
+			$return   .= $close_tag;
+		}//end foreach
 
 		/**
 		 * Filter the final top posts HTML.

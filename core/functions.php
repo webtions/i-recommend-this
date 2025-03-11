@@ -45,7 +45,7 @@ function irecommendthis( $id = null, $should_echo = true, $wrapper = true ) {
  * @return string|void The recommendation button HTML if $should_echo is false.
  */
 function dot_irecommendthis( $id = null, $should_echo = true, $wrapper = true ) {
-	// Trigger deprecation notice in debug mode
+	// Trigger deprecation notice in debug mode.
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 		trigger_error(
