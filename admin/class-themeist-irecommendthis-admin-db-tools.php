@@ -5,6 +5,8 @@
  * Handles database optimization, updates, and information display.
  *
  * @package IRecommendThis
+ * @subpackage Admin
+ * @since 4.0.0
  */
 
 if ( ! defined( 'WPINC' ) ) {
@@ -60,56 +62,13 @@ class Themeist_IRecommendThis_Admin_DB_Tools {
 
 		// Run the update using our DB upgrader.
 		$db_upgrader = $this->plugin->get_db_upgrader();
-		$result = $db_upgrader->update();
+		$result      = $db_upgrader->update();
 
 		// Create a nonce for the redirect.
 		$updated_nonce = wp_create_nonce( 'irecommendthis_update_success' );
 
 		// Redirect with success message and nonce.
-		// Using db_updated instead of updated to avoid triggering WordPress settings notice
-		$redirect_url = add_query_arg(
-			array(
-				'page'          => 'irecommendthis-settings',
-				'tab'           => 'dbtools',
-				'db_updated'    => '1',
-				'updated_nonce' => $updated_nonce,
-			),
-			admin_url( 'options-general.php' )
-		);
-		wp_safe_redirect( $redirect_url );
-		exit;
-	}
-
-	/**
-	 * Process direct URL-based update request.
-	 *
-	 * Usage: wp-admin/tools.php?page=irecommendthis-tools&action=update_db&nonce=GENERATED_NONCE
-	 */
-	public function process_direct_update() {
-		// Check if this is our action.
-		if ( ! isset( $_GET['page'] ) || 'irecommendthis-tools' !== $_GET['page'] || ! isset( $_GET['action'] ) || 'update_db' !== $_GET['action'] ) {
-			return;
-		}
-
-		// Verify user has permission.
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'i-recommend-this' ) );
-		}
-
-		// Verify nonce.
-		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'irecommendthis_update_db' ) ) {
-			wp_die( esc_html__( 'Security check failed. The link you used has expired or is invalid. Please try again with a new link.', 'i-recommend-this' ) );
-		}
-
-		// Run the update using our DB upgrader.
-		$db_upgrader = $this->plugin->get_db_upgrader();
-		$result = $db_upgrader->update();
-
-		// Create a nonce for the redirect.
-		$updated_nonce = wp_create_nonce( 'irecommendthis_update_success' );
-
-		// Redirect with success message and nonce.
-		// Using db_updated instead of updated to avoid triggering WordPress settings notice
+		// Using db_updated instead of updated to avoid triggering WordPress settings notice.
 		$redirect_url = add_query_arg(
 			array(
 				'page'          => 'irecommendthis-settings',
@@ -127,11 +86,11 @@ class Themeist_IRecommendThis_Admin_DB_Tools {
 	 * Display database table information.
 	 */
 	public function display_database_info() {
-		// Use the DB upgrader to get table information
-		$db_upgrader = $this->plugin->get_db_upgrader();
+		// Use the DB upgrader to get table information.
+		$db_upgrader  = $this->plugin->get_db_upgrader();
 		$table_exists = $db_upgrader->table_exists();
 
-		if (!$table_exists) {
+		if ( ! $table_exists ) {
 			echo '<div class="notice notice-error inline"><p>' . esc_html__( 'The database table does not exist.', 'i-recommend-this' ) . '</p></div>';
 			return;
 		}
