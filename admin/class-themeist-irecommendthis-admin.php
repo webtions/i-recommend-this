@@ -5,6 +5,8 @@
  * Coordinates all admin functionality through composition of specialized components.
  *
  * @package IRecommendThis
+ * @subpackage Admin
+ * @since 4.0.0
  */
 
 if ( ! defined( 'WPINC' ) ) {
@@ -84,11 +86,11 @@ class Themeist_IRecommendThis_Admin {
 	 * Include component classes.
 	 */
 	private function include_components() {
-		require_once dirname( __FILE__ ) . '/class-themeist-irecommendthis-admin-post-columns.php';
-		require_once dirname( __FILE__ ) . '/class-themeist-irecommendthis-admin-settings.php';
-		require_once dirname( __FILE__ ) . '/class-themeist-irecommendthis-admin-db-tools.php';
-		require_once dirname( __FILE__ ) . '/class-themeist-irecommendthis-admin-ui.php';
-		require_once dirname( __FILE__ ) . '/class-themeist-irecommendthis-admin-plugin-links.php';
+		require_once __DIR__ . '/class-themeist-irecommendthis-admin-post-columns.php';
+		require_once __DIR__ . '/class-themeist-irecommendthis-admin-settings.php';
+		require_once __DIR__ . '/class-themeist-irecommendthis-admin-db-tools.php';
+		require_once __DIR__ . '/class-themeist-irecommendthis-admin-ui.php';
+		require_once __DIR__ . '/class-themeist-irecommendthis-admin-plugin-links.php';
 	}
 
 	/**
@@ -99,10 +101,10 @@ class Themeist_IRecommendThis_Admin {
 		$this->plugin = $themeist_i_recommend_this;
 
 		// Create instances of component classes.
-		$this->post_columns_component  = new Themeist_IRecommendThis_Admin_Post_Columns();
-		$this->settings_component      = new Themeist_IRecommendThis_Admin_Settings();
-		$this->db_tools_component      = new Themeist_IRecommendThis_Admin_DB_Tools( $this->plugin );
-		$this->plugin_links_component  = new Themeist_IRecommendThis_Admin_Plugin_Links( $this->plugin_file );
+		$this->post_columns_component = new Themeist_IRecommendThis_Admin_Post_Columns();
+		$this->settings_component     = new Themeist_IRecommendThis_Admin_Settings();
+		$this->db_tools_component     = new Themeist_IRecommendThis_Admin_DB_Tools( $this->plugin );
+		$this->plugin_links_component = new Themeist_IRecommendThis_Admin_Plugin_Links( $this->plugin_file );
 
 		// The UI component needs references to other components.
 		$this->ui_component = new Themeist_IRecommendThis_Admin_UI(
