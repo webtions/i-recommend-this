@@ -8,17 +8,18 @@
 /**
  * Widget to display the most recommended posts.
  */
-class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
+class Themeist_IRecommendThis_Widget_Most_Recommended extends WP_Widget {
 
 	/**
 	 * Main constructor.
 	 */
 	public function __construct() {
 		parent::__construct(
-			'most_recommended_posts',
+			'irecommendthis_widget_most_recommended',
 			__( 'Most Recommended Posts', 'i-recommend-this' ),
 			array(
 				'customize_selective_refresh' => true,
+				'classname' => 'widget_irecommendthis_most_recommended',
 			)
 		);
 
@@ -26,7 +27,7 @@ class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 		 * Action fired after widget is constructed.
 		 *
 		 * @since 4.0.0
-		 * @param Themeist_Most_Recommended_Posts_Widget $this Widget instance.
+		 * @param Themeist_IRecommendThis_Widget_Most_Recommended $this Widget instance.
 		 */
 		do_action( 'irecommendthis_widget_constructed', $this );
 	}
@@ -90,8 +91,8 @@ class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 		 * Action to add additional widget form fields.
 		 *
 		 * @since 4.0.0
-		 * @param array                                 $instance Widget settings.
-		 * @param Themeist_Most_Recommended_Posts_Widget $this     Widget instance.
+		 * @param array                                          $instance Widget settings.
+		 * @param Themeist_IRecommendThis_Widget_Most_Recommended $this     Widget instance.
 		 */
 		do_action( 'irecommendthis_widget_form', $instance, $this );
 
@@ -219,7 +220,7 @@ class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 		 * @since 4.0.0
 		 * @param string $list_class The CSS class for the list.
 		 */
-		$list_class = apply_filters( 'irecommendthis_widget_list_class', 'mostrecommendedposts' );
+		$list_class = apply_filters( 'irecommendthis_widget_list_class', 'irecommendthis-most-recommended-posts' );
 
 		echo '<' . esc_attr( $list_tag ) . ' class="' . esc_attr( $list_class ) . '">';
 
@@ -358,7 +359,7 @@ class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 	 * Register the widget.
 	 */
 	public static function register_widget() {
-		register_widget( 'Themeist_Most_Recommended_Posts_Widget' );
+		register_widget( 'Themeist_IRecommendThis_Widget_Most_Recommended' );
 
 		/**
 		 * Action fired after widget is registered.
@@ -369,5 +370,8 @@ class Themeist_Most_Recommended_Posts_Widget extends WP_Widget {
 	}
 }
 
+// Backward compatibility.
+class_alias( 'Themeist_IRecommendThis_Widget_Most_Recommended', 'Themeist_Most_Recommended_Posts_Widget' );
+
 // Register the widget using the static method.
-add_action( 'widgets_init', array( 'Themeist_Most_Recommended_Posts_Widget', 'register_widget' ) );
+add_action( 'widgets_init', array( 'Themeist_IRecommendThis_Widget_Most_Recommended', 'register_widget' ) );
