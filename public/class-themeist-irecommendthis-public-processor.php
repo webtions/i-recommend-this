@@ -408,7 +408,8 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @return string HTML output.
 	 */
 	private static function generate_count_html( $recommended, $suffix, $hide_zero ) {
-		$classes = array( 'irecommendthis-count' );
+		$classes      = array( 'irecommendthis-count' );
+		$inline_style = '';
 
 		// Add a class for zero count for styling.
 		if ( 0 === $recommended ) {
@@ -416,13 +417,13 @@ class Themeist_IRecommendThis_Public_Processor {
 
 			// Hide the count if set in options.
 			if ( 1 === $hide_zero ) {
-				$classes[] = 'hidden';
+				$inline_style = ' style="display: none;"';
 			}
 		}
 
 		$class_attr = implode( ' ', $classes );
 
-		return '<span class="' . esc_attr( $class_attr ) . '">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
+		return '<span class="' . esc_attr( $class_attr ) . '"' . $inline_style . '>' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 	}
 
 	/**
