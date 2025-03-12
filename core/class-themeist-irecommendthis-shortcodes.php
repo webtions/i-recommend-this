@@ -66,28 +66,37 @@ class Themeist_IRecommendThis_Shortcodes {
 		 */
 		$atts = apply_filters( 'irecommendthis_shortcode_atts', $atts );
 
-		// Convert string 'false' to boolean false.
-		if ( is_string( $atts['wrapper'] ) && 'false' === strtolower( $atts['wrapper'] ) ) {
-			$atts['wrapper'] = false;
+		// Convert string values to proper types.
+		if ( is_string( $atts['wrapper'] ) ) {
+			$atts['wrapper'] = filter_var( $atts['wrapper'], FILTER_VALIDATE_BOOLEAN );
+		}
+
+		if ( is_string( $atts['use_current_post'] ) ) {
+			$atts['use_current_post'] = filter_var( $atts['use_current_post'], FILTER_VALIDATE_BOOLEAN );
 		}
 
 		// If use_current_post is true or we're in a loop and no ID is specified, use current post ID.
-		if (
-			( 'true' === $atts['use_current_post'] || true === $atts['use_current_post'] ) ||
-			( empty( $atts['id'] ) && in_the_loop() )
-		) {
+		if ( $atts['use_current_post'] || ( empty( $atts['id'] ) && in_the_loop() ) ) {
 			return self::recommend( get_the_ID(), 'get', $atts['wrapper'] );
 		}
 
-		return self::recommend( intval( $atts['id'] ), 'get', $atts['wrapper'] );
+		// Ensure the ID is an integer if specified.
+		$post_id = ! empty( $atts['id'] ) ? intval( $atts['id'] ) : null;
+
+		// Fallback to current post ID if no valid ID is provided.
+		if ( null === $post_id ) {
+			$post_id = get_the_ID();
+		}
+
+		return self::recommend( $post_id, 'get', $atts['wrapper'] );
 	}
 
 	/**
 	 * Display the recommendation button.
 	 *
-	 * @param int    $id      Post ID.
-	 * @param string $action  Action to perform: 'get' or 'update'.
-	 * @param bool   $wrapper Whether to wrap the output in a container div.
+	 * @param int|null $id      Post ID. If null, the current post ID will be used.
+	 * @param string   $action  Action to perform: 'get' or 'update'.
+	 * @param bool     $wrapper Whether to wrap the output in a container div.
 	 * @return string HTML output for the recommendation button.
 	 */
 	public static function recommend( $id = null, $action = 'get', $wrapper = true ) {
@@ -97,13 +106,21 @@ class Themeist_IRecommendThis_Shortcodes {
 		 * Action fired before recommendation link is generated.
 		 *
 		 * @since 4.0.0
-		 * @param int    $id      Post ID.
-		 * @param string $action  Action: 'get' or 'update'.
-		 * @param bool   $wrapper Whether to wrap in container.
+		 * @param int|null $id      Post ID.
+		 * @param string   $action  Action: 'get' or 'update'.
+		 * @param bool     $wrapper Whether to wrap in container.
 		 */
 		do_action( 'irecommendthis_before_recommend', $id, $action, $wrapper );
 
-		$post_id = $id ? $id : get_the_ID();
+		// Ensure we have a valid post ID.
+		$post_id = null !== $id ? absint( $id ) : get_the_ID();
+
+		// Ensure action is valid.
+		$action = in_array( $action, array( 'get', 'update' ), true ) ? $action : 'get';
+
+		// Make sure wrapper is a boolean.
+		$wrapper = (bool) $wrapper;
+
 		$options = get_option( 'irecommendthis_settings' );
 
 		$ip              = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
@@ -129,8 +146,13 @@ class Themeist_IRecommendThis_Shortcodes {
 		if ( '0' !== $options['enable_unique_ip'] ) {
 			global $wpdb;
 			$anonymized_ip     = Themeist_IRecommendThis_Public_Processor::anonymize_ip( $ip );
-			$sql               = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s", $post_id, $anonymized_ip );
-			$vote_status_by_ip = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
+			$vote_status_by_ip = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(*) FROM {$wpdb->prefix}irecommendthis_votes WHERE post_id = %d AND ip = %s",
+					$post_id,
+					$anonymized_ip
+				)
+			);
 		}
 
 		// Check cookie status.
@@ -146,25 +168,31 @@ class Themeist_IRecommendThis_Shortcodes {
 			? __( 'Unrecommend this', 'i-recommend-this' )
 			: $options['link_title_active'];
 
-		if ( $cookie_exists || $vote_status_by_ip > 0 ) {
-			$class         = 'irecommendthis active irecommendthis-post-' . $post_id;
-			$title         = $unlike_text;
-			$current_state = $unlike_text;
-		} else {
-			$class         = 'irecommendthis irecommendthis-post-' . $post_id;
-			$title         = $like_text;
-			$current_state = $like_text;
+		// Set the active state based on existing cookie or IP record.
+		$is_active = $cookie_exists || $vote_status_by_ip > 0;
+
+		// Build the CSS classes.
+		$classes = array( 'irecommendthis' );
+
+		if ( $is_active ) {
+			$classes[] = 'active';
 		}
 
+		$classes[] = 'irecommendthis-post-' . $post_id;
+
+		// Determine title text based on active state.
+		$title = $is_active ? $unlike_text : $like_text;
+
 		// Enhanced HTML with better attribute support for accessibility and JavaScript interaction.
-		$irt_html  = '<a href="#" class="' . esc_attr( $class ) . '" ';
-		$irt_html .= 'data-post-id="' . esc_attr( $post_id ) . '" ';
-		$irt_html .= 'data-like="' . esc_attr( $like_text ) . '" ';
-		$irt_html .= 'data-unlike="' . esc_attr( $unlike_text ) . '" ';
-		$irt_html .= 'aria-label="' . esc_attr( $title ) . '" ';
-		$irt_html .= 'title="' . esc_attr( $title ) . '">';
-		$irt_html .= $output;
-		$irt_html .= '</a>';
+		$irt_html = sprintf(
+			'<a href="#" class="%1$s" data-post-id="%2$d" data-like="%3$s" data-unlike="%4$s" aria-label="%5$s" title="%5$s">%6$s</a>',
+			esc_attr( implode( ' ', $classes ) ),
+			esc_attr( $post_id ),
+			esc_attr( $like_text ),
+			esc_attr( $unlike_text ),
+			esc_attr( $title ),
+			$output
+		);
 
 		/**
 		 * Filter the recommendation HTML before wrapping.
@@ -186,7 +214,11 @@ class Themeist_IRecommendThis_Shortcodes {
 			 * @param int    $post_id       The post ID.
 			 */
 			$wrapper_class = apply_filters( 'irecommendthis_wrapper_class', 'irecommendthis-wrapper', $post_id );
-			$irt_html      = '<div class="' . esc_attr( $wrapper_class ) . '">' . $irt_html . '</div>';
+			$irt_html      = sprintf(
+				'<div class="%1$s">%2$s</div>',
+				esc_attr( $wrapper_class ),
+				$irt_html
+			);
 		}
 
 		/**
@@ -217,6 +249,10 @@ class Themeist_IRecommendThis_Shortcodes {
 				'year'       => '',
 				'monthnum'   => '',
 				'show_count' => 1,
+				'wrapper'    => '',
+				// Optional wrapper to surround the whole list.
+												'wrapper_class' => 'irecommendthis-top-posts',
+			// Class for the wrapper.
 			),
 			$atts,
 			'irecommendthis_top_posts'
@@ -243,12 +279,14 @@ class Themeist_IRecommendThis_Shortcodes {
 		global $wpdb;
 
 		// Sanitize and set defaults.
-		$container  = sanitize_text_field( $atts['container'] );
-		$number     = intval( $atts['number'] );
-		$post_type  = sanitize_text_field( $atts['post_type'] );
-		$year       = intval( $atts['year'] );
-		$monthnum   = intval( $atts['monthnum'] );
-		$show_count = intval( $atts['show_count'] );
+		$container     = sanitize_text_field( $atts['container'] );
+		$number        = absint( $atts['number'] );
+		$post_type     = sanitize_text_field( $atts['post_type'] );
+		$year          = absint( $atts['year'] );
+		$monthnum      = absint( $atts['monthnum'] );
+		$show_count    = filter_var( $atts['show_count'], FILTER_VALIDATE_BOOLEAN );
+		$wrapper       = sanitize_text_field( $atts['wrapper'] );
+		$wrapper_class = sanitize_html_class( $atts['wrapper_class'] );
 
 		/**
 		 * Action fired before querying for top posts.
@@ -296,6 +334,14 @@ class Themeist_IRecommendThis_Shortcodes {
 
 		$posts = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 
+		// If no posts are found, return a message.
+		if ( empty( $posts ) ) {
+			return sprintf(
+				'<p class="irecommendthis-no-posts">%s</p>',
+				esc_html__( 'No recommended posts found.', 'i-recommend-this' )
+			);
+		}
+
 		$return = '';
 
 		/**
@@ -307,6 +353,16 @@ class Themeist_IRecommendThis_Shortcodes {
 		 */
 		do_action( 'irecommendthis_before_top_posts_output', $posts, $atts );
 
+		// Open the wrapper if specified.
+		if ( ! empty( $wrapper ) ) {
+			$return .= sprintf(
+				'<%1$s class="%2$s">',
+				tag_escape( $wrapper ),
+				esc_attr( $wrapper_class )
+			);
+		}
+
+		// Process each post.
 		foreach ( $posts as $item ) {
 			$post_title = get_the_title( $item->ID );
 			$permalink  = get_permalink( $item->ID );
@@ -320,8 +376,14 @@ class Themeist_IRecommendThis_Shortcodes {
 			 * @param string $container The container element.
 			 * @param object $item The current post item.
 			 */
-			$open_tag = apply_filters( 'irecommendthis_top_post_open_tag', '<' . esc_html( $container ) . '>', $container, $item );
-			$return  .= $open_tag;
+			$open_tag = apply_filters(
+				'irecommendthis_top_post_open_tag',
+				sprintf( '<%s>', tag_escape( $container ) ),
+				$container,
+				$item
+			);
+
+			$return .= $open_tag;
 
 			/**
 			 * Filter the post link HTML.
@@ -334,14 +396,20 @@ class Themeist_IRecommendThis_Shortcodes {
 			 */
 			$link_html = apply_filters(
 				'irecommendthis_top_post_link',
-				'<a href="' . esc_url( $permalink ) . '" title="' . esc_attr( $post_title ) . '" rel="nofollow">' . esc_html( $post_title ) . '</a> ',
+				sprintf(
+					'<a href="%1$s" title="%2$s" rel="nofollow">%3$s</a> ',
+					esc_url( $permalink ),
+					esc_attr( $post_title ),
+					esc_html( $post_title )
+				),
 				$item,
 				$permalink,
 				$post_title
 			);
-			$return   .= $link_html;
 
-			if ( 1 === $show_count ) {
+			$return .= $link_html;
+
+			if ( $show_count ) {
 				/**
 				 * Filter the count display HTML.
 				 *
@@ -352,12 +420,18 @@ class Themeist_IRecommendThis_Shortcodes {
 				 */
 				$count_html = apply_filters(
 					'irecommendthis_top_post_count',
-					'<span class="votes">' . esc_html( $post_count ) . '</span> ',
+					sprintf(
+						'<span class="votes" aria-label="%1$s">%2$s</span> ',
+						/* translators: %d: number of recommendations */
+						esc_attr( sprintf( _n( '%d recommendation', '%d recommendations', $post_count, 'i-recommend-this' ), $post_count ) ),
+						esc_html( $post_count )
+					),
 					$post_count,
 					$item
 				);
-				$return    .= $count_html;
-			}
+
+				$return .= $count_html;
+			}//end if
 
 			/**
 			 * Filter the closing HTML tag for each top post item.
@@ -367,9 +441,20 @@ class Themeist_IRecommendThis_Shortcodes {
 			 * @param string $container The container element.
 			 * @param object $item The current post item.
 			 */
-			$close_tag = apply_filters( 'irecommendthis_top_post_close_tag', '</' . esc_html( $container ) . '>', $container, $item );
-			$return   .= $close_tag;
+			$close_tag = apply_filters(
+				'irecommendthis_top_post_close_tag',
+				sprintf( '</%s>', tag_escape( $container ) ),
+				$container,
+				$item
+			);
+
+			$return .= $close_tag;
 		}//end foreach
+
+		// Close the wrapper if specified.
+		if ( ! empty( $wrapper ) ) {
+			$return .= sprintf( '</%s>', tag_escape( $wrapper ) );
+		}
 
 		/**
 		 * Filter the final top posts HTML.
