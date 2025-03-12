@@ -111,6 +111,18 @@ class Themeist_IRecommendThis_DB_Upgrader {
 		$table_name      = $wpdb->prefix . 'irecommendthis_votes';
 		$charset_collate = $wpdb->get_charset_collate();
 
+		// Check if table already exists to prevent duplicate operations.
+		$table_exists = $this->table_exists();
+		if ( $table_exists ) {
+			return true;
+		}
+
+		// Start a transaction if supported by the database.
+		$supports_transactions = $this->db_supports_transactions();
+		if ( $supports_transactions ) {
+			$wpdb->query( 'START TRANSACTION' );
+		}
+
 		// Updated IP column to VARCHAR(255) to accommodate hashed IPs.
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . $table_name . " (
 			id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
@@ -127,11 +139,38 @@ class Themeist_IRecommendThis_DB_Upgrader {
 
 		$success = empty( $wpdb->last_error );
 
+		// Log the error for debugging if it occurred.
+		if ( ! $success ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( 'I Recommend This plugin: Error creating database table: ' . $wpdb->last_error );
+		}
+
+		// Check if table was actually created.
+		$table_created = $this->table_exists();
+		$success       = $success && $table_created;
+
+		if ( $supports_transactions ) {
+			if ( $success ) {
+				$wpdb->query( 'COMMIT' );
+			} else {
+				$wpdb->query( 'ROLLBACK' );
+			}
+		}
+
 		if ( $success ) {
 			delete_option( 'irecommendthis_db_error' );
 		} else {
-			update_option( 'irecommendthis_db_error', true );
+			update_option( 'irecommendthis_db_error', $wpdb->last_error );
 		}
+
+		/**
+		 * Action fired after database table creation attempt.
+		 *
+		 * @since 4.0.0
+		 * @param bool   $success    Whether the table was successfully created.
+		 * @param string $table_name The name of the table.
+		 */
+		do_action( 'irecommendthis_after_table_creation', $success, $table_name );
 
 		return $success;
 	}
@@ -155,10 +194,46 @@ class Themeist_IRecommendThis_DB_Upgrader {
 			return $this->create_table();
 		}
 
-		// Run each update method in sequence.
-		$success = $this->update_ip_column_size( $table_name );
-		$success = $success && $this->ensure_indexes( $table_name );
-		$success = $success && $this->maybe_anonymize_ips( $table_name );
+		// Track overall success.
+		$success = true;
+
+		// Run each update method in sequence and collect results.
+		$ip_column_updated = $this->update_ip_column_size( $table_name );
+		if ( ! $ip_column_updated ) {
+			// Log error but continue with other updates.
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( 'I Recommend This plugin: Failed to update IP column size.' );
+			$success = false;
+		}
+
+		$indexes_added = $this->ensure_indexes( $table_name );
+		if ( ! $indexes_added ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( 'I Recommend This plugin: Failed to ensure indexes.' );
+			$success = false;
+		}
+
+		$ips_anonymized = $this->maybe_anonymize_ips( $table_name );
+		if ( ! $ips_anonymized ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( 'I Recommend This plugin: Failed to anonymize IPs.' );
+			$success = false;
+		}
+
+		if ( $success ) {
+			update_option( 'irecommendthis_db_update_success', current_time( 'mysql' ) );
+		} else {
+			update_option( 'irecommendthis_db_update_error', current_time( 'mysql' ) );
+		}
+
+		/**
+		 * Action fired after database update operations.
+		 *
+		 * @since 4.0.0
+		 * @param bool   $success    Whether all updates were successful.
+		 * @param string $table_name The name of the table.
+		 */
+		do_action( 'irecommendthis_after_db_operations', $success, $table_name );
 
 		return $success;
 	}
@@ -242,6 +317,21 @@ class Themeist_IRecommendThis_DB_Upgrader {
 	}
 
 	/**
+	 * Check if the database supports transactions.
+	 *
+	 * @return bool Whether transactions are supported.
+	 */
+	private function db_supports_transactions() {
+		global $wpdb;
+
+		// Check if we're using MySQL or MariaDB with a transactional storage engine.
+		$engine = $wpdb->get_var( 'SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() LIMIT 1' );
+
+		// InnoDB supports transactions, MyISAM doesn't.
+		return 'InnoDB' === $engine;
+	}
+
+	/**
 	 * Anonymize IP addresses if needed.
 	 *
 	 * @param string $table_name The database table name.
@@ -270,8 +360,25 @@ class Themeist_IRecommendThis_DB_Upgrader {
 		// Process in batches to avoid timeouts.
 		$processed = 0;
 		$has_more  = true;
+		$max_loops = 10;
+		// Safety mechanism to prevent endless loops.
+		$loop_count = 0;
 
-		while ( $has_more ) {
+		// Before starting, record the time to enforce a maximum execution time.
+		$start_time         = time();
+		$max_execution_time = 30;
+		// 30 seconds max to avoid timeouts.
+
+		while ( $has_more && $loop_count < $max_loops ) {
+			// Safety check for execution time.
+			if ( time() - $start_time > $max_execution_time ) {
+				// Store progress and exit, will continue on next request.
+				update_option( 'irecommendthis_ip_migration_progress', $processed );
+				return true;
+			}
+
+			++$loop_count;
+
 			// Get a batch of records to process.
 			$table_name_escaped = esc_sql( $table_name );
 
@@ -292,8 +399,13 @@ class Themeist_IRecommendThis_DB_Upgrader {
 			if ( empty( $records ) ) {
 				$has_more = false;
 				update_option( 'irecommendthis_ip_migration_complete', true );
+				delete_option( 'irecommendthis_ip_migration_progress' );
+				// Clean up progress tracking.
 				break;
 			}
+
+			// Track how many records we've updated in this batch for better error handling.
+			$batch_processed = 0;
 
 			// Process each record in this batch.
 			foreach ( $records as $record ) {
@@ -302,9 +414,10 @@ class Themeist_IRecommendThis_DB_Upgrader {
 					continue;
 				}
 
-				$hashed_ip = $this->anonymize_ip( $record->ip );
+				// Use the processor's anonymize_ip method instead of our own implementation.
+				$hashed_ip = Themeist_IRecommendThis_Public_Processor::anonymize_ip( $record->ip );
 
-				$wpdb->update(
+				$result = $wpdb->update(
 					$table_name,
 					array( 'ip' => $hashed_ip ),
 					array( 'id' => $record->id ),
@@ -312,46 +425,63 @@ class Themeist_IRecommendThis_DB_Upgrader {
 					array( '%d' )
 				);
 
-				++$processed;
+				// Count only successful updates.
+				if ( false !== $result ) {
+					++$batch_processed;
+					++$processed;
+				}
 			}//end foreach
+
+			// If we didn't successfully process any records but records existed,
+			// there may be a database issue - avoid infinite loops.
+			if ( 0 === $batch_processed && ! empty( $records ) ) {
+				// Log the error and break out.
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( 'I Recommend This plugin: IP migration stalled - processed 0 records in batch.' );
+				update_option( 'irecommendthis_ip_migration_error', 'Stalled processing' );
+				$has_more = false;
+				break;
+			}
 
 			// If we've processed less than the batch size, we're done.
 			if ( count( $records ) < $this->batch_size ) {
 				$has_more = false;
 				update_option( 'irecommendthis_ip_migration_complete', true );
+				delete_option( 'irecommendthis_ip_migration_progress' );
+				// Clean up progress tracking.
 			}
+
+			// Update progress.
+			update_option( 'irecommendthis_ip_migration_progress', $processed );
 
 			// Give the server a brief moment to breathe if we're processing a lot of records.
 			if ( $processed > 5000 ) {
-				sleep( 1 );
+				usleep( 100000 );
+				// 100ms pause.
 			}
 		}//end while
+
+		// If we hit the max loops but still have more to process,
+		// we'll need to continue on the next request.
+		if ( $loop_count >= $max_loops && $has_more ) {
+			update_option( 'irecommendthis_ip_migration_progress', $processed );
+			// This will ensure we continue next time.
+			return true;
+		}
 
 		return true;
 	}
 
 	/**
-	 * Anonymize an IP address for secure storage using global hashing.
+	 * Delegating method for IP anonymization to maintain backward compatibility.
+	 * Uses the canonical implementation from the processor class.
 	 *
 	 * @param string $ip The IP address to anonymize.
 	 * @return string The anonymized (hashed) IP.
 	 */
 	private function anonymize_ip( $ip ) {
-		// Empty IPs should return a consistent hash.
-		if ( empty( $ip ) ) {
-			$ip = 'unknown';
-		}
-
-		// Use WordPress salt for authentication.
-		$auth_salt = wp_salt( 'auth' );
-
-		// Use site-specific hash for additional entropy.
-		$site_hash = defined( 'COOKIEHASH' ) ? COOKIEHASH : md5( site_url() );
-
-		// Create the hash using WordPress hash function with site context.
-		$hashed_ip = wp_hash( $ip . $site_hash, 'auth' );
-
-		return $hashed_ip;
+		// Use the processor's implementation which includes filter hooks.
+		return Themeist_IRecommendThis_Public_Processor::anonymize_ip( $ip );
 	}
 
 	/**

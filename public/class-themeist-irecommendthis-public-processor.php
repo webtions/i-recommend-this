@@ -340,7 +340,7 @@ class Themeist_IRecommendThis_Public_Processor {
 				// Set cookie again to ensure state consistency.
 				setcookie( $cookie_name, (string) time(), time() + 31536000, '/' );
 			}
-		}
+		}//end if
 
 		return $recommended;
 	}
@@ -377,9 +377,16 @@ class Themeist_IRecommendThis_Public_Processor {
 		if ( empty( $ip ) ) {
 			$ip = 'unknown';
 		}
+
+		// Use WordPress salt for authentication.
 		$auth_salt = wp_salt( 'auth' );
+
+		// Use site-specific hash for additional entropy.
 		$site_hash = defined( 'COOKIEHASH' ) ? COOKIEHASH : md5( site_url() );
+
+		// Create the hash using WordPress hash function with site context.
 		$hashed_ip = wp_hash( $ip . $site_hash, 'auth' );
+
 		/**
 		 * Filter the anonymized IP address.
 		 *
