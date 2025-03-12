@@ -55,11 +55,7 @@ class Themeist_IRecommendThis_Public_Assets {
 			$css_path = plugin_dir_path( $this->plugin_file ) . 'assets/css/' . $css_file;
 			$css_url  = plugins_url( 'assets/css/' . $css_file, $this->plugin_file );
 
-			if ( file_exists( $css_path ) ) {
-				wp_enqueue_style( 'irecommendthis', $css_url, array(), filemtime( $css_path ) );
-			} else {
-				wp_enqueue_style( 'irecommendthis', $css_url, array(), THEMEIST_IRT_VERSION );
-			}
+			wp_enqueue_style( 'irecommendthis', $css_url, array(), THEMEIST_IRT_VERSION );
 		}
 
 		// Register and enqueue the main JavaScript file.
@@ -70,7 +66,7 @@ class Themeist_IRecommendThis_Public_Assets {
 			'irecommendthis',
 			$js_url,
 			array( 'jquery' ),
-			file_exists( $js_path ) ? filemtime( $js_path ) : THEMEIST_IRT_VERSION,
+			THEMEIST_IRT_VERSION,
 			true
 		);
 
@@ -88,7 +84,7 @@ class Themeist_IRecommendThis_Public_Assets {
 				'ajaxurl'       => admin_url( 'admin-ajax.php' ),
 				'options'       => wp_json_encode( $options ),
 				'removal_delay' => 250,
-			// Add configurable delay for button state transitions.
+				// Add configurable delay for button state transitions.
 			)
 		);
 	}
