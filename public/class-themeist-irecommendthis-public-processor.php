@@ -240,8 +240,8 @@ class Themeist_IRecommendThis_Public_Processor {
 		$anonymized_ip = self::anonymize_ip( $ip );
 
 		// Check for unrecommend action with nonce verification.
-		if ( isset( $_POST['unrecommend'] ) && isset( $_POST['security'] )
-			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'irecommendthis-nonce' )
+		if ( isset( $_POST['unrecommend'] ) && isset( $_POST['nonce'] )
+			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'irecommendthis-nonce' )
 			&& 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
 		) {
 			$wpdb->query(
@@ -305,7 +305,7 @@ class Themeist_IRecommendThis_Public_Processor {
 	 */
 	private static function process_cookie_based_recommendation( $post_id, $recommended ) {
 		// Verify nonce for security.
-		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'irecommendthis-nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'irecommendthis-nonce' ) ) {
 			return $recommended;
 		}
 
@@ -313,8 +313,7 @@ class Themeist_IRecommendThis_Public_Processor {
 		$cookie_exists = isset( $_COOKIE[ $cookie_name ] );
 
 		// Process unrecommend action.
-		if ( isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
-		) {
+		if ( isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
 			// Case 1: User is unliking a post they previously liked.
 			if ( $cookie_exists ) {
 				// Delete the cookie (set its expiration to the past).
@@ -326,7 +325,6 @@ class Themeist_IRecommendThis_Public_Processor {
 				do_action( 'irecommendthis_count_decremented', $post_id, $recommended, $cookie_exists );
 			}
 		} elseif ( isset( $_POST['unrecommend'] ) && 'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
-			// end if
 			// Case 2: User is liking a post they haven't liked before.
 			if ( ! $cookie_exists ) {
 				// Set cookie for 1 year.
@@ -342,7 +340,7 @@ class Themeist_IRecommendThis_Public_Processor {
 				// Set cookie again to ensure state consistency.
 				setcookie( $cookie_name, (string) time(), time() + 31536000, '/' );
 			}
-		}//end if
+		}
 
 		return $recommended;
 	}

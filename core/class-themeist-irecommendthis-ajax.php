@@ -62,50 +62,14 @@ class Themeist_IRecommendThis_Ajax {
 			exit;
 		}
 
-		// Check for nonce.
-		$nonce_value = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-
-		if ( ! wp_verify_nonce( $nonce_value, 'irecommendthis-nonce' ) ) {
-			/**
-			 * Action fired when nonce verification fails.
-			 */
-			do_action( 'irecommendthis_ajax_nonce_failure', $post_id );
-
-			// Get plugin settings for returning current state only.
-			$options          = get_option( 'irecommendthis_settings' );
-			$text_zero_suffix = isset( $options['text_zero_suffix'] ) ? sanitize_text_field( $options['text_zero_suffix'] ) : '';
-			$text_one_suffix  = isset( $options['text_one_suffix'] ) ? sanitize_text_field( $options['text_one_suffix'] ) : '';
-			$text_more_suffix = isset( $options['text_more_suffix'] ) ? sanitize_text_field( $options['text_more_suffix'] ) : '';
-
-			// Return current count without processing.
-			echo wp_kses_post(
-				Themeist_IRecommendThis_Public_Processor::process_recommendation(
-					$post_id,
-					$text_zero_suffix,
-					$text_one_suffix,
-					$text_more_suffix,
-					'get'
-				)
-			);
-			exit;
-		}//end if
-
-		// Check for unrecommend parameter.
-		$unrecommend = false;
-		if ( isset( $_POST['unrecommend'] ) ) {
-			$unrecommend = 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) );
-		}
-
-		/**
-		 * Action fired before processing AJAX recommendation request.
-		 */
-		do_action( 'irecommendthis_before_ajax_process', $post_id, $_POST );
-
 		// Process the recommendation update.
 		$options          = get_option( 'irecommendthis_settings' );
 		$text_zero_suffix = isset( $options['text_zero_suffix'] ) ? sanitize_text_field( $options['text_zero_suffix'] ) : '';
 		$text_one_suffix  = isset( $options['text_one_suffix'] ) ? sanitize_text_field( $options['text_one_suffix'] ) : '';
 		$text_more_suffix = isset( $options['text_more_suffix'] ) ? sanitize_text_field( $options['text_more_suffix'] ) : '';
+
+		// Send headers before any potential cookie operations
+		header('Content-Type: text/html; charset=UTF-8');
 
 		$result = Themeist_IRecommendThis_Public_Processor::process_recommendation(
 			$post_id,
@@ -114,16 +78,6 @@ class Themeist_IRecommendThis_Ajax {
 			$text_more_suffix,
 			'update'
 		);
-
-		/**
-		 * Action fired after processing AJAX recommendation request.
-		 */
-		do_action( 'irecommendthis_after_ajax_process', $post_id, $result, $_POST );
-
-		/**
-		 * Filter the AJAX response HTML.
-		 */
-		$result = apply_filters( 'irecommendthis_ajax_response', $result, $post_id );
 
 		echo wp_kses_post( $result );
 		exit;
