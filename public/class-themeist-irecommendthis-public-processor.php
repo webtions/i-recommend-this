@@ -24,6 +24,7 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @param string $text_one_suffix   Text for one suffix.
 	 * @param string $text_more_suffix  Text for more suffix.
 	 * @param string $action            Action to perform: 'get' or 'update'.
+	 * @param string $unrecommend       Whether this is an unrecommend action (true/false as string).
 	 * @return string HTML output for the recommendation count.
 	 */
 	public static function process_recommendation(
@@ -31,7 +32,8 @@ class Themeist_IRecommendThis_Public_Processor {
 		$text_zero_suffix = false,
 		$text_one_suffix = false,
 		$text_more_suffix = false,
-		$action = 'get'
+		$action = 'get',
+		$unrecommend = 'false'
 	) {
 		// Validate post ID.
 		if ( ! is_numeric( $post_id ) ) {
@@ -68,7 +70,7 @@ class Themeist_IRecommendThis_Public_Processor {
 		if ( 'get' === $action ) {
 			return self::get_recommendation_count( $post_id, $recommended, $settings, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
 		} elseif ( 'update' === $action ) {
-			return self::update_recommendation_count( $post_id, $recommended, $settings, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
+			return self::update_recommendation_count( $post_id, $recommended, $settings, $text_zero_suffix, $text_one_suffix, $text_more_suffix, $unrecommend );
 		}
 
 		return '';
@@ -170,9 +172,18 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @param string $text_zero_suffix  Text for zero suffix.
 	 * @param string $text_one_suffix   Text for one suffix.
 	 * @param string $text_more_suffix  Text for more suffix.
+	 * @param string $unrecommend       Whether this is an unrecommend action (true/false as string).
 	 * @return string HTML output.
 	 */
-	private static function update_recommendation_count( $post_id, $recommended, $settings, $text_zero_suffix, $text_one_suffix, $text_more_suffix ) {
+	private static function update_recommendation_count(
+		$post_id,
+		$recommended,
+		$settings,
+		$text_zero_suffix,
+		$text_one_suffix,
+		$text_more_suffix,
+		$unrecommend = 'false'
+	) {
 		$hide_zero        = $settings['hide_zero'];
 		$enable_unique_ip = $settings['enable_unique_ip'];
 
@@ -187,11 +198,11 @@ class Themeist_IRecommendThis_Public_Processor {
 
 		// Process IP-based tracking if enabled.
 		if ( 0 !== $enable_unique_ip ) {
-			self::process_ip_based_recommendation( $post_id );
+			self::process_ip_based_recommendation( $post_id, $unrecommend );
 		}
 
 		// Process cookie-based recommendation and get updated count.
-		$recommended = self::process_cookie_based_recommendation( $post_id, $recommended );
+		$recommended = self::process_cookie_based_recommendation( $post_id, $recommended, $unrecommend );
 
 		// Update the recommendation count.
 		update_post_meta( $post_id, '_recommended', $recommended );
@@ -231,19 +242,17 @@ class Themeist_IRecommendThis_Public_Processor {
 	/**
 	 * Process IP-based recommendation.
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int    $post_id     Post ID.
+	 * @param string $unrecommend Whether this is an unrecommend action (true/false as string).
 	 */
-	private static function process_ip_based_recommendation( $post_id ) {
+	private static function process_ip_based_recommendation( $post_id, $unrecommend = 'false' ) {
 		global $wpdb;
 
 		$ip            = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$anonymized_ip = self::anonymize_ip( $ip );
 
-		// Check for unrecommend action with nonce verification.
-		if ( isset( $_POST['unrecommend'] ) && isset( $_POST['nonce'] )
-			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'irecommendthis-nonce' )
-			&& 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) )
-		) {
+		// Check for unrecommend action.
+		if ( 'true' === $unrecommend ) {
 			$wpdb->query(
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->prefix}irecommendthis_votes
@@ -299,21 +308,17 @@ class Themeist_IRecommendThis_Public_Processor {
 	/**
 	 * Process cookie-based recommendation.
 	 *
-	 * @param int $post_id     Post ID.
-	 * @param int $recommended Current recommendation count.
+	 * @param int    $post_id     Post ID.
+	 * @param int    $recommended Current recommendation count.
+	 * @param string $unrecommend Whether this is an unrecommend action (true/false as string).
 	 * @return int Updated recommendation count.
 	 */
-	private static function process_cookie_based_recommendation( $post_id, $recommended ) {
-		// Verify nonce for security.
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'irecommendthis-nonce' ) ) {
-			return $recommended;
-		}
-
+	private static function process_cookie_based_recommendation( $post_id, $recommended, $unrecommend = 'false' ) {
 		$cookie_name   = 'irecommendthis_' . $post_id;
 		$cookie_exists = isset( $_COOKIE[ $cookie_name ] );
 
 		// Process unrecommend action.
-		if ( isset( $_POST['unrecommend'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
+		if ( 'true' === $unrecommend ) {
 			// Case 1: User is unliking a post they previously liked.
 			if ( $cookie_exists ) {
 				// Delete the cookie (set its expiration to the past).
@@ -322,24 +327,73 @@ class Themeist_IRecommendThis_Public_Processor {
 				// Only decrement if cookie existed.
 				$recommended = max( 0, $recommended - 1 );
 
+				/**
+				 * Action fired after decrementing the recommendation count.
+				 *
+				 * @since 4.0.0
+				 * @param int  $post_id      The post ID.
+				 * @param int  $recommended  The updated recommendation count.
+				 * @param bool $cookie_exists Whether the cookie existed.
+				 */
 				do_action( 'irecommendthis_count_decremented', $post_id, $recommended, $cookie_exists );
 			}
-		} elseif ( isset( $_POST['unrecommend'] ) && 'false' === sanitize_text_field( wp_unslash( $_POST['unrecommend'] ) ) ) {
+		} elseif ( 'false' === $unrecommend ) {
 			// Case 2: User is liking a post they haven't liked before.
 			if ( ! $cookie_exists ) {
-				// Set cookie for 1 year.
-				setcookie( $cookie_name, (string) time(), time() + 31536000, '/' );
+				// Build secure cookie parameters.
+				$cookie_params = array(
+					'expires'  => time() + YEAR_IN_SECONDS,
+					'path'     => '/',
+					'domain'   => '',
+					'secure'   => is_ssl(),
+					'httponly' => true,
+					'samesite' => 'Strict',
+				);
+
+				/**
+				 * Filter cookie parameters.
+				 *
+				 * @since 4.0.0
+				 * @param array $cookie_params Cookie parameters.
+				 * @param int   $post_id       The post ID.
+				 */
+				$cookie_params = apply_filters( 'irecommendthis_cookie_parameters', $cookie_params, $post_id );
+
+				// Set the cookie - using modern cookie parameters where supported.
+				if ( PHP_VERSION_ID >= 70300 ) {
+					setcookie(
+						$cookie_name,
+						(string) time(),
+						$cookie_params
+					);
+				} else {
+					// Fallback for older PHP versions.
+					setcookie(
+						$cookie_name,
+						(string) time(),
+						$cookie_params['expires'],
+						$cookie_params['path']
+					);
+				}
 
 				// Increment the count.
 				++$recommended;
 
+				/**
+				 * Action fired after incrementing the recommendation count.
+				 *
+				 * @since 4.0.0
+				 * @param int  $post_id      The post ID.
+				 * @param int  $recommended  The updated recommendation count.
+				 * @param bool $cookie_exists Whether the cookie existed.
+				 */
 				do_action( 'irecommendthis_count_incremented', $post_id, $recommended, $cookie_exists );
 			} else {
 				// User is trying to like but the cookie already exists.
 				// This can happen when cookie wasn't properly cleared in a previous unlike.
 				// Set cookie again to ensure state consistency.
-				setcookie( $cookie_name, (string) time(), time() + 31536000, '/' );
-			}
+				setcookie( $cookie_name, (string) time(), time() + YEAR_IN_SECONDS, '/' );
+			}//end if
 		}//end if
 
 		return $recommended;
@@ -354,10 +408,21 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @return string HTML output.
 	 */
 	private static function generate_count_html( $recommended, $suffix, $hide_zero ) {
-		if ( 0 === $recommended && 1 === $hide_zero ) {
-			return '<span class="irecommendthis-count" style="display: none;">0</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
+		$classes = array( 'irecommendthis-count' );
+
+		// Add a class for zero count for styling.
+		if ( 0 === $recommended ) {
+			$classes[] = 'count-zero';
+
+			// Hide the count if set in options.
+			if ( 1 === $hide_zero ) {
+				$classes[] = 'hidden';
+			}
 		}
-		return '<span class="irecommendthis-count">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
+
+		$class_attr = implode( ' ', $classes );
+
+		return '<span class="' . esc_attr( $class_attr ) . '">' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
 	}
 
 	/**
@@ -377,16 +442,9 @@ class Themeist_IRecommendThis_Public_Processor {
 		if ( empty( $ip ) ) {
 			$ip = 'unknown';
 		}
-
-		// Use WordPress salt for authentication.
 		$auth_salt = wp_salt( 'auth' );
-
-		// Use site-specific hash for additional entropy.
 		$site_hash = defined( 'COOKIEHASH' ) ? COOKIEHASH : md5( site_url() );
-
-		// Create the hash using WordPress hash function with site context.
 		$hashed_ip = wp_hash( $ip . $site_hash, 'auth' );
-
 		/**
 		 * Filter the anonymized IP address.
 		 *
