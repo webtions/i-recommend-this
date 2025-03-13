@@ -83,18 +83,31 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @return array Settings array.
 	 */
 	private static function get_recommendation_settings( $post_id ) {
-		// Fetch options and recommendation count.
-		$options          = get_option( 'irecommendthis_settings' );
-		$recommended      = (int) get_post_meta( $post_id, '_recommended', true );
+		static $settings_cache = array();
+
+		if ( isset( $settings_cache[ $post_id ] ) ) {
+			return $settings_cache[ $post_id ];
+		}
+
+		$options    = get_option( 'irecommendthis_settings' );
+		$meta_value = get_post_meta( $post_id, '_recommended', true );
+		if ( false === $meta_value || '' === $meta_value ) {
+			$recommended = 0;
+			add_post_meta( $post_id, '_recommended', $recommended, true );
+		} else {
+			$recommended = (int) $meta_value;
+		}
 		$hide_zero        = isset( $options['hide_zero'] ) ? (int) $options['hide_zero'] : 0;
 		$enable_unique_ip = isset( $options['enable_unique_ip'] ) ? (int) $options['enable_unique_ip'] : 0;
 
-		return array(
+		$settings_cache[ $post_id ] = array(
 			'options'          => $options,
 			'recommended'      => $recommended,
 			'hide_zero'        => $hide_zero,
 			'enable_unique_ip' => $enable_unique_ip,
 		);
+
+		return $settings_cache[ $post_id ];
 	}
 
 	/**
@@ -114,6 +127,23 @@ class Themeist_IRecommendThis_Public_Processor {
 		} else {
 			return $text_more_suffix;
 		}
+	}
+
+	/**
+	 * Render the recommendation output HTML.
+	 *
+	 * @param int    $post_id           Post ID.
+	 * @param int    $recommended       Recommendation count.
+	 * @param int    $hide_zero         Whether to hide zero count.
+	 * @param string $text_zero_suffix  Text for zero suffix.
+	 * @param string $text_one_suffix   Text for one suffix.
+	 * @param string $text_more_suffix  Text for more suffix.
+	 * @return string HTML output.
+	 */
+	private static function render_recommendation_output( $post_id, $recommended, $hide_zero, $text_zero_suffix, $text_one_suffix, $text_more_suffix ) {
+		$suffix = self::get_suffix( $recommended, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
+		$output = self::generate_count_html( $recommended, $suffix, $hide_zero );
+		return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
 	}
 
 	/**
@@ -139,28 +169,9 @@ class Themeist_IRecommendThis_Public_Processor {
 		 */
 		do_action( 'irecommendthis_before_get_recommendation', $post_id, $recommended );
 
-		// Initialize recommendation count if not set.
-		if ( ! $recommended ) {
-			$recommended = 0;
-			add_post_meta( $post_id, '_recommended', $recommended, true );
-		}
+		// Removed redundant add_post_meta() call as initialization is now handled in get_recommendation_settings().
 
-		// Get the appropriate suffix.
-		$suffix = self::get_suffix( $recommended, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
-
-		// Create output HTML.
-		$output = self::generate_count_html( $recommended, $suffix, $hide_zero );
-
-		/**
-		 * Filter the recommendation count HTML output.
-		 *
-		 * @since 4.0.0
-		 * @param string $output      The HTML output.
-		 * @param int    $recommended The recommendation count.
-		 * @param int    $post_id     The post ID.
-		 * @param string $suffix      The suffix text.
-		 */
-		return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
+		return self::render_recommendation_output( $post_id, $recommended, $hide_zero, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
 	}
 
 	/**
@@ -175,15 +186,7 @@ class Themeist_IRecommendThis_Public_Processor {
 	 * @param string $unrecommend       Whether this is an unrecommend action (true/false as string).
 	 * @return string HTML output.
 	 */
-	private static function update_recommendation_count(
-		$post_id,
-		$recommended,
-		$settings,
-		$text_zero_suffix,
-		$text_one_suffix,
-		$text_more_suffix,
-		$unrecommend = 'false'
-	) {
+	private static function update_recommendation_count( $post_id, $recommended, $settings, $text_zero_suffix, $text_one_suffix, $text_more_suffix, $unrecommend = 'false' ) {
 		$hide_zero        = $settings['hide_zero'];
 		$enable_unique_ip = $settings['enable_unique_ip'];
 
@@ -210,33 +213,14 @@ class Themeist_IRecommendThis_Public_Processor {
 		/**
 		 * Action fired after a post's recommendation count is updated.
 		 *
-		 * This action provides a hook point for cache clearing and other post-update actions.
-		 * Useful for integration with caching plugins to refresh content when recommendations change.
-		 *
 		 * @since 4.0.0
-		 *
 		 * @param int    $post_id     The ID of the post that was recommended.
 		 * @param int    $recommended The updated recommendation count.
 		 * @param string $action      The action performed: 'get' or 'update'.
 		 */
 		do_action( 'irecommendthis_after_process_recommendation', $post_id, $recommended, 'update' );
 
-		// Get the appropriate suffix.
-		$suffix = self::get_suffix( $recommended, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
-
-		// Create output HTML.
-		$output = self::generate_count_html( $recommended, $suffix, $hide_zero );
-
-		/**
-		 * Filter the recommendation count HTML output.
-		 *
-		 * @since 4.0.0
-		 * @param string $output      The HTML output.
-		 * @param int    $recommended The recommendation count.
-		 * @param int    $post_id     The post ID.
-		 * @param string $suffix      The suffix text.
-		 */
-		return apply_filters( 'irecommendthis_count_output', $output, $recommended, $post_id, $suffix );
+		return self::render_recommendation_output( $post_id, $recommended, $hide_zero, $text_zero_suffix, $text_one_suffix, $text_more_suffix );
 	}
 
 	/**
@@ -340,24 +324,7 @@ class Themeist_IRecommendThis_Public_Processor {
 		} elseif ( 'false' === $unrecommend ) {
 			// Case 2: User is liking a post they haven't liked before.
 			if ( ! $cookie_exists ) {
-				// Build secure cookie parameters.
-				$cookie_params = array(
-					'expires'  => time() + YEAR_IN_SECONDS,
-					'path'     => '/',
-					'domain'   => '',
-					'secure'   => is_ssl(),
-					'httponly' => true,
-					'samesite' => 'Strict',
-				);
-
-				/**
-				 * Filter cookie parameters.
-				 *
-				 * @since 4.0.0
-				 * @param array $cookie_params Cookie parameters.
-				 * @param int   $post_id       The post ID.
-				 */
-				$cookie_params = apply_filters( 'irecommendthis_cookie_parameters', $cookie_params, $post_id );
+				$cookie_params = self::get_cookie_params( $post_id );
 
 				// Set the cookie - using modern cookie parameters where supported.
 				if ( PHP_VERSION_ID >= 70300 ) {
@@ -422,8 +389,25 @@ class Themeist_IRecommendThis_Public_Processor {
 		}
 
 		$class_attr = implode( ' ', $classes );
-
 		return '<span class="' . esc_attr( $class_attr ) . '"' . $inline_style . '>' . esc_html( $recommended ) . '</span> <span class="irecommendthis-suffix">' . esc_html( $suffix ) . '</span>';
+	}
+
+	/**
+	 * Get cookie parameters.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return array Cookie parameters.
+	 */
+	private static function get_cookie_params( $post_id ) {
+		$cookie_params = array(
+			'expires'  => time() + YEAR_IN_SECONDS,
+			'path'     => '/',
+			'domain'   => '',
+			'secure'   => is_ssl(),
+			'httponly' => true,
+			'samesite' => 'Strict',
+		);
+		return apply_filters( 'irecommendthis_cookie_parameters', $cookie_params, $post_id );
 	}
 
 	/**
