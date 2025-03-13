@@ -8,7 +8,11 @@
     "icon": "thumbs-up",
     "description": "Block to add recommend link.",
     "supports": {
-        "html": false
+        "html": false,
+        "align": true,
+        "alignWide": false,
+        "customClassName": true,
+        "inserterScope": "block-editor"
     },
     "attributes": {
         "postId": {
@@ -22,8 +26,14 @@
         "useCurrentPost": {
             "type": "boolean",
             "default": true
+        },
+        "isEditorPreview": {
+            "type": "boolean",
+            "default": false
         }
     },
     "textdomain": "i-recommend-this",
-    "editorScript": "file:./index.js"
+    "editorScript": "file:./index.js",
+    "editorStyle": "irecommendthis-editor-style",
+    "usesContext": ["postId", "postType"]
 }

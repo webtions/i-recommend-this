@@ -9,7 +9,6 @@ import {
 	InspectorControls,
 	BlockControls,
 	AlignmentToolbar,
-	useBlockDisplayInformation,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -21,6 +20,7 @@ import {
 } from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
+import ServerSideRender from '@wordpress/server-side-render';
 import metadata from './block.json';
 
 registerBlockType( metadata, {
@@ -41,17 +41,34 @@ registerBlockType( metadata, {
 		const { postId, alignText, useCurrentPost } = attributes;
 		const [ error, setError ] = useState( null );
 		const [ loading, setLoading ] = useState( false );
+		const [ isWidgetContext, setIsWidgetContext ] = useState( false );
 
 		// Get block props with the alignment class
 		const blockProps = useBlockProps( {
 			className: `has-text-align-${ alignText }`,
 		} );
 
-		// Get current post ID from the editor
-		const currentPostId = useSelect( ( select ) => {
-			const { getCurrentPostId } = select( 'core/editor' );
-			return getCurrentPostId ? getCurrentPostId() : null;
+		// Safely check if we're in a widget editor context
+		const isEditor = useSelect( ( select ) => {
+			// Check if the editor store exists at all
+			const storeNames = select.storeNames ? Object.keys(select.storeNames()) : [];
+			const hasEditorStore = storeNames.includes('core/editor');
+
+			// Check if we might be in a widget context
+			const hasWidgetsStore = storeNames.includes('core/edit-widgets');
+			setIsWidgetContext(hasWidgetsStore && !hasEditorStore);
+
+			return hasEditorStore;
 		}, [] );
+
+		// Get current post ID from the editor - only if we're in the regular editor
+		const currentPostId = useSelect( ( select ) => {
+			// Only attempt to get current post ID if we're in a regular editor context
+			if (!isEditor) return null;
+
+			const editor = select( 'core/editor' );
+			return editor && editor.getCurrentPostId ? editor.getCurrentPostId() : null;
+		}, [isEditor] );
 
 		// Get context post ID if in a query loop
 		const contextPostId = context?.postId || null;
@@ -123,30 +140,17 @@ registerBlockType( metadata, {
 			? contextPostId || currentPostId
 			: postId;
 
-		// Create a readable preview of the current state
-		const getPreviewContent = () => {
-			if ( ! effectivePostId ) {
-				return (
-					<Notice status="warning" isDismissible={ false }>
-						No valid post ID available. Please select a post or provide an ID.
-					</Notice>
-				);
-			}
-
-			// Show different shortcode preview based on settings
-			const shortcodePreview = useCurrentPost
-				? '[irecommendthis use_current_post="true"]'
-				: `[irecommendthis id="${ effectivePostId }"]`;
-
+		// If we're in a widget context, show a helpful message
+		if (isWidgetContext) {
 			return (
-				<div className="recommend-preview">
-					<div className="recommend-shortcode">{ shortcodePreview }</div>
-					<div className="recommend-info">
-						Using post ID: { effectivePostId || 'Unknown' }
-					</div>
+				<div {...blockProps}>
+					<Notice status="warning" isDismissible={false}>
+						<p><strong>I Recommend This:</strong> This block is designed for post content.</p>
+						<p>It may not work correctly in a widget area. Consider using the "Most Recommended Posts" widget instead.</p>
+					</Notice>
 				</div>
 			);
-		};
+		}
 
 		return (
 			<div { ...blockProps }>
@@ -168,6 +172,7 @@ registerBlockType( metadata, {
 									? "In query loops, the plugin will use each post's ID automatically."
 									: 'Using a specific post ID for all instances.'
 							}
+							__nextHasNoMarginBottom={true}
 						/>
 
 						{ ! useCurrentPost && (
@@ -178,6 +183,7 @@ registerBlockType( metadata, {
 									onChange={ handlePostIdChange }
 									type="number"
 									min="1"
+									__nextHasNoMarginBottom={true}
 								/>
 								{ error && (
 									<Notice status="error" isDismissible={ false }>
@@ -200,7 +206,23 @@ registerBlockType( metadata, {
 						<Spinner />
 					</Placeholder>
 				) : (
-					getPreviewContent()
+					<div className="irecommendthis-preview">
+						{!effectivePostId ? (
+							<Notice status="warning" isDismissible={false}>
+								No valid post ID available. Please select a post or provide an ID.
+							</Notice>
+						) : (
+							<ServerSideRender
+								block="irecommendthis/recommend"
+								attributes={{
+									postId: effectivePostId,
+									alignText,
+									useCurrentPost,
+									isEditorPreview: true
+								}}
+							/>
+						)}
+					</div>
 				) }
 			</div>
 		);
