@@ -20,6 +20,8 @@ For detailed information, see the following documentation:
 - [Overview](docs/overview.md) - Plugin architecture, file structure, and process flow
 - [Developers Guide](docs/developers.md) - Hooks, filters, and integration methods
 - [Advanced Usage](docs/advanced-usage.md) - GDPR, caching, and customization examples
+- [Technical Reference](docs/technical-reference.md) - Functions, classes, and methods reference
+
 
 ## Development Setup
 

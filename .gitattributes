@@ -10,9 +10,9 @@ phpcs.xml                  export-ignore
 package.json               export-ignore
 package-lock.json          export-ignore
 
-readme.md                  export-ignore
 SECURITY.md                export-ignore
 plugin-documentation.md    export-ignore
+docs/                      export-ignore
 
 src/                       export-ignore
 node_modules/              export-ignore
