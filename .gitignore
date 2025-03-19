@@ -62,3 +62,6 @@ local-config.php
 .git/
 
 *-old.*
+
+package-lock.json
+
