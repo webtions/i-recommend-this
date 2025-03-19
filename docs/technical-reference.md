@@ -1,4 +1,4 @@
-# I Recommend This - API Reference
+# I Recommend This - Technical Reference
 
 This document provides a technical reference for the functions, methods, and classes available for developers.
 
