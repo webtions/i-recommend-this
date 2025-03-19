@@ -1,7 +1,7 @@
 === I Recommend This ===
 Contributors: themeist, hchouhan
 Donate link: https://themeist.com
-Tags: recommend, like, love, post, rate, GDPR
+Tags: recommend, like, love, post, rate
 Requires at least: 6.0
 Tested up to: 6.7.2
 Stable tag: 4.0.0
