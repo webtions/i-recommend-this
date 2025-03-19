@@ -45,20 +45,17 @@ function irecommendthis( $id = null, $should_echo = true, $wrapper = true ) {
  * @return string|void The recommendation button HTML if $should_echo is false.
  */
 function dot_irecommendthis( $id = null, $should_echo = true, $wrapper = true ) {
-	// Trigger deprecation notice in debug mode.
-	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
-		trigger_error(
+	// Log deprecation message to debug.log instead of showing on frontend.
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log(
 			sprintf(
-				/* translators: 1: Deprecated function name, 2: Version number, 3: Alternative function name */
-				esc_html__( 'Function %1$s is deprecated since version %2$s! Use %3$s instead.', 'i-recommend-this' ),
+				'Function %1$s is deprecated since version %2$s! Use %3$s instead.',
 				'dot_irecommendthis()',
 				'4.0.0',
 				'irecommendthis()'
-			),
-			E_USER_DEPRECATED
+			)
 		);
 	}
-
 	return irecommendthis( $id, $should_echo, $wrapper );
 }
