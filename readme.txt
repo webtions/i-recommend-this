@@ -149,7 +149,7 @@ IMPORTANT: After upgrading, run "Optimize Database" in Settings > DB Tools. Upda
 
 == Changelog ==
 
-= 4.0.0 - (10 March 2025) =
+= 4.0.0 - (19 March 2025) =
 * Core Improvements:
 	- Completely rebuilt plugin with a modern component-based architecture
 	- Changed naming from "dot_irecommendthis" to "irecommendthis" throughout
