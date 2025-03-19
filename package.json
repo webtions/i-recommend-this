@@ -1,14 +1,16 @@
 {
 	"name": "i-recommend-this",
-	"version": "3.10.3",
+	"version": "4.0.0",
 	"description": "I Recommend This plugin block",
 	"author": "hchouhan",
 	"license": "GPL-2.0-or-later",
-	"main": "build/index.js",
+	"main": "blocks/recommend/build/index.js",
 	"scripts": {
-		"build": "wp-scripts build",
+		"prebuild": "echo '<?php // Silence is golden.' > blocks/recommend/build/index.php",
+		"build": "wp-scripts build blocks/recommend/src/index.js --output-path=blocks/recommend/build && cp -f blocks/recommend/src/block.json blocks/recommend/build/",
 		"packages-update": "wp-scripts packages-update",
-		"start": "wp-scripts start"
+		"prestart": "echo '<?php // Silence is golden.' > blocks/recommend/build/index.php",
+		"start": "wp-scripts start blocks/recommend/src/index.js --output-path=blocks/recommend/build && cp -f blocks/recommend/src/block.json blocks/recommend/build/"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^27.9.0"

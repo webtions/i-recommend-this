@@ -2,13 +2,16 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "irecommendthis/recommend",
-    "version": "3.10.3",
+    "version": "4.0.0",
     "title": "I Recommend This",
     "category": "widgets",
     "icon": "thumbs-up",
     "description": "Block to add recommend link.",
     "supports": {
-        "html": false
+        "html": false,
+        "align": true,
+        "alignWide": false,
+        "customClassName": true
     },
     "attributes": {
         "postId": {
@@ -22,8 +25,14 @@
         "useCurrentPost": {
             "type": "boolean",
             "default": true
+        },
+        "isEditorPreview": {
+            "type": "boolean",
+            "default": false
         }
     },
     "textdomain": "i-recommend-this",
-    "editorScript": "file:./index.js"
+    "editorScript": "file:./index.js",
+    "editorStyle": "irecommendthis-editor-style",
+    "usesContext": ["postId", "postType"]
 }
