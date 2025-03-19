@@ -64,7 +64,7 @@ The build process compiles the JavaScript and CSS assets, including the Gutenber
 
 ## License
 
-This project is licensed under the GPL-3.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPL-3.0 License - see the [GNU General Public License](http://www.gnu.org/licenses/gpl-3.0.txt) for details.
 
 ## Security
 
