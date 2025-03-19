@@ -1,6 +1,6 @@
 === I Recommend This ===
 Contributors: themeist, hchouhan
-Donate link: https://themeist.com
+Donate link: https://themeist.com/plugins/wordpress/i-recommend-this/
 Tags: recommend, like, love, post, rate
 Requires at least: 6.0
 Tested up to: 6.7.2
@@ -53,7 +53,7 @@ This plugin is based exactly on Benoit "LeBen" Burgener's "I Like This" Plugin a
 
 ### For Developers:
 
-This plugin is being developed on GitHub.. If you want to collaborate, please look at [I Recommend This plugin on GitHub](https://github.com/hchouhan/I-Recommend-This).
+This plugin is being developed on GitHub.. If you want to collaborate, please look at [I Recommend This plugin on GitHub](https://github.com/webtions/I-Recommend-This).
 
 ### Translations
 
