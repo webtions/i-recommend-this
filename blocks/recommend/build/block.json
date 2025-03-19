@@ -11,8 +11,7 @@
         "html": false,
         "align": true,
         "alignWide": false,
-        "customClassName": true,
-        "inserterScope": "block-editor"
+        "customClassName": true
     },
     "attributes": {
         "postId": {

@@ -40,8 +40,6 @@ function irecommendthis_register_recommend_block() {
 				'align'           => true,
 				'alignWide'       => false,
 				'customClassName' => true,
-				// Only show in post editor, not in widget screen.
-				'inserterScope'   => 'block-editor',
 			),
 		)
 	);
@@ -99,17 +97,15 @@ function irecommendthis_is_editor_context() {
  * @return string Rendered block output.
  */
 function irecommendthis_block_render_callback( $attributes, $_content, $block ) {
-	// Check if this is in a widget context.
-	if ( irecommendthis_is_in_widget_context( $block ) ) {
-		return irecommendthis_get_widget_context_message();
-	}
-
 	// Get the post ID based on context.
 	$post_id = irecommendthis_determine_post_id( $attributes, $block );
 
 	// If we still don't have a valid post ID, provide an informative message.
 	if ( ! $post_id ) {
-		return irecommendthis_get_no_post_context_message();
+		return '<div class="irecommendthis-context-notice" style="padding: 12px; background-color: #f8f9fa; border-left: 4px solid #ffb900; margin: 10px 0;">
+			<p style="margin: 0; padding: 0;"><strong>' . esc_html__( 'I Recommend This', 'i-recommend-this' ) . ':</strong> ' .
+			esc_html__( 'Unable to determine which post to recommend. This block works best within a post or page context.', 'i-recommend-this' ) . '</p>
+		</div>';
 	}
 
 	/**
@@ -267,93 +263,4 @@ function irecommendthis_render_button( $post_id, $wrapper ) {
 	}
 
 	return '';
-}
-
-/**
- * Detect if the block is being rendered in a widget context.
- *
- * @param WP_Block $block The block instance.
- * @return boolean Whether the block is in a widget context.
- */
-function irecommendthis_is_in_widget_context( $block ) {
-	// Check block ancestors for widget blocks.
-	if ( isset( $block->context['widget'] ) ) {
-		return true;
-	}
-
-	// Check if we're in the widgets admin screen.
-	if ( function_exists( 'get_current_screen' ) ) {
-		$screen = get_current_screen();
-		if ( $screen && 'widgets' === $screen->id ) {
-			return true;
-		}
-	}
-
-	// Check if the block has widget area as parent.
-	if ( isset( $block->context['postId'] ) && 0 === $block->context['postId'] ) {
-		return true;
-	}
-
-	// Check if this is the widget editing interface.
-	if ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() ) {
-		// Get the referer if available.
-		$referer = wp_get_referer();
-		if ( $referer && false !== strpos( $referer, 'widgets.php' ) ) {
-			return true;
-		}
-	}
-
-	// Check current page safely with nonce verification.
-	$page           = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
-	$nonce_verified = false;
-
-	if ( isset( $_REQUEST['_wpnonce'] ) ) {
-		$nonce_verified = wp_verify_nonce( sanitize_key( $_REQUEST['_wpnonce'] ), 'widgets-access' );
-	}
-
-	if ( 'gutenberg-widgets' === $page && $nonce_verified ) {
-		return true;
-	}
-
-	// Check if we're in a sidebar.
-	if ( doing_action( 'dynamic_sidebar' ) || doing_action( 'dynamic_sidebar_before' ) || doing_action( 'dynamic_sidebar_after' ) ) {
-		return true;
-	}
-
-	// Check if we're on a page with no post context.
-	if ( ! is_singular() && ! get_the_ID() && ! isset( $block->context['postId'] ) ) {
-		return true;
-	}
-
-	return false;
-}
-
-/**
- * Get a friendly message for widget contexts.
- *
- * @return string HTML message for widget contexts.
- */
-function irecommendthis_get_widget_context_message() {
-	$message  = '<div class="irecommendthis-widget-notice" style="padding: 12px; background-color: #f8f9fa; border-left: 4px solid #007cba; margin: 10px 0;">';
-	$message .= '<p style="margin: 0; padding: 0;"><strong>' . esc_html__( 'I Recommend This', 'i-recommend-this' ) . ':</strong> ';
-	$message .= esc_html__( 'This block is designed to work within post content. For widgets, consider using the "Most Recommended Posts" widget instead.', 'i-recommend-this' );
-	$message .= '</p>';
-	$message .= '</div>';
-
-	return $message;
-}
-
-/**
- * Get a message for when there is no post context.
- *
- * @return string HTML message for no post context.
- */
-function irecommendthis_get_no_post_context_message() {
-	$message  = '<div class="irecommendthis-context-notice" style="padding: 12px; background-color: #f8f9fa; border-left: 4px solid #ffb900; margin: 10px 0;">';
-	$message .= '<p style="margin: 0; padding: 0;"><strong>' . esc_html__( 'I Recommend This', 'i-recommend-this' ) . ':</strong> ';
-	$message .= esc_html__( 'Unable to determine which post to recommend. This block works best within a post or page context.', 'i-recommend-this' );
-	$message .= '</p>';
-	$message .= '</div>';
-
-	return $message;
 }

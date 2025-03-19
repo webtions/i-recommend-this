@@ -41,24 +41,17 @@ registerBlockType( metadata, {
 		const { postId, alignText, useCurrentPost } = attributes;
 		const [ error, setError ] = useState( null );
 		const [ loading, setLoading ] = useState( false );
-		const [ isWidgetContext, setIsWidgetContext ] = useState( false );
 
 		// Get block props with the alignment class
 		const blockProps = useBlockProps( {
 			className: `has-text-align-${ alignText }`,
 		} );
 
-		// Safely check if we're in a widget editor context
+		// Check if we're in an editor context
 		const isEditor = useSelect( ( select ) => {
-			// Check if the editor store exists at all
+			// Check if the editor store exists
 			const storeNames = select.storeNames ? Object.keys(select.storeNames()) : [];
-			const hasEditorStore = storeNames.includes('core/editor');
-
-			// Check if we might be in a widget context
-			const hasWidgetsStore = storeNames.includes('core/edit-widgets');
-			setIsWidgetContext(hasWidgetsStore && !hasEditorStore);
-
-			return hasEditorStore;
+			return storeNames.includes('core/editor');
 		}, [] );
 
 		// Get current post ID from the editor - only if we're in the regular editor
@@ -139,18 +132,6 @@ registerBlockType( metadata, {
 		const effectivePostId = useCurrentPost
 			? contextPostId || currentPostId
 			: postId;
-
-		// If we're in a widget context, show a helpful message
-		if (isWidgetContext) {
-			return (
-				<div {...blockProps}>
-					<Notice status="warning" isDismissible={false}>
-						<p><strong>I Recommend This:</strong> This block is designed for post content.</p>
-						<p>It may not work correctly in a widget area. Consider using the "Most Recommended Posts" widget instead.</p>
-					</Notice>
-				</div>
-			);
-		}
 
 		return (
 			<div { ...blockProps }>
