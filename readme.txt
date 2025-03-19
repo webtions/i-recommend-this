@@ -145,10 +145,7 @@ Please report security bugs found in the source code through the [Patchstack Vul
 == Upgrade Notice ==
 
 = 4.0.0 =
-Major version with architecture changes. After upgrading, go to Settings > I Recommend This > DB Tools tab and run "Optimize Database" to update database structure. If using custom CSS for the recommendation button, update selectors to target .irecommendthis-wrapper. For theme developers: Template tag now includes optional wrapper parameter and better post ID detection for query loops. Review plugin documentation for implementation details. All changes are backward compatible but leverage new features for better performance.
-
-= 3.10.3 =
-Fixes critical issue with block editor and query loops that could cause incorrect post IDs to be used.
+IMPORTANT: After upgrading, run "Optimize Database" in Settings > DB Tools. Update custom CSS to target .irecommendthis-wrapper. Template tags and shortcodes changed from dot_irecommendthis to irecommendthis. Legacy code still works for backward compatibility.
 
 == Changelog ==
 
