@@ -1,0 +1,310 @@
+# Copyright (C) 2025 Harish Chouhan, Themeist
+# This file is distributed under the GPL-3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: I Recommend This 4.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/i-recommend-this\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-03-26T13:46:44+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: i-recommend-this\n"
+
+#. Plugin Name of the plugin
+#: i-recommend-this.php
+#: admin/class-themeist-irecommendthis-admin.php:138
+#: admin/class-themeist-irecommendthis-admin.php:139
+#: blocks/recommend/block.php:106
+msgid "I Recommend This"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: i-recommend-this.php
+msgid "https://themeist.com/plugins/wordpress/i-recommend-this/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page"
+msgstr ""
+
+#. Description of the plugin
+#: i-recommend-this.php
+msgid "This plugin allows your visitors to recommend or like your posts."
+msgstr ""
+
+#. Author of the plugin
+#: i-recommend-this.php
+msgid "Harish Chouhan, Themeist"
+msgstr ""
+
+#. Author URI of the plugin
+#: i-recommend-this.php
+msgid "https://themeist.com/"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:55
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:60
+msgid "Security check failed. Please try again."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:94
+msgid "The database table does not exist."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:125
+msgid "Current Database Version:"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:128
+msgid "Table Structure"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:130
+msgid "Column"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:130
+msgid "Type"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:130
+msgid "Null"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:130
+msgid "Key"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:147
+msgid "Table Indexes"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:149
+msgid "Index Name"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:149
+msgid "Columns"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-db-tools.php:162
+msgid "Total Records:"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-plugin-links.php:55
+msgid "Settings"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-post-columns.php:39
+msgid "Likes"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-post-columns.php:53
+msgid "like"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:51
+msgid "Automatically display on"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:52
+msgid "Choose a style"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:53
+msgid "Disable CSS"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:54
+msgid "Hide Zero Count"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:57
+msgid "Text after 0 Count"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:58
+msgid "Text after 1 Count"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:59
+msgid "Text after more than 1 Count"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:60
+msgid "Text for new recommendations"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:61
+msgid "Text for removing recommendations"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:64
+msgid "Enable IP tracking"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:124
+msgid "This plugin allows your visitors to simply recommend or like your posts instead of commenting."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:158
+msgid "Posts"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:161
+msgid "All other pages like Index, Archive, etc."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:191
+msgid "Hide count if count is zero"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:221
+msgid "Enable tracking unique recommendations by IP. IPs are securely anonymized using WordPress cryptographic functions to enhance GDPR compliance."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:222
+msgid "Cookies are always saved by default. Enabling this option provides stronger protection against duplicate votes using secure global IP hashing."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:252
+msgid "I want to use my own CSS styles"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:281
+msgid "Text to display after zero count. Leave blank for no text after the count."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:310
+msgid "Text to display after 1 person has recommended. Leave blank for no text after the count."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:339
+msgid "Text to display after more than 1 person have recommended. Leave blank for no text after the count."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:368
+msgid "Text shown for the recommendation button for posts not yet recommended. Default: \"Recommend this\""
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:397
+msgid "Text shown for the recommendation button for posts already recommended. Default: \"Unrecommend this\""
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:426
+msgid "Default style - Thumb"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-settings.php:429
+msgid "Heart"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-ui.php:115
+msgid "General"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-ui.php:116
+msgid "DB Tools"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-ui.php:120
+msgid "I Recommend This: Settings"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-ui.php:137
+msgid "Database has been updated successfully!"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-ui.php:170
+msgid "Save Changes"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-ui.php:182
+msgid "Database Optimization"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-ui.php:183
+msgid "This tool will optimize the database tables used by the I Recommend This plugin. It will add appropriate indexes and update the table structure for better performance."
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-ui.php:189
+msgid "Optimize Database"
+msgstr ""
+
+#: admin/class-themeist-irecommendthis-admin-ui.php:195
+msgid "Database Information"
+msgstr ""
+
+#: blocks/recommend/block.php:107
+msgid "Unable to determine which post to recommend. This block works best within a post or page context."
+msgstr ""
+
+#: core/class-themeist-irecommendthis-shortcodes.php:164
+msgid "Recommend this"
+msgstr ""
+
+#: core/class-themeist-irecommendthis-shortcodes.php:168
+msgid "Unrecommend this"
+msgstr ""
+
+#: core/class-themeist-irecommendthis-shortcodes.php:341
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:280
+msgid "No recommended posts found."
+msgstr ""
+
+#. translators: %d: number of recommendations
+#. translators: %d: Number of recommendations
+#: core/class-themeist-irecommendthis-shortcodes.php:426
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:350
+msgid "%d recommendation"
+msgid_plural "%d recommendations"
+msgstr[0] ""
+msgstr[1] ""
+
+#: core/class-themeist-irecommendthis.php:186
+msgid "Error creating database table for I Recommend This plugin. Please check your WordPress error logs."
+msgstr ""
+
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:19
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:44
+msgid "Most Recommended Posts"
+msgstr ""
+
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:23
+msgid "Display the most recommended posts."
+msgstr ""
+
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:76
+msgid "Widget Title:"
+msgstr ""
+
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:82
+msgid "Number of posts to show:"
+msgstr ""
+
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:89
+msgid "Show number of recommends?"
+msgstr ""
+
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:95
+msgid "Show message when no posts found?"
+msgstr ""
+
+#: public/class-themeist-irecommendthis-widget-most-recommended.php:289
+msgid "Most recommended posts"
+msgstr ""
+
+#: blocks/recommend/build/block.json
+#: blocks/recommend/src/block.json
+msgctxt "block title"
+msgid "I Recommend This"
+msgstr ""
+
+#: blocks/recommend/build/block.json
+#: blocks/recommend/src/block.json
+msgctxt "block description"
+msgid "Block to add recommend link."
+msgstr ""
