@@ -4,7 +4,7 @@ Donate link: https://themeist.com/plugins/wordpress/i-recommend-this/
 Tags: recommend, like, love, post, rate
 Requires at least: 6.0
 Tested up to: 6.7.2
-Stable tag: 4.0.0
+Stable tag: 4.0.1
 Requires PHP: 7.4
 License: GPL-3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -148,6 +148,10 @@ Please report security bugs found in the source code through the [Patchstack Vul
 IMPORTANT: After upgrading, run "Optimize Database" in Settings > DB Tools. Update custom CSS to target .irecommendthis-wrapper. Template tags and shortcodes changed from dot_irecommendthis to irecommendthis. Legacy code still works for backward compatibility.
 
 == Changelog ==
+
+= 4.0.1 - (10 APril 2025) =
+* Updated translation template (.pot) using WP-CLI
+* Removed outdated .po/.mo files
 
 = 4.0.0 - (19 March 2025) =
 * Core Improvements:
