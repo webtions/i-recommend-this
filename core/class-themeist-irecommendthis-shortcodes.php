@@ -422,7 +422,7 @@ class Themeist_IRecommendThis_Shortcodes {
 					'irecommendthis_top_post_count',
 					sprintf(
 						'<span class="votes" aria-label="%1$s">%2$s</span> ',
-						/* translators: %d: number of recommendations */
+						/* translators: %d: Number of recommendations */
 						esc_attr( sprintf( _n( '%d recommendation', '%d recommendations', $post_count, 'i-recommend-this' ), $post_count ) ),
 						esc_html( $post_count )
 					),

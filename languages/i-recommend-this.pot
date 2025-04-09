@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-26T13:46:44+00:00\n"
+"POT-Creation-Date: 2025-04-09T16:46:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: i-recommend-this\n"
@@ -255,7 +255,6 @@ msgstr ""
 msgid "No recommended posts found."
 msgstr ""
 
-#. translators: %d: number of recommendations
 #. translators: %d: Number of recommendations
 #: core/class-themeist-irecommendthis-shortcodes.php:426
 #: public/class-themeist-irecommendthis-widget-most-recommended.php:350
@@ -297,13 +296,11 @@ msgstr ""
 msgid "Most recommended posts"
 msgstr ""
 
-#: blocks/recommend/build/block.json
 #: blocks/recommend/src/block.json
 msgctxt "block title"
 msgid "I Recommend This"
 msgstr ""
 
-#: blocks/recommend/build/block.json
 #: blocks/recommend/src/block.json
 msgctxt "block description"
 msgid "Block to add recommend link."
