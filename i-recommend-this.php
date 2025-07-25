@@ -4,7 +4,7 @@
  * Plugin URI: https://themeist.com/plugins/wordpress/i-recommend-this/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page
  * Description: This plugin allows your visitors to recommend or like your posts.
  * Version: 4.0.1
- * Author: Harish Chouhan, Themeist
+ * Author: Themeist
  * Author URI: https://themeist.com/
  * Author Email: support@themeist.com/
  * Text Domain: i-recommend-this

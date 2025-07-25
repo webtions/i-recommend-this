@@ -1,9 +1,9 @@
-=== I Recommend This ===
+=== I Recommend This – Love/Like Button for WordPress Posts ===
 Contributors: themeist, hchouhan
 Donate link: https://themeist.com/plugins/wordpress/i-recommend-this/
-Tags: recommend, like, love, post, rate
-Requires at least: 6.0
-Tested up to: 6.7.2
+Tags: like, love, post, rate, recommend
+Requires at least: 6.1
+Tested up to: 6.8
 Stable tag: 4.0.1
 Requires PHP: 7.4
 License: GPL-3.0
