@@ -65,3 +65,7 @@ local-config.php
 
 package-lock.json
 
+# Local planning and scratch resources (not versioned)
+_resources/
+_tasks/
+
