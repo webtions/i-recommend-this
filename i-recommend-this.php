@@ -3,7 +3,7 @@
  * Plugin Name: I Recommend This
  * Plugin URI: https://themeist.com/plugins/wordpress/i-recommend-this/#utm_source=wp-plugin&utm_medium=i-recommend-this&utm_campaign=plugins-page
  * Description: This plugin allows your visitors to recommend or like your posts.
- * Version: 4.0.1
+ * Version: 4.1.0
  * Author: Themeist
  * Author URI: https://themeist.com/
  * Author Email: support@themeist.com/
@@ -24,7 +24,7 @@ if ( class_exists( 'Themeist_IRecommendThis' ) ) {
 	return;
 }
 
-define( 'THEMEIST_IRT_VERSION', '4.0.1' );
+define( 'THEMEIST_IRT_VERSION', '4.1.0' );
 define( 'THEMEIST_IRT_DB_VERSION', '3.0.0' );
 
 // Require includes.
@@ -34,6 +34,7 @@ require_once __DIR__ . '/admin/class-themeist-irecommendthis-admin.php';
 require_once __DIR__ . '/public/class-themeist-irecommendthis-public.php';
 require_once __DIR__ . '/public/class-themeist-irecommendthis-widget-most-recommended.php';
 require_once __DIR__ . '/core/class-themeist-irecommendthis-ajax.php';
+require_once __DIR__ . '/core/class-themeist-irecommendthis-rest.php';
 require_once __DIR__ . '/core/class-themeist-irecommendthis-shortcodes.php';
 require_once __DIR__ . '/core/functions.php';
 require_once __DIR__ . '/blocks/blocks.php';
@@ -57,6 +58,10 @@ $themeist_i_recommend_this_public->add_public_hooks();
 global $themeist_i_recommend_this_ajax;
 $themeist_i_recommend_this_ajax = new Themeist_IRecommendThis_Ajax();
 $themeist_i_recommend_this_ajax->add_ajax_hooks();
+
+global $themeist_i_recommend_this_rest;
+$themeist_i_recommend_this_rest = new Themeist_IRecommendThis_Rest();
+$themeist_i_recommend_this_rest->initialize();
 
 add_action( 'init', 'themeist_register_shortcodes' );
 
