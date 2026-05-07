@@ -13,6 +13,7 @@
 - Gutenberg block integration for modern WordPress sites
 - GDPR compliance options including IP anonymization
 - Extensive developer hooks for customization
+- REST API: `irt_likes` on core post REST responses and an authenticated `POST .../irecommendthis/v1/posts/{id}/like` endpoint (for headless/mobile clients; see developer docs)
 
 ## File Structure
 
@@ -48,6 +49,7 @@ i-recommend-this/
 ├── core/                                 # Core functionality
 │   ├── class-themeist-irecommendthis.php              # Main plugin class
 │   ├── class-themeist-irecommendthis-ajax.php         # AJAX processing
+│   ├── class-themeist-irecommendthis-rest.php         # REST API fields and routes
 │   ├── class-themeist-irecommendthis-db-upgrader.php  # Database management
 │   ├── class-themeist-irecommendthis-shortcodes.php   # Shortcodes
 │   ├── functions.php                                  # Public functions
@@ -95,6 +97,11 @@ Each component focuses on a specific functionality:
    - Processes recommendation requests
    - Validates security nonces
    - Returns updated recommendation counts
+
+6. **REST API** (`Themeist_IRecommendThis_Rest`)
+   - Registers the `irt_likes` field on allowed post types in `wp/v2` responses
+   - Exposes `POST /wp-json/irecommendthis/v1/posts/{id}/like` for authenticated clients
+   - Reuses the same recommendation processor as AJAX (cookie/IP rules apply)
 
 ## Database Structure
 
@@ -153,3 +160,7 @@ The recommendation process follows this workflow:
    - `irecommendthis_after_process_recommendation` action fires
    - Cache clearing functions can be triggered for the specific post
    - Ensures visitors see updated recommendation counts even with caching
+
+### REST API path (headless / mobile)
+
+For authenticated HTTP clients (e.g. Application Passwords over HTTPS): **read** the like count via `GET /wp-json/wp/v2/posts` or a single post (`irt_likes`). **Write** a like or unlike using `POST /wp-json/irecommendthis/v1/posts/{id}/like`, optionally with `unrecommend=true` (same semantics as AJAX). Server-side logic matches the AJAX flow; details and hooks are in `docs/developers.md` and `docs/technical-reference.md`.

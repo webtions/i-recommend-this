@@ -120,6 +120,26 @@ Handles AJAX processing for the plugin.
 - `add_ajax_hooks()`: Registers AJAX hooks
 - `ajax_callback()`: Processes AJAX recommendation requests
 
+#### `Themeist_IRecommendThis_Rest`
+
+Registers REST API fields and routes (since 4.1.0).
+
+**Key Methods:**
+- `initialize()`: Hooks `rest_api_init`
+- `register_rest_routes_and_fields()`: Registers `irt_likes` on allowed post types and the like route
+- `get_post_like_count_for_rest()`: REST field callback reading `_recommended` meta
+- `like_permission()`: Permission callback for `POST .../like`
+- `like_post()`: Runs `Themeist_IRecommendThis_Public_Processor::process_recommendation()` with the same settings suffixes as AJAX
+
+**REST surface**
+
+| Item | Details |
+|------|---------|
+| Like count field | Name `irt_likes` (integer), on each post object from `GET /wp/v2/posts` and `GET /wp/v2/posts/{id}` when the post type is allowed |
+| Like route | `POST /wp-json/irecommendthis/v1/posts/{id}/like` |
+| Body / query | Optional `unrecommend`: `true` or `false` (string or boolean in JSON), same meaning as the AJAX parameter |
+| Auth | Authenticated WordPress user by default (e.g. Basic auth with an Application Password). Not intended for anonymous writing |
+
 ### Admin Classes
 
 #### `Themeist_IRecommendThis_Admin`

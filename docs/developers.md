@@ -137,6 +137,24 @@ The plugin provides extensive hooks and filters for customization.
 | `irecommendthis_after_ajax_process` | Fired after processing AJAX recommendation request | `$post_id`, `$result`, `$_POST` |
 | `irecommendthis_ajax_response` | Filter the AJAX response HTML | `$result`, `$post_id` |
 
+### REST API Hooks
+
+**Fields & registration**
+
+| Hook | Description | Parameters |
+|------|-------------|------------|
+| `irecommendthis_rest_post_types` | Post types that expose the `irt_likes` REST field and are allowed for the like route | Array of post type strings (default `post` only) |
+| `irecommendthis_rest_registered` | Fired after REST routes and fields are registered | None |
+
+**Like endpoint (`POST /wp-json/irecommendthis/v1/posts/{id}/like`)**
+
+| Hook | Description | Parameters |
+|------|-------------|------------|
+| `irecommendthis_rest_like_permission` | Override permission: return `null` for default rules, or `true` / `false` / `WP_Error` | `$permission` (null), `$request` (`WP_REST_Request`), `$post` (`WP_Post` or null) |
+| `irecommendthis_rest_like_response` | Filter successful JSON (`post_id`, `likes`, `message`) | `$data` (array), `$post_id`, `$request` |
+
+Default permission requires a logged-in user who may **read** the post (`read_post`), the post must be **published**, and its type must be allowed by `irecommendthis_rest_post_types`. Unauthenticated requests receive a REST authentication error (status from `rest_authorization_required_code()`). Use [Application Passwords](https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/) over HTTPS for mobile and headless clients.
+
 ### Shortcode Hooks
 
 | Hook | Description | Parameters |
