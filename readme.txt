@@ -4,7 +4,7 @@ Donate link: https://themeist.com/plugins/wordpress/i-recommend-this/
 Tags: like, love, post, rate, recommend
 Requires at least: 6.1
 Tested up to: 6.8
-Stable tag: 4.0.1
+Stable tag: 4.1.0
 Requires PHP: 7.4
 License: GPL-3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -25,6 +25,7 @@ Enable your visitors to easily like or recommend your posts with a single click,
 - Better GDPR compliance with anonymized IPs
 - Built-in query block compatibility
 - Extensive action and filter hooks for developers
+- REST API: read like counts on `wp/v2/posts` (`irt_likes` field) and recommend published posts via `POST /wp-json/irecommendthis/v1/posts/{id}/like` (authenticated; Application Passwords supported — use HTTPS)
 
 
 ### Advanced Options:
@@ -148,6 +149,9 @@ Please report security bugs found in the source code through the [Patchstack Vul
 IMPORTANT: After upgrading, run "Optimize Database" in Settings > DB Tools. Update custom CSS to target .irecommendthis-wrapper. Template tags and shortcodes changed from dot_irecommendthis to irecommendthis. Legacy code still works for backward compatibility.
 
 == Changelog ==
+
+= 4.1.0 =
+* Added REST API support: `irt_likes` field on post objects in `GET /wp/v2/posts` (and single post), and `POST /wp-json/irecommendthis/v1/posts/{id}/like` for authenticated clients (e.g. Application Passwords). Cookie and IP duplicate rules apply as on the front end. Developer filters documented in `docs/developers.md`.
 
 = 4.0.1 - (10 APril 2025) =
 * Updated translation template (.pot) using WP-CLI
